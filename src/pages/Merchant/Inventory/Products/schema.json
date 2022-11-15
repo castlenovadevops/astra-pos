@@ -1,0 +1,228 @@
+{
+    "formName":"product",
+    "properties": [
+        {
+            "component":"div", 
+            "type": "text",
+            "format":"string",
+            "text" : "Product & Services",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
+        {
+            "component":"Radio", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":12,
+            "name":"mProductType",
+            "label":"Product / Service Type",
+            "placeholder":"Product / Service Type",
+            "data":[
+                {
+                  "label":"Product",
+                  "value":"Product"
+                },
+                {
+                  "label":"Service",
+                  "value":"Service"
+                }
+            ]
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mProductName",
+            "label":"Product / Service Name",
+            "placeholder":"Product / Service Name"
+        }, 
+
+        {
+          "component":"Select", 
+          "type": "text",
+          "format":"string",
+          "multiple":"true",
+          "minLength": 1,
+          "maxLength": 50,
+          "grid":6, 
+          "name":"mProductCategories",
+          "data":"/merchant/category/get",
+          "dataformat":{
+              "label":"mCategoryName",
+              "value":"id"
+          },
+          "label":"Category",
+          "placeholder":"Category"
+        } ,
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mProductSKU",
+            "label":"SKU",
+            "placeholder":"SKU"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mProductCode",
+            "label":"Product Code",
+            "placeholder":"Product Code"
+        }, 
+        {
+            "component":"Select", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":4,
+            "name":"mProductPriceType",
+            "label":"Price Type",
+            "placeholder":"Price Type",
+            "data":[
+              {
+                "label":"Fixed",
+                "value":"Fixed"
+              },
+              {
+                "label":"Variable",
+                "value":"Variable"
+              },
+              {
+                "label":"Per Unit",
+                "value":"Per Unit"
+              }
+            ],
+            "onChange":"onStateChange"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"currency",
+            "minLength": 1,
+            "maxLength": 15,
+            "grid":4,
+            "name":"mProductPrice",
+            "label":"Product / Service Price",
+            "placeholder":"Product / Service Price",
+            "validations":[
+                "number"
+            ]
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"currency",
+            "minLength": 1,
+            "maxLength": 15,
+            "grid":4,
+            "name":"mProductCost",
+            "label":"Product / Service Cost",
+            "placeholder":"Product / Service Cost",
+            "validations":[
+                "number"
+            ]
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 1000,
+            "grid":12,
+            "name":"mProductDescription",
+            "label":"Product Description",
+            "placeholder":"Product Description"
+        }, 
+        {
+            "component":"Radio", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":12,
+            "name":"mProductTaxType",
+            "label":"Select Tax",
+            "placeholder":"Select Tax",
+            "value":"Default",
+            "data":[
+                {
+                  "label":"Default",
+                  "value":"Default"
+                },
+                {
+                  "label":"Custom",
+                  "value":"Custom"
+                },
+                {
+                  "label":"No Tax",
+                  "value":"No Tax"
+                }
+              ],
+              "onChange":"onStateChange"
+        },
+        {
+          "component":"Checkbox", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50, 
+            "checkboxWidth":"100%",
+            "grid":12,
+            "disabled": true,
+            "name":"mProductDefaultTaxes",
+            "data":"merchant/tax/getByType/default",
+            "dataformat":{
+                "label":"mTaxName",
+                "value":"mTaxId"
+            },
+            "label":"Taxes",
+            "placeholder":"Taxes"
+        },
+        {
+          "component":"Checkbox", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50, 
+            "checkboxWidth":"100%",
+            "grid":12,
+            "name":"mProductTaxes",
+            "data":"merchant/tax/getByType/all",
+            "dataformat":{
+                "label":"mTaxName",
+                "value":"mTaxId"
+            },
+            "label":"Taxes",
+            "placeholder":"Taxes"
+        }
+    ],
+    "required": ["mProductName","mProductPrice"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        },
+        {
+          "label":"Cancel",
+          "type":"close",
+          "variant":"outlined",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/product/save",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        } 
+    }
+}

@@ -1,0 +1,117 @@
+{
+    "formName":"employeeSpecificSetting",
+    "properties": [
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"minimumSalary",
+            "label":"Minimum Salary",
+            "placeholder":"Minimum Salary"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mOwnerPercentage",
+            "label":"Owner Percentage",
+            "format":"percentage", 
+            "onBlur":"changePercentage",
+            "placeholder":"Owner Percentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mEmployeePercentage",
+            "label":"Employee Percentage",
+            "format":"percentage", 
+            "onBlur":"changePercentage",
+            "placeholder":"Employee Percentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mCashPercentage",
+            "label":"Cash Percentage",
+            "format":"percentage", 
+            "onBlur":"changePercentage",
+            "placeholder":"Cash Percentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mCheckPercentage",
+            "label":"Check Percentage",
+            "format":"percentage", 
+            "onBlur":"changePercentage",
+            "placeholder":"Check Percentage"
+        },
+        {
+            "component":"div", 
+            "type": "text",  
+            "grid":6,
+            "text":""
+        },
+        {
+            "component":"div", 
+            "type": "text",  
+            "grid":12,
+            "text":"Tips Payment"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mTipsCashPercentage",
+            "label":"Tips Cash Percentage",
+            "format":"percentage", 
+            "onBlur":"changePercentage",
+            "placeholder":"Tips Cash Percentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mTipsCheckPercentage",
+            "label":"Tips Check Percentage",
+            "format":"percentage", 
+            "onBlur":"changePercentage",
+            "placeholder":"Tips Check Percentage"
+        }
+
+    ],
+    "required": ["minimumSalary","mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
+    ],
+    "onSubmit":{   
+        "action":"API",
+        "url":"merchant/employeecommission/saveCommission",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+    }
+}

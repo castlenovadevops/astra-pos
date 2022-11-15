@@ -1,0 +1,129 @@
+{
+    "formName":"discounts",
+    "properties": [
+        {
+            "component":"div", 
+            "type": "text",
+            "format":"string",
+            "text" : "Discount Details",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mDiscountName",
+            "label":"Discount Name",
+            "placeholder":"Discount Name"
+        }, 
+        {
+            "component":"Radio", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mDiscountType",
+            "label":"Discount Type",
+            "placeholder":"Discount Type",
+            "value":"Amount",
+            "data":[
+                {
+                  "label":"Amount",
+                  "value":"Amount"
+                },
+                {
+                  "label":"Percentage",
+                  "value":"Percentage"
+                }
+              ],
+              "onChange":"onStateChange"
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 5,
+            "format":"currency",
+            "grid":6,
+            "name":"mDiscountValue",
+            "label":"Discount Value",
+            "placeholder":"Discount Value"
+        },
+        {
+            "component":"Radio", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mDiscountDivisionType",
+            "label":"Division Type",
+            "placeholder":"Division Type",
+            "value":"Owner",
+            "data":[
+                {
+                  "label":"Owner",
+                  "value":"Owner"
+                },
+                {
+                  "label":"Employee",
+                  "value":"Employee"
+                },
+                {
+                    "label":"Both",
+                    "value":"Both"
+                  }
+              ],
+              "onChange":"onStateChange"
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"percentage",
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mOwnerDivision",
+            "label":"Owner Percentage",
+            "placeholder":"Owner Percentage",
+            "onBlur":"changePercentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mEmployeeDivision",
+            "label":"Employee Percentage",
+            "placeholder":"Employee Percentage",
+            "onBlur":"changePercentage"
+        }
+    ],
+    "required": ["mDiscountName", "mDiscountValue"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        },
+        {
+          "label":"Cancel",
+          "type":"close",
+          "variant":"outline",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/discounts/save",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+       
+    }
+}

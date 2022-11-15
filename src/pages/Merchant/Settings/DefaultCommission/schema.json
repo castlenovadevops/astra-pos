@@ -1,0 +1,95 @@
+{
+    "formName":"commissionPayment",
+    "properties": [
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mOwnerPercentage",
+            "label":"Owner Percentage",
+            "placeholder":"Owner Percentage",
+            "onBlur":"changePercentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mEmployeePercentage",
+            "label":"Employee Percentage",
+            "placeholder":"Employee Percentage",
+            "onBlur":"changePercentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mCashPercentage",
+            "label":"Cash Percentage",
+            "placeholder":"Cash Percentage",
+            "onBlur":"changePercentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mCheckPercentage",
+            "label":"Check Percentage",
+            "placeholder":"Check Percentage",
+            "onBlur":"changePercentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mTipsCashPercentage",
+            "label":"Tips Cash Percentage",
+            "placeholder":"Tips Cash Percentage",
+            "onBlur":"changePercentage"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"mTipsCheckPercentage",
+            "label":"Tips Check Percentage",
+            "placeholder":"Tips Check Percentage",
+            "onBlur":"changePercentage"
+        }
+    ],
+    "required": ["mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/defaultcommission/save",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+       
+    }
+}

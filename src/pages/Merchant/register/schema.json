@@ -1,0 +1,238 @@
+{
+    "formName":"register",
+    "properties": [
+      {
+        "component":"div", 
+        "type": "text",
+        "format":"string",
+        "text" : "Merchant Details",
+        "style":{"font-size":"20px", "margin-top":"1rem"}
+      } ,
+      {
+        "component":"TextField", 
+        "type": "text", 
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantName",
+        "label":"Business Name",
+        "placeholder":"Business Name"
+      } ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"email",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantEmail",
+        "label":"Business Email",
+        "placeholder":"Business Email"
+      } ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantAddress1",
+        "label":"Address 1",
+        "placeholder":"Address 1"
+      }  ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantAddress2",
+        "label":"Address 2",
+        "placeholder":"Address 2"
+      }   ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantCity",
+        "label":"City",
+        "placeholder":"City"
+      }  ,
+      {
+        "component":"Select", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantState", 
+        "data":"lookup/getStates",
+        "dataformat":{
+            "label":"stateName",
+            "value":"id"
+        },
+        "label":"State ",
+        "placeholder":"State"
+      } , 
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"number",
+        "minLength": 1,
+        "maxLength": 5,
+        "grid":6,
+        "name":"merchantZipCode",
+        "label":"Zipcode",
+        "placeholder":"Zipcode",
+        "validations":[
+          "number"
+        ]
+      },
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"phone",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantPhone",
+        "label":"Business Phone",
+        "placeholder":"Business Phone"
+      }  ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"legalName",
+        "label":"Legal Name",
+        "placeholder":"Legal Name"
+      }  ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"number",
+        "minLength": 1,
+        "maxLength": 9,
+        "grid":6,
+        "name":"merchantTaxId",
+        "label":"EIN Tax ID",
+        "placeholder":"EIN Tax ID"
+      }  , 
+      {
+        "component":"div", 
+        "type": "text",
+        "format":"string",
+        "text" : "Owner Details",
+        "style":{"font-size":"20px", "margin-top":"1rem"}
+      } ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"ownerName",
+        "label":"Owner Name",
+        "placeholder":"Owner Name"
+      }  ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"phone",
+        "minLength": 1,
+        "maxLength": 15,
+        "grid":6,
+        "name":"ownerPhone",
+        "label":"Owner Phone",
+        "placeholder":"Owner Phone"
+      }  , 
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"currency",
+        "minLength": 1,
+        "maxLength": 15,
+        "grid":6,
+        "name":"estMonthlySalary",
+        "label":"Monthly Sale Income",
+        "placeholder":"Monthly Sale Income"
+      }  ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 8,
+        "grid":6,
+        "name":"referralAgent",
+        "label":"Referral Agent",
+        "placeholder":"Referral Agent"
+      }  ,
+      {
+        "component":"TextField", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantCurrentProcessor",
+        "label":"Current Credit Card Processor",
+        "placeholder":"Current Credit Card Processor"
+      }  ,
+      {
+        "component":"Select", 
+        "type": "text",
+        "format":"string",
+        "minLength": 1,
+        "maxLength": 50,
+        "grid":6,
+        "name":"merchantSince",
+        "label":"Years in Business",
+        "placeholder":"Years in Business",
+        "data":[
+          {
+            "label":"0 - 1 Year",
+            "value":"0 - 1 Year"
+          },
+          {
+            "label":"1 - 2 Year",
+            "value":"1 - 2 Year"
+          },
+          {
+            "label":"2 - 5 Year",
+            "value":"2 - 5 Year"
+          },
+          {
+            "label":"More than 5 Years",
+            "value":"More than 5 Years"
+          }
+        ]
+      }  
+    ],
+    "required": ["merchantName","merchantEmail", "merchantAddress1","merchantCity", "merchantState", "merchantZipCode","merchantPhone", "merchantLegalName", "ownerName"],
+    "buttons":[
+      {
+        "label":"Register",
+        "type":"submit",
+        "variant":"contained",
+        "grid":4
+      }
+    ],
+    "onSubmit":{
+      "action":"API",
+      "url":"merchant/register",
+      "method":"POST",
+      "onSuccess":{
+        "action":"showPopup",
+        "url":"/"
+      }
+    }
+  }

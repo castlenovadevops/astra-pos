@@ -1,0 +1,112 @@
+{
+    "formName":"tax",
+    "properties": [
+        {
+            "component":"div", 
+            "type": "text",
+            "format":"string",
+            "text" : "Tax Details",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mTaxName",
+            "label":"Tax Name",
+            "placeholder":"Tax Name"
+        },
+        {
+            "component":"Select", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mTaxType",
+            "label":"Tax Type",
+            "placeholder":"Tax Type",
+            "value":"Percentage",
+            "data":[
+              {
+                "label":"Percentage",
+                "value":"Percentage"
+              },
+              {
+                "label":"Flat fee",
+                "value":"Flat fee"
+              }
+            ],
+            "onChange":"onStateChange"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"percentage", 
+            "minLength": 1,
+            "maxLength": 10,
+            "grid":6,
+            "name":"mTaxValue",
+            "label":"Tax Value",
+            "placeholder":"Tax Value"
+        },
+        {
+            "component":"Checkbox", 
+            "grid":6,
+            "name":"isDefault",
+            "label":"",
+            "placeholder":"",
+            "checkboxWidth": "100%",  
+            "data":[
+              {
+                "label":"Is Default",
+                "value":"1"
+              }
+            ]
+        }
+    ],
+    "required": ["mTaxName", "mTaxType", "mTaxValue"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        },
+        {
+          "label":"Cancel",
+          "type":"close",
+          "variant":"outlined",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+      "action":"API",
+      "url":"merchant/tax/save",
+      "method":"POST",
+      "onSuccess":{
+          "action":"reloadData"
+      },
+      "onError":{
+        "status":"405",
+        "action":"showPopup",
+        "actionButtons":[
+          {
+            "label":"Use the current as default",
+            "type":"closeWithAction",
+            "variant":"contained",
+            "grid":2
+          },
+          {
+            "label":"Add to existing defaults",
+            "type":"closeWithAction",
+            "variant":"contained",
+            "grid":2
+          }
+        ]
+      }
+       
+    }
+}

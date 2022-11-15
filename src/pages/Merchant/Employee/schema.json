@@ -1,0 +1,171 @@
+{
+    "formName":"employee",
+    "properties": [
+        {
+            "component":"div", 
+            "type": "text",
+            "format":"string",
+            "text" : "Employee Details",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeeFirstName",
+            "label":"First Name",
+            "placeholder":"First Name"
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeeLastName",
+            "label":"Last Name",
+            "placeholder":"Last Name"
+        },  
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"email", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeeEmail",
+            "label":"Email",
+            "placeholder":"Email"
+        },   
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"phone",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeePhone",
+            "label":"Phone Number",
+            "placeholder":"Phone Number"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeeAddress1",
+            "label":"Address 1",
+            "placeholder":"Address 1"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeeAddress2",
+            "label":"Address 2",
+            "placeholder":"Address 2"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":4,
+            "name":"mEmployeeCity",
+            "label":"City",
+            "placeholder":"City"
+        },
+        {
+            "component":"Select", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":4,
+            "name":"mEmployeeState",
+            "data":"/lookup/getStates",
+            "dataformat":{
+                "label":"stateName",
+                "value":"id"
+            },
+            "label":"State ",
+            "placeholder":"State"
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"number",
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":4,
+            "name":"mEmployeeZipCode",
+            "label":"Zipcode",
+            "placeholder":"Zipcode",
+            "validations":[
+                "number"
+            ]
+        },
+        {
+            "component":"Select", 
+            "type": "text",
+            "format":"string",
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mEmployeeRole",
+            "label":"Role",
+            "placeholder":"Role",
+            "data":"merchant/getRoles",
+            "dataformat":{
+                "label" : "roleName",
+                "value": "roleId"
+            }
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"number",
+            "minLength": 1,
+            "maxLength": 4,
+            "grid":6,
+            "name":"mEmployeeCode",
+            "label":"Passcode",
+            "placeholder":"Passcode",
+            "validations":[
+                "number"
+            ]
+        }
+       
+    ],
+    "required": ["mEmployeeFirstName", "mEmployeeLastName","mEmployeePhone","mEmployeeAddress1","mEmployeeCity","mEmployeeZipCode","mEmployeeRole","mEmployeeCode"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        },
+        {
+          "label":"Cancel",
+          "type":"close",
+          "variant":"outline",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/employee/save",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+    }
+}

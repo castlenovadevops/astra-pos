@@ -1,0 +1,56 @@
+{
+    "formName":"category",
+    "properties": [
+        {
+            "component":"div", 
+            "type": "text",
+            "format":"string",
+            "text" : "Category Details",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mCategoryName",
+            "label":"Category Name",
+            "placeholder":"Category Name"
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"mCategoryDescription",
+            "label":"Description",
+            "placeholder":"Description"
+        } 
+    ],
+    "required": ["mCategoryName"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        },
+        {
+          "label":"Cancel",
+          "type":"close",
+          "variant":"outlined",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/category/save",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+       
+    }
+}
