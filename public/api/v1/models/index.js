@@ -32,7 +32,16 @@ const modelDefiners = [
 	//POS MODELS
 	require('./POS/mPOSDevices.model'),
 	require('./POS/toBeSynced.model'),
-	require('./empLog.model')
+	require('./empLog.model'),
+	require('./POS/ticketcombined.model'),
+	require('./POS/ticketcommission.model'),
+	require('./POS/ticketdiscount.model'),
+	require('./POS/ticketpayment.model'),
+	require('./POS/tickets.model'),
+	require('./POS/ticketservicediscount.model'),
+	require('./POS/ticketservices.model'),
+	require('./POS/ticketservicetax.model'),
+	require('./POS/tickettips.model'), 
 ];
 
 // We define all models according to their files.

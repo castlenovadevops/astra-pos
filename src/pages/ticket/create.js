@@ -12,6 +12,8 @@ export default class TicketListComponent extends React.Component{
         }  
     } 
 
+    componentDidMount(){}
+
     render(){
         return  <Grid container className='fullWidth fullHeight'>
                     <Grid item xs={12}  className='fullWidth fullHeight'>

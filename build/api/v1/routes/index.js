@@ -22,6 +22,7 @@ const SyncDefaultCommissionController = require('../controllers/pos/syncDefaultC
 const SyncEmployeesController = require('../controllers/pos/syncEmployeeController');
 
 const ClockInController = require('../controllers/merchant/clockinController');
+const TicketController = require('../controllers/merchant/ticketController');
 
 
 const express = require('express');
@@ -53,6 +54,7 @@ const corsOptions ={
         // new MEmployeeCommissionController(),
         // new MProfileController(),
         new ClockInController(),
+        new TicketController(),
 
         new SyncController(),
         new SyncTaxController(),
