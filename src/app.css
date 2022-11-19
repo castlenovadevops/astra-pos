@@ -344,3 +344,8 @@
     border-radius: 0 10px 0  0; 
     letter-spacing: 0.5px;
 }
+
+
+.fullWidth{
+    width:100%;
+}
