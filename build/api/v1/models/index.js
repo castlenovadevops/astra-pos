@@ -26,11 +26,13 @@ const modelDefiners = [
 	require('./mProductCategory.model'),
 	require('./mProductTax.model'),
 	require('./merchantEmployeeCommission.model'),
+	require('./mEmpPermissions.model'),
 
 
 	//POS MODELS
 	require('./POS/mPOSDevices.model'),
-	require('./POS/toBeSynced.model')
+	require('./POS/toBeSynced.model'),
+	require('./empLog.model')
 ];
 
 // We define all models according to their files.

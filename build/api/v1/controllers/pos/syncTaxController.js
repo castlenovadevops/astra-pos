@@ -5,9 +5,14 @@ const express = require('express');
 const APIManager = require('../../utils/apiManager'); 
 
 const settings = require('../../config/settings');
-let sequelize = settings.database;
+let sequelize = settings.database; 
+const db = settings.database;
 
-module.exports = class RegistrationController extends baseController{
+const pkfields = {
+    'mTax':"id"
+}
+
+module.exports = class SyncTaxController extends baseController{
     path = "/pos/syncData";
     router = express.Router();
     routes = [];
@@ -43,6 +48,7 @@ module.exports = class RegistrationController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
+            console.log("SAVE TAX CALLED")
             this.apiManager.postRequest('/pos/sync/saveTax', toBeSynced[idx] , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
@@ -55,9 +61,15 @@ module.exports = class RegistrationController extends baseController{
     }
 
     pullData = async(req, res, next)=>{ 
-        this.apiManager.getRequest('/pos/sync/getTax', req).then(response=>{
-            if(response.length > 0){
-                this.saveData(0, response, req, res, next)
+        
+        var input = { 
+            merchantId: req.deviceDetails.merchantId,
+            POSId: req.deviceDetails.device.POSId,
+            // syncAll: true
+        }
+        this.apiManager.postRequest('/pos/sync/getTax',  input ,req).then(resp=>{ 
+            if(resp.response.data.length > 0){
+                this.saveData(0, resp.response.data, req, res, next, [])
             }
             else{
                 this.sendResponse({message:"Tax Module synced successfully"}, res, 200);
@@ -65,13 +77,38 @@ module.exports = class RegistrationController extends baseController{
         })
     }
 
-    saveData = async(idx,taxes, req, res, next)=>{
-        let taxexist = await this.readOne({where:{mTaxId: taxes[idx].mTaxId, mTaxStatus:1}})
-        if(taxexist !== null){
-            
+    saveData = async(idx,taxes, req, res, next, syncedRows)=>{
+        var model = "mTax"
+        if(idx<taxes.length){ 
+            var taxdetail = taxes[idx];
+            let taxexist = await this.readOne({where:{mTaxId: taxes[idx].mTaxId, mTaxStatus:1}}, 'mTax')
+            if(taxexist !== null){
+                this.delete('mTax', {mTaxId:  taxes[idx].mTaxId}).then(r=>{
+                    this.create('mTax', taxes[idx], false).then(async r=>{
+                        var pkfield = pkfields[model]
+                        syncedRows.push(taxdetail[pkfield])
+                        this.saveData(idx+1, taxes, req, res, next,syncedRows)
+                    })
+                })
+            }
+            else{
+                this.create('mTax', taxes[idx], false).then(async r=>{ 
+                    var pkfield = pkfields[model]
+                        syncedRows.push(taxdetail[pkfield])
+                        this.saveData(idx+1, taxes, req, res, next,syncedRows)
+                })
+            }
         }
         else{
-
+            var input = { 
+                merchantId: req.deviceDetails.merchantId,
+                POSId: req.deviceDetails.device.POSId,
+                tableRows: syncedRows,
+                syncedTable:'mTax'
+            }
+            this.apiManager.postRequest('/pos/updateSync',  input ,req).then(resp=>{  
+                this.sendResponse({message:"Tax Module synced successfully"}, res, 200); 
+            }) 
         }
     }
 }

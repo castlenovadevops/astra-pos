@@ -6,9 +6,10 @@ import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 import SyncCodeComponent from './pages/syncCode';  
 
 import NotFound from './pages/Page404';
-import { isLogin } from './utils/protector';
+import { isDeviceRegistered, isLogin } from './utils/protector';
  
 import Dashboard from './pages/Dashboard'; 
+import SimpleLayout from './layouts/SimpleLayout';
 
 
 import Customer from './pages/Merchant/Customer';
@@ -23,6 +24,9 @@ import EmployeeSetting from './pages/Merchant/Settings/EmployeeSpecificSetting';
 import UserProfile from './pages/Profile';
 import SyncDataComponent from './pages/syncData';
 
+import Login from './pages/Login';
+import TicketLayout from './layouts/TicketLayout';
+import CreateTicket from './pages/ticket/create';
 
 // ----------------------------------------------------------------------
 
@@ -59,18 +63,34 @@ export default function Router() {
         { path: 'employeesetting', element: <EmployeeSetting />},
         { path:'profile', element: <UserProfile/>}
       ],
+    }, {
+      path: '/ticket/create', 
+      element: isLogin() ? <TicketLayout /> : <Navigate to="/syncBusiness"/>,
+      children: [
+        { path: '', element: <CreateTicket /> },   
+      ],
     }, 
     {
       path: 'syncBusiness',
-      element: <SyncCodeComponent />,
+      element: isDeviceRegistered() ?<Navigate to="/login"/>: <SyncCodeComponent />  
     }, 
     {
       path: 'syncData',
-      element: <SyncDataComponent />,
+      element: isDeviceRegistered() ? <LogoOnlyLayout /> : <Navigate to="/syncBusiness"/>,
+      children: [
+        { path: '/syncData/progress', element: <SyncDataComponent /> }, 
+      ],
+    }, 
+    {
+      path: 'login',
+      element: isDeviceRegistered() ? (!isLogin() ? <SimpleLayout /> : <Navigate to="/app"/>) : <Navigate to="/syncBusiness"/>,
+      children: [
+        { path: '/login', element: <Login /> }, 
+      ],
     }, 
     {
       path: '/',
-      element: !isLogin() ? <LogoOnlyLayout /> : <Navigate to="/app"/>,
+      element: !isDeviceRegistered() ? <LogoOnlyLayout /> : <Navigate to="/login"/>,
       children: [
         { path: '/', element: <Navigate to="/syncBusiness" /> },
         { path: '404', element: <NotFound /> },

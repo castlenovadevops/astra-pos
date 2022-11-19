@@ -18,7 +18,7 @@ const database = new Sequelize({
     password: '',
     host: 'localhost',
     dialect: 'sqlite',
-    storage: path.join(__dirname, "../../DB/astrapos.db")
+    storage: path.join(__dirname, "../../DB/astrapos.sqlite")
 });
 // const database = new Sequelize('astrapos','','',{
 //     host: "0.0.0.0",

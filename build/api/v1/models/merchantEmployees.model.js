@@ -97,6 +97,30 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: true 
         },
+        mEmployeeRole: {
+             field: 'mEmployeeRole', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: false,
+        },
+        mEmployeeRoleName: {
+             field: 'mEmployeeRoleName', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: false,
+        },
+        mEmployeeStatus: {
+             field: 'mEmployeeStatus', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: false,
+        },
+        mEmployeePasscode: {
+             field: 'mEmployeePasscode', 
+             type: DataTypes.STRING(20), 
+             primaryKey: false, 
+             allowNull: false,
+        }
     }, {
       freezeTableName: true,
       timestamps: false,

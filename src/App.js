@@ -9,8 +9,6 @@ import { deviceDetect } from 'react-device-detect';
 // ---------------- ------------------------------------------------------
 import HTTPManager from './utils/httpRequestManager';
 import React from 'react';
-
-
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './app.css';

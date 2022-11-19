@@ -8,6 +8,9 @@ const MsgController = require('./msgController');
 const sequelize = require('sequelize'); 
 const settings = require('../../config/settings');
 const db = settings.database;
+const pkfields = {
+    'mTax':"id"
+}
 
 module.exports = class baseController extends MsgController{
     models = models;
@@ -54,12 +57,11 @@ module.exports = class baseController extends MsgController{
     } 
     
 
-    async create(model,data){ 
+    async create(model,data, updateTobeSync=true){ 
         return new Promise(async (resolve) => { 
             let results =  await this.models[model].create(data);
-            if(this.syncTables.indexOf(model) !== -1){
-                var pkquery = await db.query("SELECT k.column_name FROM information_schema.table_constraints t JOIN information_schema.key_column_usage k USING(constraint_name,table_schema,table_name) WHERE t.constraint_type='PRIMARY KEY' AND t.table_schema='"+settings.dbConfig.database+"' AND t.table_name='"+model+"'", { type: sequelize.QueryTypes.SELECT })
-                var pkfield = pkquery.column_name
+            if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){
+                 var pkfield = pkfields[model]
                 var input = {
                     syncTable: model,
                     tableRowId: results[pkfield],
@@ -83,14 +85,11 @@ module.exports = class baseController extends MsgController{
         })
     }
 
-    async update(model, data, where){ 
+    async update(model, data, where, updateTobeSync=true){ 
         return new Promise(async (resolve) => {
             let results =  await this.models[model].update(data, where);
-            if(this.syncTables.indexOf(model) !== -1){
-                var pkquery = await db.query("SELECT k.column_name FROM information_schema.table_constraints t JOIN information_schema.key_column_usage k USING(constraint_name,table_schema,table_name) WHERE t.constraint_type='PRIMARY KEY' AND t.table_schema='"+settings.dbConfig.database+"' AND t.table_name='"+model+"'", { type: sequelize.QueryTypes.SELECT })
-                console.log("$$$$$$")
-                console.log(data);
-                var pkfield = pkquery[0].COLUMN_NAME
+            if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){ 
+                var pkfield = pkfields[model] 
                 var input = {
                     syncTable: model,
                     tableRowId: data[pkfield],
@@ -105,13 +104,13 @@ module.exports = class baseController extends MsgController{
         });
     }
 
-    async updateWithNew(model, data, where, statusfield, pkfield){ 
+    async updateWithNew(model, data, where, statusfield, pkfield, updateTobeSync=true){ 
         return new Promise(async (resolve) => {
             await this.models[model].update({[statusfield]: 2}, where).then(async r=>{
                 var input = Object.assign({}, data);
                 delete input[pkfield];
                 let results = await this.models[model].create(input);
-                if(this.syncTables.indexOf(model) !== -1){ 
+                if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){ 
                     var input = {
                         syncTable: model,
                         tableRowId: data[pkfield],

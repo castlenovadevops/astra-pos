@@ -9,7 +9,7 @@ import DashboardSidebar from './DashboardSidebar';
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64;
-const APP_BAR_DESKTOP = 92;
+const APP_BAR_DESKTOP = 64;
 
 const RootStyle = styled('div')({
   display: 'flex',
@@ -22,11 +22,11 @@ const MainStyle = styled('div')(({ theme }) => ({
   overflow: 'auto',
   minHeight: '100%',
   paddingTop: APP_BAR_MOBILE + 24,
-  paddingBottom: theme.spacing(10),
+  paddingBottom: theme.spacing(7.5),
   [theme.breakpoints.up('lg')]: {
     paddingTop: APP_BAR_DESKTOP + 24,
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
+    paddingLeft: 0,//theme.spacing(2),
+    paddingRight:0// theme.spacing(2)
   }
 }));
 

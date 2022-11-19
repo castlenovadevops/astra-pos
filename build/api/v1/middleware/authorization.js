@@ -13,6 +13,15 @@ module.exports = (req, res, next) => {
         req.userData = decoded; 
         console.log("DECODED")
         console.log(decoded)
+
+        const devicetoken = req.headers.devicetoken 
+        if(devicetoken){
+            const decoded_device = jwt.verify(devicetoken, secretKey); 
+            req.deviceDetails = decoded_device; 
+            // console.log("DECODED DEVICE");
+            // console.log(decoded_device);
+        }
+
         if(req.body.data)
             req.input = crypto.AESDecrypt( req.body.data);
         next();

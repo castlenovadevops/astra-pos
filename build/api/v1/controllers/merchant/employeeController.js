@@ -3,6 +3,8 @@
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController');
 
+const jwt = require("jsonwebtoken");
+const  {jwtOptions} = require('../../config/jwtOptions')
 const express = require('express');
 const authenticate = require('../../middleware/index');  
 const { Sequelize } = require('sequelize'); 
@@ -10,18 +12,27 @@ module.exports = class EmployeeController extends baseController{
     path = "/merchant/employee";
     router = express.Router();
     msgController = new MsgController();
+    routes =[];
     constructor(props){
         super(props);
     }
 
     initialize(){ 
         return new Promise((resolve) => {
+            this.routes = [
+                {
+                    path:this.path+"/login",
+                    type:"post",
+                    method: "loginEmployee",
+                    authorization:'accessAuth'
+                }
+            ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
-            this.router.get(this.path+"/getMerchants", authenticate.authorizationAuth, this.getMerchants); 
-            this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
-            this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
-            this.router.get(this.path+"/getAll", authenticate.authorizationAuth, this.getAll); 
-            this.router.post(this.path+"/update", authenticate.authorizationAuth, this.updateEmployee); 
+            // this.router.get(this.path+"/getMerchants", authenticate.authorizationAuth, this.getMerchants); 
+            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
+            // this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
+            // this.router.get(this.path+"/getAll", authenticate.authorizationAuth, this.getAll); 
+            // this.router.post(this.path+"/update", authenticate.authorizationAuth, this.updateEmployee); 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     } 
@@ -322,6 +333,27 @@ module.exports = class EmployeeController extends baseController{
         this.update('merchantEmployees', data, {where:{mEmployeeId:input.id}}).then(r1=>{
             this.sendResponse({message:"Customer details updated successfully."}, res, 200);
         })
+    }
+
+
+    loginEmployee = async(req,res, next)=>{
+        if(req.input.passCode !== ''){
+            this.readOne({where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1}}, 'merchantEmployees').then(results=>{
+                if(results !== null){
+                    var userData = Object.assign({}, results.dataValues||results); 
+                    let payload = { ...userData  }; 
+                    console.log(payload)
+                    let token = jwt.sign(payload, jwtOptions.secretOrKey); 
+                    return this.sendResponse({  token:token, data: userData}, res, 200);
+                }
+                else{
+                    this.sendResponse({message:"Invalid passcode. Please try again later."}, res, 400)
+                }
+            })
+        }
+        else{
+            this.sendResponse({message:"Please enter the passcode."}, res, 400)
+        }
     }
 
 }

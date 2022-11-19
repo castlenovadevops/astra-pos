@@ -23,18 +23,11 @@ const HeaderStyle = styled('header')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function LogoOnlyLayout() {
+  console.log(window.location.pathname)
   return (
     <>
       <HeaderStyle>
-        <Logo />
-
-      
-        <Typography variant="body2" align="center" style={{position:'absolute', right:10, top:0}} sx={{ mt: 6 }}>
-            Already having an account?&nbsp;
-            <Link variant="subtitle2" component={RouterLink} to="/">
-              Login
-            </Link>
-          </Typography>
+        <Logo /> 
       </HeaderStyle>
       <Outlet />
     </>

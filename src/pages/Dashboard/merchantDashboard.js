@@ -1,23 +1,33 @@
 import React from "react";
-import { Button, Grid } from "@mui/material";
-import AppCard from "../../components/dashboard.js/AppCard";
+import {   Grid, Dialog, DialogTitle, DialogContent, DialogContentText } from "@mui/material"; 
 import Loader from "../../components/Loader";
 import Iconify from '../../components/Iconify';
 import HTTPManager from "../../utils/httpRequestManager";
+
+import Technicians from "./technicians";
+import Clockin from './clockin';
+import TicketListComponent from "../ticket/list";
+
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class MerchantDashboard extends React.Component{
-    httpmanager = new HTTPManager();
+    httpmanager = new HTTPManager(); 
+
     constructor(){
         super();
         this.state={
             userdetail:{},
             requestNewBusiness: false,
             isLoading: false,
-            businessMetrics: {}
+            value:0,
+            showClockIn: false
         }
-        this.loadData = this.loadData.bind(this);
-        this.getBusinessMetrics = this.getBusinessMetrics.bind(this);
+        this.loadData = this.loadData.bind(this);  
+        this.handleCloseDialog = this.handleCloseDialog.bind(this);
+    }
+
+    handleCloseDialog(){
+        this.setState({showClockIn: false})
     }
     componentDidMount(){ 
         this.loadData()
@@ -28,61 +38,71 @@ export default class MerchantDashboard extends React.Component{
         var details = window.localStorage.getItem("userdetail") || ''
         if(details !== ''){
             this.setState({userdetail: JSON.stringify(details)}, ()=>{
-                this.getBusinessMetrics();
+                // this.getBusinessMetrics();
             })
         }
-    }
-
-    getBusinessMetrics(){
-        this.setState({isLoading: true}, ()=>{
-            this.httpmanager.getRequest(`/merchant/getMetrics`).then(response=>{
-                console.log(response.data)
-                if(response.data.customerCount !== undefined){
-                    this.setState({businessMetrics:response.data, isLoading: false}, ()=>{
-                        console.log(this.state.businessMetrics)
-                    })
-                }
-                else{ 
-                this.setState({isLoading:false, businessMetrics:{
-                    customerCount: 0,
-                    empCount: 0,
-                    itemsCount:0,
-                    categoryCount:0
-                }})
-                }
-            }).catch(e=>{
-                this.setState({isLoading:false, businessMetrics:{
-                    customerCount: 0,
-                    empCount: 0,
-                    itemsCount:0,
-                    categoryCount:0
-                }})
-            })
-        })
-    }
+    } 
 
     render(){
-        return <div> 
-            {!this.state.requestNewBusiness && <><div style={{width:'100%', display:'flex', flexDirection:'row', justifyContent:'end'}}>
-                <Button variant="contained" onClick={()=>{
-                    this.setState({requestNewBusiness: true})
-                }}>Request New Business</Button>
-            </div></>}
+        return <div className="fullHeight">  
             {this.state.isLoading && <Loader />}
-           {!this.state.isLoading && <Grid container><Grid item xs={12} sm={6} md={3}>
-          <AppCard Icon={getIcon("mdi:account-group")} Text="Customers" background={"#D0F2FF"}  value={this.state.businessMetrics.customerCount}/> 
+           
+            <Grid container className="fullHeight">
+                <Grid item xs={4} className={'dashboardDivider'}>
+                    <Technicians />
+                </Grid>
+                <Grid item xs={8} className={'dashboardDivider'}>
+                    <TicketListComponent/>
+                </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-          <AppCard Icon={getIcon("mdi:sitemap")} Text="Categories" background={"#E9FCD4"}   value={this.state.businessMetrics.categoryCount}/> 
-              {/* <AppCategory  value={this.state.businessMetrics.categorycount}/> */}
+
+            <Grid container>
+                <Grid item xs={12} className="dashboardFooter">
+                    <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
+                        this.setState({showClockIn: true})
+                    }}>
+                        Clock-In / Clock-Out
+                    </Grid>
+                    <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
+                        window.location.href="/ticket/create"
+                    }}>
+                        Create Ticket
+                    </Grid>
+                    <Grid item xs={2} className={'dashboardFooterDivider '}>
+                        Check-In
+                    </Grid>
+                    <Grid item xs={2} className={'dashboardFooterDivider '}>
+                        Waiting List
+                    </Grid> 
+                    <Grid item xs={2} className={'dashboardFooterDivider '}>
+                        Appointments
+                    </Grid>
+                    <Grid item xs={2} className={'dashboardFooterDivider active'}>
+                        Report
+                    </Grid>
+                </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-          <AppCard Icon={getIcon("mdi:cash")} Text="Item Orders" background={"#FFF7CD"}   value={this.state.businessMetrics.itemsCount}/>  
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-          <AppCard Icon={getIcon("mdi:account-box")} Text="Employees" background={"rgb(255, 231, 217)"}  value={this.state.businessMetrics.empCount}/>  
-            </Grid>
-            </Grid>} 
+
+
+
+    <Dialog
+                    open={this.state.showClockIn}
+                    onClose={this.handleCloseDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        Clock-In / Clock-Out
+                    </DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <Clockin handleCloseDialog={()=>{
+                                this.setState({showClockIn: false})
+                        }} />
+                    </DialogContentText>
+                    </DialogContent> 
+                </Dialog>
+
         </div>
     }
 }

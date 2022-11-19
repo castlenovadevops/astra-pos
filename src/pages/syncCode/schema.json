@@ -12,7 +12,7 @@
       {
         "component":"TextField", 
         "type": "text",
-        "format":"string",
+        "format":"stringnumeric",
         "minLength": 1,
         "maxLength": 6,
         "grid":9,
@@ -34,10 +34,23 @@
     "onSubmit":{
       "action":"API",
       "url":"pos/checkSyncCode",
-      "method":"POST",
+      "method":"POST", 
       "onSuccess":{
-        "action":"redirect",
-        "url":"/syncData"
-      }
+        "action":"savelocalstorage",
+        "options":[
+          {
+            "key":"merchantdetail",
+            "value":"response"
+          },
+          {
+            "key":"devicetoken",
+            "value":"response"
+          }
+        ],
+        "onSuccess":{
+          "action":"redirect",
+          "url":"/syncData/progress"
+        }
+      } 
     }
   }

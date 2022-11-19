@@ -47,22 +47,50 @@ export default class SyncProgress extends React.Component{
         this.setState({ merchantDetail: JSON.parse(detail) })
         console.log("did mount")
         this.setState({mastertables:[
-            // {
-            //     name: "users",
-            //     tablename: 'users',
-            //     progressText: "Synchronizing Staffs...",
-            //     progresscompletion: 10,
-            //     url: config.root + "/employee/" + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/inventory/category/saveorupdate'
-            // },
-            // {
-            //     name: "category",
-            //     tablename: 'category',
-            //     progressText: "Synchronizing Categories...",
-            //     progresscompletion: 10,
-            //     url: config.root + "/inventory/category/" + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/inventory/category/saveorupdate'
-            // },
+            
+            {
+                name: "merchantEmployees",
+                tablename: 'merchantEmployees',
+                progressText: "Synchronizing Staff details...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/employees`
+            } ,
+            {
+                name: "mCategory",
+                tablename: 'mCategory',
+                progressText: "Synchronizing Categories...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/category`
+            },
+            {
+                name: "mProducts",
+                tablename: 'mProducts',
+                progressText: "Synchronizing Products/Services...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/products`
+            } ,
+            {
+                name: "mDefaultDiscountDivision",
+                tablename: 'mDefaultDiscountDivision',
+                progressText: "Synchronizing Default Discount Division Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/defaultDiscountDivision`
+            } ,
+            {
+                name: "mDefaultCommission",
+                tablename: 'mDefaultCommission',
+                progressText: "Synchronizing Default Commission Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/defaultCommission`
+            } ,
+            {
+                name: "mDiscounts",
+                tablename: 'mDiscounts',
+                progressText: "Synchronizing Discounts...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/discounts`
+            } ,
+            
             // {
             //     name: "default_commission",
             //     tablename: 'default_commission',
@@ -70,8 +98,7 @@ export default class SyncProgress extends React.Component{
             //     progresscompletion: 10,
             //     url: config.root + `/settings/default_commission/list/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
             //     syncurl:''
-            // } ,
-
+            // } , 
             // {
             //     name: "default_discount_division",
             //     tablename: 'default_discount_division',
@@ -94,7 +121,7 @@ export default class SyncProgress extends React.Component{
                 tablename: 'mTax',
                 progressText: "Synchronizing Taxes...",
                 progresscompletion: 10,
-                url: `/pos/syncData/tax`
+                url:  `/pos/syncData/tax`
             } ,
             // {
             //     name: "customers",
@@ -213,7 +240,8 @@ export default class SyncProgress extends React.Component{
     
     syncAllData(){
         if(this.state.runningIndex< this.state.mastertables.length){
-            this.httpManager.postRequest(this.state.mastertables[this.state.runningIndex].url, {}).then(res=>{
+            this.setState({downloadinMessage: this.state.mastertables[this.state.runningIndex].progressText})
+            this.httpManager.postRequest(this.state.mastertables[this.state.runningIndex].url, {data:"TAX"}).then(res=>{
                 this.setState({runningIndex: this.state.runningIndex+1}, ()=>{
                     this.syncAllData();
                 })

@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles';
 import {  Container, Typography } from '@mui/material'; 
 import FormManager from '../../components/formComponents/FormManager';
 import schema from './schema.json'; 
+import { deviceDetect } from 'react-device-detect';
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -19,8 +20,20 @@ const ContentStyle = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   padding: theme.spacing(12, 0),
 })); 
-export default function Login() { 
-
+export default function SyncCode() { 
+  var schemaObj = Object.assign({}, schema);
+  schema.properties.push(
+    {
+      "component":"TextField", 
+      "type": "hidden",
+      "format":"stringnumeric",
+      "minLength": 1,
+      "maxLength": 6,
+      "grid":9,
+      "name":"deviceDetails",
+      "label":"", 
+      "value": deviceDetect(window.navigator.userAgent)
+    }  )
   return (
 
     <RootStyle title="Business Registration | Astro POS">  
@@ -35,7 +48,7 @@ export default function Login() {
 
     <Container maxWidth="sm">
       <ContentStyle className="mobileminautoform">  
-             <FormManager formProps={schema} />   
+             <FormManager formProps={schemaObj} />   
       </ContentStyle>
     </Container>
   </RootStyle> 

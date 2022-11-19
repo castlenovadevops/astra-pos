@@ -22,6 +22,7 @@ module.exports =  class Crypto{
     };
         
     AESDecrypt(word) {
+        console.log("DECRYPT VALUE ", word)
         var keys = CryptoJS.enc.Utf8.parse(this.privateKey);
         let base64 = CryptoJS.enc.Base64.parse(word);
         let src = CryptoJS.enc.Base64.stringify(base64);

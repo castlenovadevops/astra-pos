@@ -11,11 +11,11 @@ Logo.propTypes = {
   sx: PropTypes.object,
 };
 
-export default function Logo({ disabledLink = false, sx, height=100 }) {  
+export default function Logo({ disabledLink = false, sx, height=100, src='/static/icons/logo.png' }) {  
 
   const logo = (
     <Box sx={{ height:height,display:'flex', justifyContent:'center', ...sx }}>
-      <img alt="" style={{maxHeight:'100%'}} src={'/static/icons/logo.png'} />
+      <img alt="" style={{maxHeight:'100%'}} src={src} />
     </Box>
   );
 

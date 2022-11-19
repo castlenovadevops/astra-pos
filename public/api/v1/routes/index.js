@@ -13,6 +13,16 @@ const MProfileController = require('../controllers/merchant/profileController');
 const CommonController = require('../controllers/common/commonController');
 
 const SyncController = require('../controllers/pos/syncCodeController');
+const SyncTaxController = require('../controllers/pos/syncTaxController');
+const SyncCategoryController = require('../controllers/pos/syncCategoryController');
+const SyncProductController = require('../controllers/pos/syncProductsController');
+const SyncDiscountController = require('../controllers/pos/syncDiscountsController')
+const SyncDefaultDiscountController = require('../controllers/pos/syncDefaultDiscountController');
+const SyncDefaultCommissionController = require('../controllers/pos/syncDefaultCommissionController');
+const SyncEmployeesController = require('../controllers/pos/syncEmployeeController');
+
+const ClockInController = require('../controllers/merchant/clockinController');
+
 
 const express = require('express');
 const path = require('path');
@@ -37,13 +47,21 @@ const corsOptions ={
         // new DefaultDiscountController(),
         // new CategoryController(),
         // new ProductController(),
-        new TaxController(),
-        // new MerchantEmployeeController(),
+        // new TaxController(),
+        new MerchantEmployeeController(),
         // new MEmployeeManager(),
         // new MEmployeeCommissionController(),
-        // new MProfileController()
+        // new MProfileController(),
+        new ClockInController(),
 
-        new SyncController()
+        new SyncController(),
+        new SyncTaxController(),
+        new SyncCategoryController(),
+        new SyncProductController(),
+        new SyncDiscountController(),
+        new SyncDefaultDiscountController(),
+        new SyncDefaultCommissionController(),
+        new SyncEmployeesController()
     ] 
     function initialize(){ 
             initializeControllers(0); 
@@ -77,8 +95,7 @@ const corsOptions ={
                     }
                 }
                 else{
-                    if(route.type === 'post'){
-                        console.log("ELSE CONND", route)
+                    if(route.type === 'post'){ 
                         router.post(route.path, controller[route.method]);
                     }
                     else{ 
