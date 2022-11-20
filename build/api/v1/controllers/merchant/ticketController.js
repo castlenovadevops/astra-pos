@@ -21,7 +21,7 @@ module.exports = class TicketController extends baseController{
                     path:this.path+"/getTicketcode",
                     type:"post",
                     method: "getTicketcode",
-                    authorization:'accessAuth'
+                    authorization:'authorizationAuth'
                 }
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -57,15 +57,36 @@ module.exports = class TicketController extends baseController{
                         console.log(rows[0].ticketCode)
                         var ticketcode = rows[0].ticketCode !== '' && rows[0].ticketCode !== undefined &&rows[0].ticketCode!==null ? rows[0].ticketCode : 0;
                         var count = Number(ticketcode)+1; 
-                        this.sendResponse({ticketid: String(count).padStart(4, '0')}, res, 200)
+                        var ticketcode =  String(count).padStart(4, '0') 
+                        this.createDraftTicket(req, res, next, ticketcode)
                       }
                       else{
                         var count = 1;
-                        this.sendResponse({ticketid: String(count).padStart(4, '0')}, res, 200)
+                        var ticketcode =  String(count).padStart(4, '0') 
+                        this.createDraftTicket(req, res, next, ticketcode)
+                        // this.sendResponse({ticketid: String(count).padStart(4, '0')}, res, 200)
                       }
                 })
 
             }
+        })
+    }
+
+    createDraftTicket= async(req, res, next, ticketcode)=>{
+        var input = {
+            ticketCode: ticketcode,
+            isDraft: 1, 
+            merchantId: req.deviceDetails.merchantId,
+            POSId: req.deviceDetails.device.POSId,
+            createdBy: req.userData.mEmployeeId,
+            createdDate: this.getDate()
+        }
+
+        this.create('tickets', input).then(ticket=>{
+            console.log(ticket)
+            this.sendResponse({data: ticket.dataValues}, res, 200)
+        }).catch(e=>{
+            this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
         })
     }
 }

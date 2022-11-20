@@ -7,6 +7,7 @@ import HTTPManager from "../../utils/httpRequestManager";
 import Technicians from "./technicians";
 import Clockin from './clockin';
 import TicketListComponent from "../ticket/list";
+import TicketContainer from "../ticket";
 
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
@@ -20,10 +21,14 @@ export default class MerchantDashboard extends React.Component{
             requestNewBusiness: false,
             isLoading: false,
             value:0,
-            showClockIn: false
+            showClockIn: false,
+            showCreateTicket:false,
+            ownerTechnician: {}
         }
         this.loadData = this.loadData.bind(this);  
         this.handleCloseDialog = this.handleCloseDialog.bind(this);
+        this.setOwnerTech = this.setOwnerTech.bind(this);
+        this.closeCreateTicket = this.closeCreateTicket.bind(this);
     }
 
     handleCloseDialog(){
@@ -33,23 +38,36 @@ export default class MerchantDashboard extends React.Component{
         this.loadData()
     }
 
-    loadData(){
-
+    loadData(){ 
         var details = window.localStorage.getItem("userdetail") || ''
         if(details !== ''){
-            this.setState({userdetail: JSON.stringify(details)}, ()=>{
+            this.setState({userdetail: JSON.parse(details), ownerTechnician: JSON.parse(details)}, ()=>{
                 // this.getBusinessMetrics();
             })
         }
     } 
 
+    setOwnerTech(obj){
+        this.setState({ownerTechnician: obj},()=>{
+            this.setState({showCreateTicket: true})
+        })
+    }
+
+    closeCreateTicket(){
+        this.setState({showCreateTicket: false})
+    }
+
     render(){
-        return <div className="fullHeight">  
+        return <div className="fullHeight" >  
+
+        {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer  ownerTechnician={this.state.ownerTechnician} functions={{
+            closeCreateTicket:this.closeCreateTicket
+        }} /></div>}
             {this.state.isLoading && <Loader />}
            
             <Grid container className="fullHeight">
                 <Grid item xs={4} className={'dashboardDivider'}>
-                    <Technicians />
+                    <Technicians setOwnerTech={this.setOwnerTech}/>
                 </Grid>
                 <Grid item xs={8} className={'dashboardDivider'}>
                     <TicketListComponent/>
@@ -64,7 +82,7 @@ export default class MerchantDashboard extends React.Component{
                         Clock-In / Clock-Out
                     </Grid>
                     <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
-                        window.location.href="/ticket/create"
+                        this.setState({showCreateTicket: true})
                     }}>
                         Create Ticket
                     </Grid>
@@ -85,7 +103,7 @@ export default class MerchantDashboard extends React.Component{
 
 
 
-    <Dialog
+                <Dialog
                     open={this.state.showClockIn}
                     onClose={this.handleCloseDialog}
                     aria-labelledby="alert-dialog-title"
