@@ -26,7 +26,7 @@ module.exports = class baseController extends MsgController{
     }
     
 
-    sendResponse(response, res, status){ 
+    sendResponse(response, res, status){  
         res.status(status).send(crypto.AESEncrypt(response));
     }
 

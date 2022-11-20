@@ -2,7 +2,8 @@ import React from "react";
 import { Grid, Typography, IconButton, Button } from "@mui/material";
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Close from '@mui/icons-material/Close';
-import DialogComponent from "../../../components/Dialog";
+import DialogComponent from "../../../../components/Dialog";
+import SelectTechnician from "./selectTechnician";
 
 export default class TicketTopBar extends React.Component{
 
@@ -28,6 +29,7 @@ export default class TicketTopBar extends React.Component{
     }
 
     openTechnician(){
+        console.log("OPEN TECH 2")
         this.setState({selectTechnicianPopup: true})
     } 
 
@@ -36,7 +38,8 @@ export default class TicketTopBar extends React.Component{
     }
 
     onSelectTechnician(obj){ 
-        this.props.setTicketOwner(obj); 
+        console.log("TOPBAR CALL")
+        this.props.data.setTicketOwner(obj); 
         this.setState({selectTechnicianPopup : false})
     }
 
@@ -65,14 +68,15 @@ export default class TicketTopBar extends React.Component{
             console.log("BUTTON CLICKED")
         }}>Click</Button>
         return  <div style={{height:'100%', width:'100%'}}>
-                    <Grid className='fullHeight padd20' item xs={12} spacing={2}   alignItems="baseline"> 
+                    <Grid className='fullHeightTicket padd20' item xs={12} spacing={2}   alignItems="baseline"> 
                         <Grid item xs={9}  style={{display:'flex'}} alignItems="center">
                                 <div className={this.props.data.isDisabled ? "topbtn disabled" : "topbtn" } onClick={()=>{
+                                            console.log("OPEN TECH")
                                         if(!this.props.data.isDisabled) {
                                             this.openTechnician()
                                         }
                                     }}>
-                                        {(this.props.data.selectedTech !== undefined || this.props.data.selectedTech !== null) ? this.props.data.selectedTech.firstName+" "+this.props.data.selectedTech.lastName: ""}
+                                        {(this.props.data.selectedTech !== undefined || this.props.data.selectedTech !== null) ? this.props.data.selectedTech.mEmployeeFirstName+" "+this.props.data.selectedTech.mEmployeeLastName: ""}
                                 </div>  
                                 <div className={this.props.data.isDisabled ? "topbtn disabled" : "topbtn" } onClick={()=>{
                                         if(!this.props.data.isDisabled) {
@@ -95,7 +99,7 @@ export default class TicketTopBar extends React.Component{
                                 }}/> 
                         </Grid>
                         
-                        <Grid item xs={3} style={{display:'flex', background: 'white'}} justify="flex-end" alignItems="center"> 
+                        <Grid item xs={3} style={{display:'flex', background: 'white', justifyContent:'flex-end'}} justify="flex-end" alignItems="center"> 
 
                             <div style={{marginLeft: 20, fontSize: 12}}>
                                 <Typography  fontSize="14"  align="center" maxWidth="90 px">
@@ -105,7 +109,7 @@ export default class TicketTopBar extends React.Component{
                             <IconButton
                                 edge="end"                                
                                 onClick={()=>{
-                                    this.props.handleCloseTicket();
+                                    this.props.data.handleCloseTicket();
                                 }}
                                 aria-label="close"
                                 style={{"color":'#8C8C8C',marginLeft: 20}}
@@ -119,9 +123,8 @@ export default class TicketTopBar extends React.Component{
                     {/* Select technician popup */}
                     {this.state.selectTechnicianPopup &&  
                         <DialogComponent open={this.state.selectTechnicianPopup} onClose={this.handleCloseTechnician} actions={actionbuttons}>
-                                <div>TECH POPIUUPP</div>
-                        </DialogComponent>
-                        // <SelectTechnician afterSubmit={()=>{this.handleCloseTechnician()}} onSelectTech={this.onSelectTechnician} technician={this.props.technicianList}/>
+                              <SelectTechnician afterSubmit={()=>{this.handleCloseTechnician()}} onSelectTech={this.onSelectTechnician} />
+                        </DialogComponent> 
                     }
 
 

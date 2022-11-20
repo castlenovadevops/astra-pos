@@ -4,6 +4,9 @@ import NumberPad from '../../components/numberpad';
 import { useState } from 'react';
 import HTTPManager from '../../utils/httpRequestManager';
 
+import socketIOClient from "socket.io-client"; 
+
+const ENDPOINT = "http://localhost:1818";
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
@@ -22,6 +25,9 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Clockin(props) {  
   const [passcode, setPasscode] = useState('');
   const[formError, setFormError] = useState('') 
+
+  const socket = socketIOClient(ENDPOINT);
+ 
 
   const[showFormError, setShowFormError] = useState(false);
   var codeLength = 4

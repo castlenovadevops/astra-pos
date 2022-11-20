@@ -18,7 +18,7 @@ export default class TicketContainer extends React.Component{
         return <CreateTicket data={{
             ownerTechnician: this.props.ownerTechnician,
             closeCreateTicket: this.props.functions.closeCreateTicket,
-            customer_detail:{}
+            customer_detail:{}, 
         }}/>
     }
 }

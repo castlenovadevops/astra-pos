@@ -1,4 +1,3 @@
-const MerchantController = require('../controllers/merchant/merchantController');
 const CustomerController = require('../controllers/merchant/customerController');
 const DiscountController = require('../controllers/merchant/discountController');
 const DefaultCommissionController = require('../controllers/merchant/defaultcommissionController');
@@ -7,9 +6,7 @@ const CategoryController = require('../controllers/merchant/categoryController')
 const ProductController = require('../controllers/merchant/productController');
 const TaxController = require('../controllers/merchant/taxController');
 const MerchantEmployeeController = require('../controllers/merchant/employeeController');
-const MEmployeeManager = require('../controllers/merchant/employeeManager');
 const MEmployeeCommissionController = require('../controllers/merchant/employeeCommissionController');
-const MProfileController = require('../controllers/merchant/profileController');
 const CommonController = require('../controllers/common/commonController');
 
 const SyncController = require('../controllers/pos/syncCodeController');
@@ -41,18 +38,15 @@ const corsOptions ={
         new CommonController(),
 
         // MERCHANT CONTROLLERS
-        // new MerchantController(),
-        // new CustomerController(),
-        // new DiscountController(),
-        // new DefaultCommissionController(),
-        // new DefaultDiscountController(),
-        // new CategoryController(),
-        // new ProductController(),
-        // new TaxController(),
-        new MerchantEmployeeController(),
-        // new MEmployeeManager(),
-        // new MEmployeeCommissionController(),
-        // new MProfileController(),
+        new CustomerController(),
+        new DiscountController(),
+        new DefaultCommissionController(),
+        new DefaultDiscountController(),
+        new CategoryController(),
+        new ProductController(),
+        new TaxController(),
+        new MerchantEmployeeController(), 
+        new MEmployeeCommissionController(), 
         new ClockInController(),
         new TicketController(),
 
@@ -84,6 +78,7 @@ const corsOptions ={
     }
 
    function initializeRoutes(idx, routes, index ){
+    console.log("IDX", idx)
         if(idx < routes.length){
             var controller = contollers[index];
             var route = Object.assign({},routes[idx])

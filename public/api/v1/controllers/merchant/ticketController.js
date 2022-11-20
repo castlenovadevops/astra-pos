@@ -21,7 +21,7 @@ module.exports = class TicketController extends baseController{
                     path:this.path+"/getTicketcode",
                     type:"post",
                     method: "getTicketcode",
-                    authorization:'accessAuth'
+                    authorization:'authorizationAuth'
                 }
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -32,7 +32,7 @@ module.exports = class TicketController extends baseController{
         let options = {
             where:{ 
                 ticketId:{
-                    [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) > Date('"+new Date().toISOString()+"') )")
+                    [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) > Date('"+new Date().toISOString()+"') and isDraft=0)")
                 }
             }
         }
@@ -45,7 +45,7 @@ module.exports = class TicketController extends baseController{
                 let options = {
                     where:{
                         ticketId:{
-                            [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) = Date('"+new Date().toISOString()+"') )")
+                            [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) = Date('"+new Date().toISOString()+"')  and isDraft=0)")
                         }
                     },
                     order:[
@@ -78,10 +78,13 @@ module.exports = class TicketController extends baseController{
             isDraft: 1, 
             merchantId: req.deviceDetails.merchantId,
             POSId: req.deviceDetails.device.POSId,
+            createdBy: req.userData.mEmployeeId,
+            createdDate: this.getDate()
         }
 
         this.create('tickets', input).then(ticket=>{
-            this.sendResponse({data: ticket}, res, 200)
+            console.log(ticket)
+            this.sendResponse({data: ticket.dataValues}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
         })

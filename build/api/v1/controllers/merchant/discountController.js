@@ -9,15 +9,43 @@ module.exports = class DiscountController extends baseController{
     path = "/merchant/discounts";
     router = express.Router();
     msgController = new MsgController();
+    routes=[];
     constructor(props){
         super(props);
     }
 
     initialize(){ 
         return new Promise((resolve) => {
-            this.router.post(this.path+"/save", authenticate.authorizationAuth, this.saveDiscount); 
-            this.router.get(this.path+"/getDiscount", authenticate.authorizationAuth, this.getDiscount); 
-            this.router.post(this.path+"/updateDiscount", authenticate.authorizationAuth, this.updateDiscount); 
+            this.routes = [
+                {
+                    path:this.path+"/get",
+                    type:"post",
+                    method: "getActive",
+                    authorization:'authorizationAuth'
+                }, 
+
+                {
+                    path:this.path+"/save",
+                    type:"post",
+                    method: "saveDiscount",
+                    authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/getDiscount",
+                    type:"post",
+                    method: "getDiscount",
+                    authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/updateDiscount",
+                    type:"post",
+                    method: "updateDiscount",
+                    authorization:'authorizationAuth'
+                }, 
+            ]
+            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.saveDiscount); 
+            // this.router.get(this.path+"/getDiscount", authenticate.authorizationAuth, this.getDiscount); 
+            // this.router.post(this.path+"/updateDiscount", authenticate.authorizationAuth, this.updateDiscount); 
 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
@@ -43,6 +71,25 @@ module.exports = class DiscountController extends baseController{
                 this.sendResponse({message:"Saved sucessfully"}, res, 200)
             })
         }
+    }
+    getActive= async (req,res,next)=>{ 
+        let discounts = await this.readAll({order: [
+            ['createdDate','ASC']
+        ],
+        where:{ 
+            merchantId:req.userData.merchantId,
+            mDiscountStatus:1,
+            id:{
+                [Sequelize.Op.in]:Sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
+            }
+        }
+
+        // attributes:{include: [ [
+        //     Sequelize.col('mDiscountId'),
+        //     `id`
+        // ], ]}
+        }, 'mDiscounts')
+        this.sendResponse({ data: discounts}, res, 200);
     }
 
     getDiscount = async (req,res,next)=>{ 

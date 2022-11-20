@@ -55,6 +55,7 @@ export default class HTTPManager{
             url = process.env.REACT_APP_LOCALAPIURL+url
             axios.post(url, {data:this.crypto.AESEncrypt(input)}, {headers: this.getAuthHeader()}).then(response=>{ 
                 var requestresponse = response;
+                console.log(response)
                 if(response.status !== 200){
                     requestresponse = response.response;
                 } 

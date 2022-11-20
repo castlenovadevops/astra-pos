@@ -35,15 +35,12 @@ app.use('/api/v1/', require('./api/v1/routes'));
  
 app.get('*', function (req, res,next) {
   res.sendFile(path.join(__dirname)+'/index.html');
-  next();
+  // next();
 });
 
 app.post('*', function (req, res,next) {
   console.log("POST",req.url);
   next();
-});
-app.use('/syncBusiness', function (req, res) {
-  res.sendFile(path.join(__dirname)+'/index.html');
 }); 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -88,6 +85,10 @@ io.on('connection', function(socket) {
   socket.on('resetSync', function(){
     running_sync_flag = 0
     socket.emit('stopSync',{data:'success'})
+  })
+  socket.on('refreshTechnicians', function(){
+    console.log("REFRESH SOCKET CALLED")
+    socket.emit('refreshTechnicians',{data:'success'})
   })
 
   //Whenever someone disconnects this piece of code executed

@@ -143,6 +143,11 @@ export default class TableView extends React.Component {
           disableMultipleSelection={true}
           disableSelectionOnClick
           showColumnRightBorder={false}
+          onRowClick={(params)=>{
+            if(this.props.onRowClick !== undefined){
+              this.props.onRowClick(params);
+            }
+          }}
           onCellClick={(params)=>{
             if(this.props.onclickevt !== undefined){
               this.props.onclickevt(params);

@@ -9,14 +9,23 @@ module.exports = class DefaultDiscountController extends baseController{
     path = "/merchant/defaultdiscount";
     router = express.Router();
     msgController = new MsgController();
+    routes = [];
     constructor(props){
         super(props);
     }
 
     initialize(){ 
         return new Promise((resolve) => {
-            this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
-            this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
+            this.routes = [
+                {
+                    path:this.path+"/get",
+                    type:"post",
+                    method: "get",
+                    authorization:'authorizationAuth'
+                }, 
+            ]
+            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
+            // this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     } 

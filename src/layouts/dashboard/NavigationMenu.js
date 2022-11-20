@@ -43,17 +43,8 @@ export default class NavigationMenu extends React.Component{
         var userstr = window.localStorage.getItem('userdetail');
         if(userstr !== '' && userstr !== undefined){
           var details = JSON.parse(userstr);
-          this.setState({userDetail:  details}, ()=>{  
-            if(details.userType === 'M'){
-              this.httpManager.getRequest('/merchant/getMerchants').then(response=>{
-                this.setState({mercantsList: response.data})
-              })
-              let items = [
-                  // {
-                  //   title: 'dashboard',
-                  //   path: '/merchant',
-                  //   icon: getIcon('eva:pie-chart-2-fill'),
-                  // },
+          this.setState({userDetail:  details}, ()=>{   
+              let items = [ 
                   {
                       title: 'dashboard',
                       path: '/app',
@@ -111,23 +102,12 @@ export default class NavigationMenu extends React.Component{
                     ]
                 }
               ]
-              this.setState({sideMenuItems: items});
-            }
+              this.setState({sideMenuItems: items}); 
 
           })
         }
     }
-
-    changeMerchantToken(merchantId){
-      this.setState({isLoading: true}, ()=>{
-          this.httpManager.postRequest('/merchant/changeMerchantToken', {merchantId: merchantId}).then(response=>{
-              window.localStorage.setItem('token', response.token);
-              window.localStorage.setItem('userdetail',JSON.stringify(response.userdetail));
-              this.setState({isLoading: false, userDetail: response.userdetail})
-          })
-      })
-    }
-
+ 
     render(){
         return  <Scrollbar
           sx={{
@@ -136,38 +116,21 @@ export default class NavigationMenu extends React.Component{
           }}
         >
           {this.state.isLoading && <Loader />}
-          <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
+          {/* <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
             <Logo height={70}/>
-          </Box>
+          </Box> */}
     
-          <Box sx={{ mb: 5, mx: 2.5 }}>
+          <Box sx={{ mb: 5, mx: 2.5, mt:2 }}>
             <Link underline="none" component={RouterLink} to="#">
               <AccountStyle>
                 <div style={{display:'flex'}}>
                 <Avatar src={'/static/icons/avataricon.png'} style={{maxHeight:'40px'}} alt="photoURL" />
                 <Box sx={{ ml: 2 }}>
                   <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                    {this.state.userDetail.firstName+" "+this.state.userDetail.lastName}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {this.state.userDetail.userRole}
-                  </Typography>
+                    {this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}
+                  </Typography> 
                 </Box>
-                </div>
- 
-                {this.state.userDetail.userType === 'M' &&  <FormControl fullWidth> 
-                    <Select 
-                    variant='standard' 
-                    value={this.state.userDetail.merchantId}
-                    onChange={(e)=>{
-                        this.changeMerchantToken(e.target.value)
-                    }} 
-                    >
-                      {this.state.mercantsList.map(elmt=>(
-                          <MenuItem value={elmt.merchantId}>{elmt.merchantName}</MenuItem> 
-                      ))} 
-                    </Select>
-                </FormControl>}
+                </div> 
 
               </AccountStyle>
             </Link>

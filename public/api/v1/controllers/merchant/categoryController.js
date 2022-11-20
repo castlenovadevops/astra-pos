@@ -15,6 +15,27 @@ module.exports = class CategoryController extends baseController{
 
     initialize(){ 
         return new Promise((resolve) => {
+
+            this.routes = [
+                {
+                    path:this.path+"/save",
+                    type:"post",
+                    method: "saveCategory",
+                    authorization:"authorizationAuth"
+                },
+                {
+                    path:this.path+"/get",
+                    type:"post",
+                    method: "getCategory",
+                    authorization:'authorizationAuth'
+                },
+                {
+                    path:this.path+"/update",
+                    type:"post",
+                    method: "updateCategory",
+                    authorization:'authorizationAuth'
+                }
+            ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
             this.router.post(this.path+"/save", authenticate.authorizationAuth, this.saveCategory); 
             this.router.get(this.path+"/get", authenticate.authorizationAuth, this.getCategory); 

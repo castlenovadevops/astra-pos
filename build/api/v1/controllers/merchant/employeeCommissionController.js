@@ -9,17 +9,33 @@ module.exports = class EmployeeCommissionController extends baseController{
     path = "/merchant/employeecommission";
     router = express.Router();
     msgController = new MsgController();
+    routes = [];
     constructor(props){
         super(props);
     }
 
     initialize(){ 
         return new Promise((resolve) => { 
-            this.router.post(this.path+"/getCommission", authenticate.authorizationAuth, this.getCommission);  
-            this.router.post(this.path+"/saveCommission", authenticate.authorizationAuth, this.saveCommission);  
+            
+            this.routes = [
+                {
+                    path:this.path+"/getCommission",
+                    type:"post",
+                    method: "getCommission",
+                    authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/saveCommission",
+                    type:"post",
+                    method: "saveCommission",
+                    authorization:'authorizationAuth'
+                },  
+            ]
+            // this.router.post(this.path+"/getCommission", authenticate.authorizationAuth, this.getCommission);  
+            // this.router.post(this.path+"/saveCommission", authenticate.authorizationAuth, this.saveCommission);  
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
-    }
+    } 
 
     getCommission= async(req, res, next)=>{
         var input = req.input;

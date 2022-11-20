@@ -9,10 +9,15 @@ import Clockin from './clockin';
 import TicketListComponent from "../ticket/list";
 import TicketContainer from "../ticket";
 
+import socketIOClient from "socket.io-client"; 
+
+const ENDPOINT = "http://localhost:1818";
+
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class MerchantDashboard extends React.Component{
     httpmanager = new HTTPManager(); 
+    socket = socketIOClient(ENDPOINT);
 
     constructor(){
         super();
@@ -23,7 +28,8 @@ export default class MerchantDashboard extends React.Component{
             value:0,
             showClockIn: false,
             showCreateTicket:false,
-            ownerTechnician: {}
+            ownerTechnician: {},
+            refreshData: false
         }
         this.loadData = this.loadData.bind(this);  
         this.handleCloseDialog = this.handleCloseDialog.bind(this);
@@ -36,6 +42,14 @@ export default class MerchantDashboard extends React.Component{
     }
     componentDidMount(){ 
         this.loadData()
+
+        console.log("SOCKETTTTTT")
+        console.log(this.socket)
+        this.socket.on("refreshTechnicians", data => {
+            console.log("SOCKET REFRESHHHHH")
+            // this.getData();
+            this.setState({refreshData: true})
+        });
     }
 
     loadData(){ 
@@ -67,7 +81,7 @@ export default class MerchantDashboard extends React.Component{
            
             <Grid container className="fullHeight">
                 <Grid item xs={4} className={'dashboardDivider'}>
-                    <Technicians setOwnerTech={this.setOwnerTech}/>
+                    <Technicians onCompleteRefresh={()=>{console.log("COMPLETE REFRESH CALLED");this.setState({refreshData: false})}} refreshData={this.state.refreshData} setOwnerTech={this.setOwnerTech}/>
                 </Grid>
                 <Grid item xs={8} className={'dashboardDivider'}>
                     <TicketListComponent/>
@@ -115,6 +129,7 @@ export default class MerchantDashboard extends React.Component{
                     <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         <Clockin handleCloseDialog={()=>{
+                            this.socket.emit("refreshTechnicians", {data:"success"})
                                 this.setState({showClockIn: false})
                         }} />
                     </DialogContentText>

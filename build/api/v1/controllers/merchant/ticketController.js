@@ -32,7 +32,7 @@ module.exports = class TicketController extends baseController{
         let options = {
             where:{ 
                 ticketId:{
-                    [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) > Date('"+new Date().toISOString()+"') )")
+                    [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) > Date('"+new Date().toISOString()+"') and isDraft=0)")
                 }
             }
         }
@@ -45,7 +45,7 @@ module.exports = class TicketController extends baseController{
                 let options = {
                     where:{
                         ticketId:{
-                            [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) = Date('"+new Date().toISOString()+"') )")
+                            [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) = Date('"+new Date().toISOString()+"')  and isDraft=0)")
                         }
                     },
                     order:[

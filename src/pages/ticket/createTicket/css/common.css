@@ -1,0 +1,52 @@
+.fullHeightTicket{
+    height:100%;
+    width:100%;
+    background:#fff;
+    display:flex;
+    align-items: baseline;
+    justify-content: baseline;
+}
+
+.pagealign{
+    display:flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: baseline;
+    width:100%;
+}
+
+.sidemenuitem.active{
+    background:#bee1f7; 
+}
+
+.sidemenuitem{
+    color:#000;
+    text-transform: capitalize;
+    height: 100px;
+}
+
+.sidemenuitem.even{
+    background: #F5F5F5;
+}
+
+.sidemenuitemtext{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:500;
+    overflow: hidden;
+    white-space: pre-wrap;
+    font-size:14px;
+    text-overflow: ellipsis;
+    text-transform:capitalize;
+    height: 80px;
+}
+
+.ticketfooterbtn, .ticketfooterbtn.MuiButtonBase-root.MuiButton-contained{
+    height:71px !important;
+    border-radius:0 !important
+}
+
+.qtyfield input{
+    text-align: center;
+}

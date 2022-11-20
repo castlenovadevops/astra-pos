@@ -25,13 +25,13 @@ module.exports = class ClockInController extends baseController{
                     path:this.path+"/clocklog",
                     type:"post",
                     method: "clocklogUpdate",
-                    authorization:'accessAuth'
+                    authorization:'authorizationAuth'
                 }, 
                 {
                     path:this.path+"/getTechnicians",
                     type:"post",
                     method: "getTechnicians",
-                    authorization:'accessAuth'
+                    authorization:'authorizationAuth'
                 }
             ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
@@ -87,6 +87,14 @@ module.exports = class ClockInController extends baseController{
                 mEmployeeId:{
                     [Sequelize.Op.notIn]:Sequelize.literal("(select mEmployeeId from empLog where status=1)")
                 }
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col('mEmployeeId'),
+                        'id'
+                    ]
+                ]
             }
         }
         if(input.type === 'clockedin'){
@@ -95,6 +103,14 @@ module.exports = class ClockInController extends baseController{
                     mEmployeeId:{
                         [Sequelize.Op.in]:Sequelize.literal("(select mEmployeeId from empLog where status=1)")
                     }
+                },
+                attributes:{
+                    include:[
+                        [
+                            Sequelize.col('mEmployeeId'),
+                            'id'
+                        ]
+                    ]
                 }
             }
         }

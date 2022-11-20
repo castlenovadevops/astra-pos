@@ -9,17 +9,23 @@ module.exports = class DefaultCommissionController extends baseController{
     path = "/merchant/defaultcommission";
     router = express.Router();
     msgController = new MsgController();
-     constructor(props){
-        super(props);
-    }
+    routes = []; 
 
     initialize(){ 
         return new Promise((resolve) => {
+            this.routes = [ 
+                {
+                    path:this.path+"/get",
+                    type:"post",
+                    method: "get",
+                    authorization:'authorizationAuth'
+                }, 
+            ]
             this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
             this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
-    } 
+    }  
 
     save = async(req,res,next)=>{
         var input = req.input;

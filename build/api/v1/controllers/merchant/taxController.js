@@ -31,9 +31,9 @@ module.exports = class RegistrationController extends baseController{
                 },
                 {
                     path:this.path+"/getByType/:type",
-                    type:"get",
-                    method: "getByType"
-                    // authorization:"authorizationAuth"
+                    type:"post",
+                    method: "getByType",
+                    authorization:"authorizationAuth"
                 },
                 {
                     path:this.path+"/update",

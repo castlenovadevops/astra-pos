@@ -3,17 +3,39 @@ import React from "react";
 import { Button, Grid, Typography } from "@mui/material"; 
 import HTTPManager from "../../utils/httpRequestManager";
 
+import socketIOClient from "socket.io-client"; 
+
+const ENDPOINT = "http://localhost:1818";
+
 export default class Technicians extends React.Component{
     httpManager = new HTTPManager();
+    socket = socketIOClient(ENDPOINT);
     constructor(props){
         super(props);
         this.state = {
             clockedInEmps:[],
-            clockedOutEmps: []
+            clockedOutEmps: [],
+            refreshData:false
+        }
+    }
+
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if(nextProps.refreshData !== prevState.refreshData){
+            return {refreshData: nextProps.refreshData}
         }
     }
 
     componentDidMount(){
+        console.log("SOCKETTTTTT")
+        console.log(this.socket)
+        this.socket.on("refreshTechnicians", data => {
+            console.log("SOCKET REFRESHHHHH")
+            this.getData();
+        });
+
+        this.socket.emit("refreshTechnicians", {data:"success"})
+
         this.getData()
     }
 
@@ -22,6 +44,7 @@ export default class Technicians extends React.Component{
             this.setState({clockedInEmps: res.data}); 
             this.httpManager.postRequest('merchant/employee/getTechnicians', {type:"clockedout"}).then(res=>{
                 this.setState({clockedOutEmps: res.data}); 
+                this.props.onCompleteRefresh()
             })
         })
     }
@@ -58,6 +81,8 @@ export default class Technicians extends React.Component{
 
     render(){
         return <Grid container className='dashboardTechnician'>
+
+            {this.state.refreshData && this.getData()}
             <Grid item xs={6}>
                 <Typography gutterBottom align="center" variant="subtitle1" className="techTitle">
                     Clocked In Technicians

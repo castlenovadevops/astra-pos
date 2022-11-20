@@ -25,6 +25,7 @@
     
     body{
         caret-color: transparent;
+        overflow: hidden;
     }
 
     input, select, textarea{
@@ -357,4 +358,29 @@
     right:0;
     bottom:0;
     z-index: 99999;
+}
+
+.lgwidth .MuiDialog-paper{
+    width:80%;
+    min-width: 80%;
+    max-width: 80%;
+}
+
+
+.sideMenu{
+    display:flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    border-right:1px solid #dfdfdf;
+    height:100%;
+}
+
+.sideMenu .MuiGrid-root{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:80px;
+    /* border-top:1px solid #dfdfdf; */
+    border-bottom:1px solid #dfdfdf;
 }

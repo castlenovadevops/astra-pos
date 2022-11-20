@@ -10,6 +10,8 @@ DialogComponent.propTypes = {
   };
 export default function DialogComponent({children, title, onClose, open, actions}){
     return <Dialog
+    style={{zIndex:'99999'}}
+    className="lgwidth"
     open={open}
     onClose={onClose}
     aria-labelledby="alert-dialog-title"

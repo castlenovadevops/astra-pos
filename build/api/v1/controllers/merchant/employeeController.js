@@ -25,6 +25,33 @@ module.exports = class EmployeeController extends baseController{
                     type:"post",
                     method: "loginEmployee",
                     authorization:'accessAuth'
+                },
+                {
+                    path:this.path+"/save",
+                    type:"post",
+                    method: "save",
+                    authorization:'authorizationAuth'
+                },
+                {
+                    path:this.path+"/getMerchants",
+                    type:"post",
+                    method: "getMerchants",
+                    authorization:'authorizationAuth'
+                },{
+                    path:this.path+"/get",
+                    type:"post",
+                    method: "get",
+                    authorization:'authorizationAuth'
+                },{
+                    path:this.path+"/getAll",
+                    type:"post",
+                    method: "getAll",
+                    authorization:'authorizationAuth'
+                },{
+                    path:this.path+"/update",
+                    type:"post",
+                    method: "updateEmployee",
+                    authorization:'authorizationAuth'
                 }
             ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 

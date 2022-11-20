@@ -9,15 +9,36 @@ module.exports = class ProductController extends baseController{
     path = "/merchant/product";
     router = express.Router();
     msgController = new MsgController();
+    routes = []
     constructor(props){
         super(props);
     }
 
     initialize(){ 
         return new Promise((resolve) => {
-            this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
-            this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
-            this.router.post(this.path+"/update", authenticate.authorizationAuth, this.updateProduct); 
+            this.routes = [
+                {
+                    path:this.path+"/save",
+                    type:"post",
+                    method: "save",
+                    authorization:"authorizationAuth"
+                },
+                {
+                    path:this.path+"/get",
+                    type:"post",
+                    method: "get",
+                    authorization:'authorizationAuth'
+                },
+                {
+                    path:this.path+"/update",
+                    type:"post",
+                    method: "updateProduct",
+                    authorization:'authorizationAuth'
+                }
+            ]
+            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
+            // this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
+            // this.router.post(this.path+"/update", authenticate.authorizationAuth, this.updateProduct); 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     } 
