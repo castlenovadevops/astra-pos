@@ -20,7 +20,7 @@ export default class CreateTicketComponent extends React.Component{
             selectedTech: {},
             customer_detail:{},
             selectedServices:[],
-            seletedRow:-1,
+            selectedRow:-1,
             defaultTaxes:[]
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
@@ -33,14 +33,14 @@ export default class CreateTicketComponent extends React.Component{
         var obj = {
             serviceDetail: service,
             qty: 1,
-            originalPrice: service.price,
-            subTotal: service.price,
+            originalPrice:  Number(service.mProductPrice),
+            subTotal: Number(service.mProductPrice),
             ticketservicetaxes:[],
             ticketservicediscounts:[],
             totalTax:0,
             totalDiscount:0
         }
-        if(service.mProductTaxType === 'default'){
+        if(service.mProductTaxType === "Default"){
             obj.ticketservicetaxes = Object.assign([], this.state.defaultTaxes)
         }
         else{
@@ -86,7 +86,7 @@ export default class CreateTicketComponent extends React.Component{
             var selectedservices = Object.assign([], this.state.selectedServices);
             selectedservices.push(obj);
             this.setState({selectedServices: selectedservices}, ()=>{
-                console.log(this.state.selected)
+                console.log(this.state.selectedServices)
             })
         }
     }

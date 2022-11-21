@@ -31,12 +31,12 @@ module.exports = class DefaultCommissionController extends baseController{
         var input = req.input;
         input.merchantId = req.deviceDetails.merchantId;
         input.status = 1;
-        input.createdBy= req.userData.id;
+        input.createdBy= req.userData.mEmployeeId;
         input.createdDate = this.getDate();
         delete input.id;
-        input.updatedBy= req.userData.id;
+        input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate();  
-        this.update('mDefaultCommission', {status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{merchantId: req.deviceDetails.merchantId}}).then(resa=>{
+        this.update('mDefaultCommission', {status:0, updatedBy: req.userData.mEmployeeId, updatedDate: this.getDate()}, {where:{merchantId: req.deviceDetails.merchantId}}).then(resa=>{
             this.create('mDefaultCommission', input).then(resp=>{
                 this.readOne({where:{
                     mEmployeeId:{
@@ -62,12 +62,12 @@ module.exports = class DefaultCommissionController extends baseController{
                             mCheckPercentage: input.mCheckPercentage,
                             mTipsCashPercentage: input.mTipsCashPercentage,
                             mTipsCheckPercentage: input.mTipsCheckPercentage,
-                            createdBy: req.userData.id,
-                            updatedBy: req.userData.id,
+                            createdBy: req.userData.mEmployeeId,
+                            updatedBy: req.userData.mEmployeeId,
                             createdDate: this.getDate(),
                             updatedDate: this.getDate()
                         } 
-                        this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
+                        this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.mEmployeeId}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
                             this.create('mEmployeeCommission', empInput).then(r=>{
                                 this.sendResponse({message:"Commission details saved successfully."}, res, 200);
                             })

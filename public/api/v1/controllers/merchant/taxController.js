@@ -89,11 +89,11 @@ module.exports = class RegistrationController extends baseController{
             }
             else{ 
                 if(input.updateDefault){ 
-                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.deviceDetails.merchantId }})
+                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.mEmployeeId, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.deviceDetails.merchantId }})
                 }
-                input.createdBy= req.userData.id;
+                input.createdBy= req.userData.mEmployeeId;
                 input.createdDate = this.getDate();
-                input.updatedBy= req.userData.id;
+                input.updatedBy= req.userData.mEmployeeId;
                 input.merchantId = req.deviceDetails.merchantId;
                 input.updatedDate = this.getDate();
                 // input.isDefault = req.input.isDefault[0]
@@ -272,7 +272,7 @@ module.exports = class RegistrationController extends baseController{
             else{ 
 
                 if(input.updateDefault == 1){ 
-                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.deviceDetails.merchantId }})
+                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.mEmployeeId, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.deviceDetails.merchantId }})
                 }
                 // console.log(input)
                 this.update('mTax', data, {where:{id:input.id}}).then(r1=>{

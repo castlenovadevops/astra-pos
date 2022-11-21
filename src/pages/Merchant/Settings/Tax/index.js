@@ -177,13 +177,13 @@ export default class Tax extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>     
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && <FButton
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && <FButton
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && params.row.mTaxStatus.toString()==='1' &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mTaxStatus.toString()==='1' &&
                     <FButton
                     variant="contained" 
                     size="small" 
@@ -191,21 +191,21 @@ export default class Tax extends React.Component{
                     label="Deactivate"/>
                 }
 
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && params.row.mTaxStatus.toString()==='0'  &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mTaxStatus.toString()==='0'  &&
                     <FButton
                     variant="contained" 
                     size="small" 
                     onClick={()=>{this.updateRecord(params.row, 1)}} 
                     label="Activate"/>
                 }
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && params.row.isDefault.toString()==="1"  &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.isDefault.toString()==="1"  &&
                     <FButton
                     variant="contained" 
                     size="small" 
                     onClick={()=>{this.removeDefault(params.row, 1)}} 
                     label="Remove Default"/>
                 }
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && params.row.isDefault.toString()!=="1"  &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.isDefault.toString()!=="1"  &&
                     <FButton
                     variant="contained" 
                     size="small" 

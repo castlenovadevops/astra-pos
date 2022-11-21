@@ -624,7 +624,7 @@ export default class FormManager extends React.Component{
                     {/* <Grid item xs={9}>
                         <Grid container spacing={3}  alignItems="center"  justifyContent="center">  */}
                             {this.renderFields()}
-                            <Grid container spacing={3}  alignItems="center" sx={{mt:2}}  justifyContent="center">  
+                            <Grid container spacing={12}  alignItems="center" sx={{mt:2}}  justifyContent="center">  
                                 {this.renderButtons()}
                             </Grid>
                         {/* </Grid>

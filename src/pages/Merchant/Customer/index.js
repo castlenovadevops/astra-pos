@@ -98,20 +98,20 @@ export default class Customer extends React.Component{
           var userdetail = JSON.parse(detail);
         return <div>       
                 
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && <FButton  permission_id = "web_edit_customer" permission_label="Show edit customer"
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && <FButton  permission_id = "web_edit_customer" permission_label="Show edit customer"
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') &&  params.row.mCustomerStatus.toString() === '1'  &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  params.row.mCustomerStatus.toString() === '1'  &&
                     <FButton permission_id = "web_status_customer" permission_label="Show status customer"
                     variant="contained" 
                     size="small" 
                     onClick={()=>{this.updateRecord(params.row, 0)}} 
                     label="Deactivate"/>
                 }
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') &&  params.row.mCustomerStatus.toString()==='0'  && 
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  params.row.mCustomerStatus.toString()==='0'  && 
                     <FButton permission_id = "web_status_customer" permission_label="Show status customer"
                     variant="contained" 
                     size="small" 

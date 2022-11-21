@@ -129,6 +129,9 @@ export default class NavigationMenu extends React.Component{
                   <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
                     {this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}
                   </Typography> 
+                  <Typography   sx={{ color: 'text.primary', fontSize:'12px' }}>
+                    Version - Development
+                  </Typography> 
                 </Box>
                 </div> 
 

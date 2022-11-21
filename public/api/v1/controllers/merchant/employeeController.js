@@ -67,7 +67,7 @@ module.exports = class EmployeeController extends baseController{
     getMerchants=async(req, res, next)=>{
         var options = {
             where:{
-                mEmployeeId: req.userData.id,
+                mEmployeeId: req.userData.mEmployeeId,
                 mEmployeeStatus:1
             },
             attributes:{
@@ -93,10 +93,10 @@ module.exports = class EmployeeController extends baseController{
         var input = req.input;
         input.merchantId = req.deviceDetails.merchantId;
         input.mEmployeeStatus = '1';
-        input.createdBy= req.userData.id;
+        input.createdBy= req.userData.mEmployeeId;
         input.createdDate = this.getDate();
 
-        input.updatedBy= req.userData.id;
+        input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate(); 
 
         // console.log(input)
@@ -202,7 +202,7 @@ module.exports = class EmployeeController extends baseController{
         if(input.id !== undefined){
             this.update('merchantEmployees', input, {where:{mEmployeeId :input.id}}).then(resp=>{
                 this.update('mEmpRefMerchant', {mEmployeePasscode: input.mEmployeeCode, mEmployeeRole: input.mEmployeeRole, 
-                    updatedBy: req.userData.id,
+                    updatedBy: req.userData.mEmployeeId,
                     updatedDate: this.getDate()}, {where:{mEmployeeId: input.id, merchantId: req.deviceDetails.merchantId}}).then(resp=>{
                     this.sendResponse({message:"Updated sucessfully"}, res, 200)
                 })
@@ -215,7 +215,7 @@ module.exports = class EmployeeController extends baseController{
                     mEmployeeId: resp.mEmployeeId,
                     mEmployeeRole: input.mEmployeeRole,
                     mEmployeePasscode: input.mEmployeeCode,
-                    createdBy: req.userData.id,
+                    createdBy: req.userData.mEmployeeId,
                     createdDate: this.getDate()
                 }
                 this.create('mEmpRefMerchant', refinput).then(resp=>{
@@ -243,12 +243,12 @@ module.exports = class EmployeeController extends baseController{
                     mCheckPercentage: commission.mCheckPercentage,
                     mTipsCashPercentage: commission.mTipsCashPercentage,
                     mTipsCheckPercentage: commission.mTipsCheckPercentage,
-                    createdBy: req.userData.id,
-                    updatedBy: req.userData.id,
+                    createdBy: req.userData.mEmployeeId,
+                    updatedBy: req.userData.mEmployeeId,
                     createdDate: this.getDate(),
                     updatedDate: this.getDate()
                 } 
-                this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
+                this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.mEmployeeId}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
                     this.create('mEmployeeCommission', empInput).then(r=>{
                         this.sendResponse({message:"Saved successfully."}, res, 200);
                     })

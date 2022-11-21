@@ -25,7 +25,7 @@
     
     body{
         caret-color: transparent;
-        overflow: hidden;
+        /* overflow: hidden; */
     }
 
     input, select, textarea{
@@ -240,7 +240,7 @@
     padding-right:24px !important;
     align-items: start;
     margin-left: 0;
-    width:auto !important;
+    /* width:auto !important; */
 } 
 
 .loginContainer .MuiGrid-root{
@@ -383,4 +383,23 @@
     height:80px;
     /* border-top:1px solid #dfdfdf; */
     border-bottom:1px solid #dfdfdf;
+}
+
+
+.servicebox{
+    height:80px;
+    padding:5px;
+}
+
+.serviceLbl{
+    height:100%;
+    width:100%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border:1px solid #dfdfdf; 
+}
+
+.searchfld input{
+    padding:10px !important;
 }

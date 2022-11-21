@@ -55,10 +55,10 @@ module.exports = class DiscountController extends baseController{
         var input = req.input; 
         input.merchantId = req.deviceDetails.merchantId
         input.mDiscountStatus = 1;
-        input.createdBy= req.userData.id;
+        input.createdBy= req.userData.mEmployeeId;
         input.createdDate = this.getDate();
 
-        input.updatedBy= req.userData.id;
+        input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate(); 
         if(input.id != undefined){
             // console.log(input)
@@ -116,7 +116,7 @@ module.exports = class DiscountController extends baseController{
         const user = req.userData;  
         var data = {
             mDiscountStatus: input.mDiscountStatus,
-            updatedBy: req.userData.id,
+            updatedBy: req.userData.mEmployeeId,
             updatedDate: this.getDate()
         }
         this.update('mDiscounts', data, {where:{id:input.id}}).then(r1=>{

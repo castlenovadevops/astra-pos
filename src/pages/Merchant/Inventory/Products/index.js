@@ -159,20 +159,20 @@ export default class ProductService extends React.Component{
           var userdetail = JSON.parse(detail);
         return <div>       
                 
-                {(userdetail.userRole === 'Admin'  || userdetail.userRole==='Owner')&& <FButton
+                {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&& <FButton
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && params.row.mProductStatus==='1' &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mProductStatus==='1' &&
                     <FButton
                     variant="contained" 
                     size="small" 
                     onClick={()=>{this.updateRecord(params.row, 0)}} 
                     label="Deactivate"/>
                 }
-                {(userdetail.userRole === 'Admin' || userdetail.userRole==='Owner') && params.row.mProductStatus==='0'  &&
+                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mProductStatus==='0'  &&
                     <FButton
                     variant="contained" 
                     size="small" 

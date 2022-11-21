@@ -35,13 +35,13 @@ module.exports = class DefaultDiscountController extends baseController{
 
         input.merchantId = req.deviceDetails.merchantId;
         input.status = 1;
-        input.createdBy= req.userData.id;
+        input.createdBy= req.userData.mEmployeeId;
         input.createdDate = this.getDate();
 
-        input.updatedBy= req.userData.id;
+        input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate();
         delete input["id"]
-        this.update('mDefaultDiscountDivision', {status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{merchantId: req.deviceDetails.merchantId}}).then(resa=>{
+        this.update('mDefaultDiscountDivision', {status:0, updatedBy: req.userData.mEmployeeId, updatedDate: this.getDate()}, {where:{merchantId: req.deviceDetails.merchantId}}).then(resa=>{
             this.create('mDefaultDiscountDivision', input).then(resp=>{
                 this.sendResponse({message:"Saved sucessfully"}, res, 200)
             }) 

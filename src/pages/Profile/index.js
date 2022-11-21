@@ -178,7 +178,7 @@ export default class UserProfile extends React.Component {
                                      <p><b> Last Name : </b> {this.state.userdetail.lastName !== '' ? this.state.userdetail.lastName : ' --- ' }</p>    
                                 </Stack>
                                 <Stack direction={{ xs: 'column', sm: 'row', mt:1 }} spacing={2}>
-                                    <p><b> Role : </b> {this.state.userdetail.userRole}</p>  
+                                    <p><b> Role : </b> {this.state.userdetail.mEmployeeRoleName}</p>  
                                     <p><b> Email : </b> {this.state.userdetail.email}</p>  
                                 </Stack> 
                                 

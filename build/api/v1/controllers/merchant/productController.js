@@ -53,18 +53,20 @@ module.exports = class ProductController extends baseController{
         var input = Object.assign({}, req.input);
         input.merchantId = req.deviceDetails.merchantId;
         input.mProductStatus = '1';
-        input.createdBy= req.userData.id;
+        input.createdBy= req.userData.mEmployeeId;
         input.createdDate = this.getDate();
 
-        input.updatedBy= req.userData.id;
+        input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate();
         // console.log(input)
+        console.log("PRODUCT SAVE CALLED")
+        console.log(input)
         delete input["mProductCategories"];
         delete input["mProductTaxes"]
-        if(input.id != undefined){
+        if(input.id !== undefined){
             this.updateWithNew('mProducts', input, {where:{id :input.id}},'mProductStatus', 'id').then(resp=>{
-                this.update('mProductCategory',{status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{mProductId: input.mProductId}}).then(r=>{ 
-                    this.update('mProductTax',{status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{mProductId: input.mProductId}}).then(r=>{
+                this.update('mProductCategory',{status:0, updatedBy: req.userData.mEmployeeId, updatedDate: this.getDate()}, {where:{mProductId: input.mProductId}}).then(r=>{ 
+                    this.update('mProductTax',{status:0, updatedBy: req.userData.mEmployeeId, updatedDate: this.getDate()}, {where:{mProductId: input.mProductId}}).then(r=>{
                         this.saveCategory(0, input.mProductId, req, res, next);
                     })
                 })
@@ -99,7 +101,7 @@ module.exports = class ProductController extends baseController{
                 mProductId: productid,
                 mCategoryId: categories[idx],
                 status:1,
-                createdBy: req.userData.id,
+                createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate()
             }
             this.create('mProductCategory', cinput).then(r=>{
@@ -119,7 +121,7 @@ module.exports = class ProductController extends baseController{
                 mProductId: productid,
                 mTaxId: taxes[idx],
                 status:1,
-                createdBy: req.userData.id,
+                createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate()
             }
             this.create('mProductTax', cinput).then(r=>{

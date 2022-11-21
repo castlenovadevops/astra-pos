@@ -49,9 +49,9 @@ module.exports = class CategoryController extends baseController{
         var input = req.input;
         input.merchantId = req.deviceDetails.merchantId;
         input.mCategoryStatus = 1;
-        input.createdBy= req.userData.id;
+        input.createdBy= req.userData.mEmployeeId;
         input.createdDate = this.getDate(); 
-        input.updatedBy=  req.userData.id;
+        input.updatedBy=  req.userData.mEmployeeId;
         input.updatedDate = this.getDate();
         // console.log(input)
         if(input.id != undefined){

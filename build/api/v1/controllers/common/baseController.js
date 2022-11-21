@@ -108,9 +108,11 @@ module.exports = class baseController extends MsgController{
 
     async updateWithNew(model, data, where, statusfield, pkfield, updateTobeSync=true){ 
         return new Promise(async (resolve) => {
-            await this.models[model].update({[statusfield]: 2}, where).then(async r=>{
+            await this.models[model].update({[statusfield]: 2}, where).then(async (r)=>{
                 var input = Object.assign({}, data);
                 delete input[pkfield];
+                console.log("SAVE INPUT")
+                console.log(input)
                 let results = await this.models[model].create(input);
                 if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){ 
                     var input = {
