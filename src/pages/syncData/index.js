@@ -15,10 +15,10 @@ export default class SyncDataComponent extends React.Component{
     componentDidMount(){ 
       const socket = socketIOClient(ENDPOINT);
       socket.emit("startSync", {data:"startWhole"})
-      console.log("SSSSS")
+      // console.log("SSSSS")
 
       socket.on("startSync", data => {
-          console.log("START SYNC", data)
+          // console.log("START SYNC", data)
           this.setState({syncRunning: true})
       });
     }

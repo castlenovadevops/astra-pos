@@ -23,7 +23,7 @@ const HeaderStyle = styled('header')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function LogoOnlyLayout() {
-  console.log(window.location.pathname)
+  // console.log(window.location.pathname)
   return (
     <>
       <HeaderStyle>

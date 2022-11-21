@@ -48,7 +48,7 @@ module.exports = class SyncTaxController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            console.log("SAVE TAX CALLED")
+            // console.log("SAVE TAX CALLED")
             this.apiManager.postRequest('/pos/sync/saveTax', toBeSynced[idx] , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);

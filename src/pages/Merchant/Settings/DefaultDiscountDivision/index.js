@@ -39,7 +39,7 @@ export default class DefaultDiscountDivision extends React.Component{
             }
             schemaprops.push(field);
             if(i === properties.length-1){ 
-                console.log(schemaprops)
+                // console.log(schemaprops)
                 schema.properties = schemaprops; 
                 schema.force = true; 
                 this.setState({schema: schema},()=>{
@@ -101,7 +101,7 @@ export default class DefaultDiscountDivision extends React.Component{
                     "value":data.id
                   })
                 schema.properties = props; 
-                console.log(schema)
+                // console.log(schema)
                 this.setState({schema: schema,selectedDiscount: data},()=>{
                    
                 })

@@ -29,10 +29,10 @@ module.exports = class RegistrationController extends baseController{
         });
     } 
     
-    checkSyncCode = async(req, res, next)=>{console.log("INPUT")
-    // console.log(req.input)
+    checkSyncCode = async(req, res, next)=>{// console.log("INPUT")
+    // // console.log(req.input)
         const computerName = os.hostname() 
-        console.log(computerName);
+        // console.log(computerName);
         var thisobj = this;
         macaddress.all().then(function (all) {  
             var input = {
@@ -42,7 +42,7 @@ module.exports = class RegistrationController extends baseController{
                 deviceDetails: JSON.stringify(req.input.deviceDetails)
             }
             thisobj.apiManager.postRequest('/pos/checkSyncCode', input, req).then(response=>{
-                console.log(response)
+                // console.log(response)
                 thisobj.sendResponse(response.response, res, response.status);
             })
 

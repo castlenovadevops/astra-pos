@@ -8,7 +8,7 @@ export default class Dashboard extends React.Component{
         }
     }
     componentDidMount(){
-        console.log("DASHBOARD COMPONENT")
+        // console.log("DASHBOARD COMPONENT")
         var details = window.localStorage.getItem("userdetail") || ''
         if(details !== ''){
             this.setState({userdetail: JSON.parse(details)})

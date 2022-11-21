@@ -43,10 +43,10 @@ export default class MerchantDashboard extends React.Component{
     componentDidMount(){ 
         this.loadData()
 
-        console.log("SOCKETTTTTT")
-        console.log(this.socket)
+        // console.log("SOCKETTTTTT")
+        // console.log(this.socket)
         this.socket.on("refreshTechnicians", data => {
-            console.log("SOCKET REFRESHHHHH")
+            // console.log("SOCKET REFRESHHHHH")
             // this.getData();
             this.setState({refreshData: true})
         });
@@ -81,7 +81,8 @@ export default class MerchantDashboard extends React.Component{
            
             <Grid container className="fullHeight">
                 <Grid item xs={4} className={'dashboardDivider'}>
-                    <Technicians onCompleteRefresh={()=>{console.log("COMPLETE REFRESH CALLED");this.setState({refreshData: false})}} refreshData={this.state.refreshData} setOwnerTech={this.setOwnerTech}/>
+                    <Technicians onCompleteRefresh={()=>{// console.log("COMPLETE REFRESH CALLED");
+                    this.setState({refreshData: false})}} refreshData={this.state.refreshData} setOwnerTech={this.setOwnerTech}/>
                 </Grid>
                 <Grid item xs={8} className={'dashboardDivider'}>
                     <TicketListComponent/>

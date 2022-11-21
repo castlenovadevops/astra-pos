@@ -68,9 +68,9 @@ module.exports = class RegistrationController extends baseController{
         var input = req.input;
         if(input.isDefault === null || input.isDefault === undefined || input.isDefault.length === 0){
             input.isDefault = '0'
-            console.log( input.isDefault, input ,"ASDASD!@#!@#!@#!")
+            // console.log( input.isDefault, input ,"ASDASD!@#!@#!@#!")
         } 
-        this.readAll({where:{mTaxStatus:1, isDefault:1,  merchantId:req.userData.merchantId}}, 'mTax').then(async (response)=>{
+        this.readAll({where:{mTaxStatus:1, isDefault:1,  merchantId:req.deviceDetails.merchantId}}, 'mTax').then(async (response)=>{
             var taxids = response.map(r=>r.id)
             var throwErr =false;
             if(input.id !== undefined){
@@ -89,17 +89,17 @@ module.exports = class RegistrationController extends baseController{
             }
             else{ 
                 if(input.updateDefault){ 
-                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.userData.merchantId }})
+                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.deviceDetails.merchantId }})
                 }
                 input.createdBy= req.userData.id;
                 input.createdDate = this.getDate();
                 input.updatedBy= req.userData.id;
-                input.merchantId = req.userData.merchantId;
+                input.merchantId = req.deviceDetails.merchantId;
                 input.updatedDate = this.getDate();
                 // input.isDefault = req.input.isDefault[0]
                 input.isDefault = input.isDefault !== undefined ? input.isDefault[0] : '0';
                 
-                console.log(input)
+                // console.log(input)
                 if(input.id != undefined){
                     this.updateWithNew('mTax', input, {where:{id:input.id}}, 'mTaxStatus', 'id').then(resp=>{
                         this.sendResponse({message:"Updated sucessfully"}, res, 200)
@@ -116,14 +116,14 @@ module.exports = class RegistrationController extends baseController{
     getByType= async (req,res,next)=>{ 
         var type = req.input.type;
         var where = {
-            merchantId: req.userData.merchantId,
+            merchantId: req.deviceDetails.merchantId,
             mTaxStatus:{
                 [Sequelize.Op.ne]:2
             },
         }
         if(type === 'default'){
             where = {
-                merchantId: req.userData.merchantId,
+                merchantId: req.deviceDetails.merchantId,
                 mTaxStatus:{
                     [Sequelize.Op.ne]:2
                 },
@@ -139,7 +139,7 @@ module.exports = class RegistrationController extends baseController{
         // ], ]}
         }, 'mTax')
         // var tax=[];
-        // console.log("TAX SERVICE CALLED::::::")
+        // // console.log("TAX SERVICE CALLED::::::")
         this.sendResponse({ data: tax}, res, 200);
         // res.send({statsu:200, data:"SUCCESS"})
     }
@@ -147,14 +147,14 @@ module.exports = class RegistrationController extends baseController{
     getDefaulttax= async (req,res,next)=>{ 
         var type = "default";
         var where = {
-            merchantId: req.userData.merchantId,
+            merchantId: req.deviceDetails.merchantId,
             mTaxStatus:{
                 [Sequelize.Op.ne]:2
             },
         }
         if(type === 'default'){
             where = {
-                merchantId: req.userData.merchantId,
+                merchantId: req.deviceDetails.merchantId,
                 mTaxStatus:{
                     [Sequelize.Op.ne]:2
                 },
@@ -170,21 +170,21 @@ module.exports = class RegistrationController extends baseController{
         // ], ]}
         }, 'mTax')
         // var tax=[];
-        // console.log("TAX SERVICE CALLED::::::")
+        // // console.log("TAX SERVICE CALLED::::::")
         this.sendResponse({ data: tax}, res, 200);
         // res.send({statsu:200, data:"SUCCESS"})
     }
     getAlltax= async (req,res,next)=>{ 
         var type = "all";
         var where = {
-            merchantId: req.userData.merchantId,
+            merchantId: req.deviceDetails.merchantId,
             mTaxStatus:{
                 [Sequelize.Op.ne]:2
             },
         }
         if(type === 'default'){
             where = {
-                merchantId: req.userData.merchantId,
+                merchantId: req.deviceDetails.merchantId,
                 mTaxStatus:{
                     [Sequelize.Op.ne]:2
                 },
@@ -200,7 +200,7 @@ module.exports = class RegistrationController extends baseController{
         // ], ]}
         }, 'mTax')
         // var tax=[];
-        // console.log("TAX SERVICE CALLED::::::")
+        // // console.log("TAX SERVICE CALLED::::::")
         this.sendResponse({ data: tax}, res, 200);
         // res.send({statsu:200, data:"SUCCESS"})
     }
@@ -209,7 +209,7 @@ module.exports = class RegistrationController extends baseController{
         let tax = await this.readAll({order: [
             ['createdDate','ASC']
         ],
-        where:{  merchantId:req.userData.merchantId,
+        where:{  merchantId:req.deviceDetails.merchantId,
             id:{
             [Sequelize.Op.in]:Sequelize.literal("(select id from mTax where mTaxStatus!=2)")
         } }
@@ -243,9 +243,9 @@ module.exports = class RegistrationController extends baseController{
             updatedBy: user.id,
             updatedDate: this.getDate()
         }
-        console.log(input)
+        // console.log(input)
 
-        this.readAll({where:{mTaxStatus:1, isDefault:1,  merchantId:req.userData.merchantId}}, 'mTax').then(async (response)=>{
+        this.readAll({where:{mTaxStatus:1, isDefault:1,  merchantId:req.deviceDetails.merchantId}}, 'mTax').then(async (response)=>{
             var taxids = response.map(r=>r.id)
             var throwErr =false;
             if(input.id !== undefined){
@@ -272,9 +272,9 @@ module.exports = class RegistrationController extends baseController{
             else{ 
 
                 if(input.updateDefault == 1){ 
-                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.userData.merchantId }})
+                    await this.update('mTax', {isDefault: 0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{isDefault: 1, merchantId: req.deviceDetails.merchantId }})
                 }
-                console.log(input)
+                // console.log(input)
                 this.update('mTax', data, {where:{id:input.id}}).then(r1=>{
                     this.sendResponse({message:"Tax details updated successfully."}, res, 200);
                 })

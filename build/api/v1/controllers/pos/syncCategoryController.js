@@ -49,7 +49,7 @@ module.exports = class SyncCategoryController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            console.log("SAVE syncCategory CALLED")
+            // console.log("SAVE syncCategory CALLED")
             this.apiManager.postRequest('/pos/sync/saveCategory', toBeSynced[idx] , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
@@ -66,9 +66,10 @@ module.exports = class SyncCategoryController extends baseController{
         var input = { 
             merchantId: req.deviceDetails.merchantId,
             POSId: req.deviceDetails.device.POSId,
-            // syncAll: true
+            syncAll: true
         }
         this.apiManager.postRequest('/pos/sync/getData',  input ,req).then(resp=>{ 
+            console.log("CATEGORY LENGTH", resp)
             if(resp.response.data.length > 0){
                 this.saveData(0, resp.response.data, req, res, next, [])
             }
@@ -108,7 +109,7 @@ module.exports = class SyncCategoryController extends baseController{
                 syncedTable:'mCategory'
             }
             this.apiManager.postRequest('/pos/updateSync',  input ,req).then(resp=>{  
-                console.log("SYNC UPDATES CALLED")
+                // console.log("SYNC UPDATES CALLED")
                     this.sendResponse({message:"Categories Module synced successfully"}, res, 200); 
             }) 
         }

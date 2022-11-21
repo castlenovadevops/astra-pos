@@ -32,10 +32,10 @@ export default class HTTPManager{
             url = process.env.REACT_APP_LOCALAPIURL+url
             axios.get( url, {headers: this.getAuthHeader()}).then(response=>{ 
                 // resolve(response.data); 
-                console.log(response.data)
+                // console.log(response.data)
                resolve(this.crypto.AESDecrypt(response.data));
             }).catch(error=>{
-                console.log(error)
+                // console.log(error)
                 if(error.response !== undefined){
                     if(error.response.status === 401){
                         window.localStorage.clear();
@@ -55,14 +55,14 @@ export default class HTTPManager{
             url = process.env.REACT_APP_LOCALAPIURL+url
             axios.post(url, {data:this.crypto.AESEncrypt(input)}, {headers: this.getAuthHeader()}).then(response=>{ 
                 var requestresponse = response;
-                console.log(response)
+                // console.log(response)
                 if(response.status !== 200){
                     requestresponse = response.response;
                 } 
                 console.log(this.crypto.AESDecrypt(requestresponse.data))
                resolve(this.crypto.AESDecrypt(requestresponse.data));
             }).catch(error=>{
-                console.log(error)
+                // console.log(error)
                 var requestresponse = error;
 
                 if(error.response !== undefined){
@@ -77,7 +77,7 @@ export default class HTTPManager{
                 if(requestresponse === undefined){
                     requestresponse={status:400, data:''}
                 }
-                console.log(this.crypto.AESDecrypt(requestresponse.data))
+                // console.log(this.crypto.AESDecrypt(requestresponse.data))
                 reject(this.crypto.AESDecrypt(requestresponse.data));
             }) 
         })

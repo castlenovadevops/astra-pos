@@ -13,7 +13,7 @@ export const isDeviceRegistered = ()=>{
 
 export const isLogin = () => {
     if (localStorage.getItem('userdetail')) {
-        console.log("IFFFFFFFFF")
+        // console.log("IFFFFFFFFF")
         return true;
     }
 

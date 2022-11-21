@@ -37,7 +37,7 @@ export default class CreateTicketComponent extends React.Component{
         else{
             this.httpManager.postRequest("merchant/ticket/getTicketcode",{data:"REQUEST TICKET CODE"}).then(res=>{
                 this.setState({ticketDetail: res.data})
-                console.log(res.data)
+                // console.log(res.data)
             }).catch(e=>{
                 this.setState({error: e.message}, ()=>{
                     this.setState({showError: true})

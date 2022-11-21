@@ -27,7 +27,7 @@ class CodeInput extends React.Component {
       tinput.push('')
     } 
     this.setState({input: tinput}, function() {
-      // //console.log("codeLength::",this.state.input.length)
+      // //// console.log("codeLength::",this.state.input.length)
     })
 
   }
@@ -40,7 +40,7 @@ class CodeInput extends React.Component {
   }
 
   updateValue(codeValueArray){
-    // //console.log("componentWillReceiveProps::",codeValueArray.length)
+    // //// console.log("componentWillReceiveProps::",codeValueArray.length)
 
     if(codeValueArray === 0) { //**clear inputs */
       this.setState({codeValue: ['','','','']})
@@ -50,7 +50,7 @@ class CodeInput extends React.Component {
       const index = codeValueArray.length-1; 
      
        this.setState({codeValue: codeValueArray}, function() { 
-         //console.log(codeValueArray.length , this.state.codeLength)
+         //// console.log(codeValueArray.length , this.state.codeLength)
           if(codeValueArray.length === this.state.codeLength) { 
             this.setState({isReached: true}) 
             this.props.onSubmitPasscode(this.state.codeValue)
@@ -100,7 +100,7 @@ class CodeInput extends React.Component {
     
     return (
      
-      <div style={{ background: '#ffffff', width: '100%',margin: '10px',height: '50px',display: 'inline-block' }} >
+      <div style={{   width: '100%',margin: '10px',height: '50px',display: 'inline-block' }} >
         
         <div style={{border: 'solid 0px #000',  textAlign: 'center',margin: '0px auto'}}>
         

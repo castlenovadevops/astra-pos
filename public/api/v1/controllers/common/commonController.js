@@ -18,7 +18,7 @@ module.exports = class CommonController extends baseController{
 
     getToken = async (req,res,next)=>{  
         var input = req.body;  
-        console.log("TOKEN METHOD CALLED")
+        // console.log("TOKEN METHOD CALLED")
         this.sendResponse({msg:'Token sent successfully.', token:this.generaterandomString(16)}, res, 200);
     }
 }

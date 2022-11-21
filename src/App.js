@@ -30,8 +30,8 @@ export default class App extends React.Component{
     var accessToken=window.localStorage.getItem('accessToken') || '' 
     if(accessToken === ''){ 
       this.httpManager.postRequest(`common/getToken`, deviceDetect(window.navigator.userAgent)).then(response=>{ 
-        console.log("REOPNSE")
-        console.log(response)
+        // console.log("REOPNSE")
+        // console.log(response)
         window.localStorage.setItem('accessToken', response.token) 
         toast.success(response.message,  {
             position: "top-center",
@@ -44,7 +44,7 @@ export default class App extends React.Component{
             progress: undefined,
         })
       }).catch(error=>{ 
-        console.log(error);
+        // console.log(error);
         toast.error(error.message, {
           position: "top-center",
           autoClose: 5000,

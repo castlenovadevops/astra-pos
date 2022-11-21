@@ -98,7 +98,7 @@ import CodeInput from './CodeInput'
     }
 
     clearPasscode() {
-        // console.log("passcode to be clear..")
+        // // console.log("passcode to be clear..")
 
         this.setState({
             codeValue : '',
@@ -127,7 +127,7 @@ import CodeInput from './CodeInput'
         }, 300); 
     }
     getValue(value) {
-        // console.log("getValue",value)
+        // // console.log("getValue",value)
 
         this.setState({highLightedButton: value}, function(){   
             this.clearHighlight();
@@ -166,7 +166,7 @@ import CodeInput from './CodeInput'
     };
 
     onSubmitPasscode(value) {
-        //console.log("submitcode ")
+        //// console.log("submitcode ")
         this.setState({submitCode: value, disabled: false},function() {
             this.props.handleChangeCode(value)
         }) 
@@ -174,7 +174,7 @@ import CodeInput from './CodeInput'
 
 
     render() {
-        // console.log("render::",this.state.disabled)
+        // // console.log("render::",this.state.disabled)
         var content =  <span style={doneButtonStyle}><Done style={{fontSize:"30px"}}/></span>
         if(this.state.disabled) {
             content =  <span style={disableddoneButtonStyle}><Done style={{fontSize:"30px"}}/></span>

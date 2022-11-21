@@ -55,7 +55,7 @@ module.exports = class RoutesController{
             })
         }
         else{
-            console.log("ALL API REGISTEREd")
+            // console.log("ALL API REGISTEREd")
             
             // this.app.use('/static/css',express.static(path.join(__dirname,'../../../../static/css')));
             // this.app.use('/static/js',express.static(path.join(__dirname,'../../../../static/js')));
@@ -72,7 +72,7 @@ module.exports = class RoutesController{
                
             //     res.sendFile(path.resolve(__dirname+'../../../../index.html'));
             // }) 
-            console.log(this.router);
+            // console.log(this.router);
             resolve(this.router);
             // res.send({msg:"Initial route called"});
         }
@@ -83,7 +83,7 @@ module.exports = class RoutesController{
             var controller = this.contollers[index];
             var route = routes[idx]
             if(route.authorization !== undefined && route.authorization !== ''){
-                console.log(controller[route.method])
+                // console.log(controller[route.method])
                 this.router.post(route.path, authenticate[route.authorization], async(req, res, next)=>{
                     // controller[route.method](req, res, next)
                     res.send({data:"CONTROLLER INITI"})

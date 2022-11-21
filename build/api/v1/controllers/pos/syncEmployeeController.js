@@ -38,7 +38,7 @@ module.exports = class SyncCategoryController extends baseController{
     } 
     
     syncEmployees = async(req, res, next)=>{ 
-        console.log("SYNC EMPLOYEE CALLED")
+        // console.log("SYNC EMPLOYEE CALLED")
         this.pullData(req, res, next) 
     } 
 
@@ -49,9 +49,9 @@ module.exports = class SyncCategoryController extends baseController{
             POSId: req.deviceDetails.device.POSId,
             // syncAll: true
         }
-        console.log("API CALLING")
+        // console.log("API CALLING")
         this.apiManager.postRequest('/pos/sync/getEmployees',  input ,req).then(resp=>{ 
-            console.log(resp)
+            // console.log(resp)
             if(resp.response.data.length > 0){
                 this.saveData(0, resp.response.data, req, res, next, [])
             }
@@ -67,7 +67,7 @@ module.exports = class SyncCategoryController extends baseController{
             var detail = data[idx];
             let detailexist = await this.readOne({where:{mEmployeeId: data[idx].mEmployeeId }}, 'merchantEmployees')
             if(detailexist !== null){
-                console.log("UPDATEEEEEE", data[idx]);
+                // console.log("UPDATEEEEEE", data[idx]);
                 this.delete('merchantEmployees', {mEmployeeId:  data[idx].mEmployeeId}).then(r=>{
                     this.create('merchantEmployees', data[idx], false).then(async r=>{
                         this.delete('mEmployeeCommission',{mEmployeeId:detail.mEmployeeId}).then(r=>{
@@ -79,7 +79,7 @@ module.exports = class SyncCategoryController extends baseController{
                 })
             }
             else{
-                console.log("EEEEEEEEE", data[idx]);
+                // console.log("EEEEEEEEE", data[idx]);
                 this.create('merchantEmployees', data[idx], false).then(async r=>{ 
                     var pkfield = pkfields[model]
                         syncedRows.push(detail[pkfield])
@@ -116,11 +116,11 @@ module.exports = class SyncCategoryController extends baseController{
 
     saveEmpPermissions = async (tidx, idx, data, model, syncedRows,  req, res, next)=>{ 
         var detail = data[idx]
-        console.log(detail)
+        // console.log(detail)
         if(tidx < detail.mEmployeePermissions.length){
             var taxdetail = detail.mEmployeePermissions[tidx];
-            console.log("$$$$$")
-            console.log(taxdetail)
+            // console.log("$$$$$")
+            // console.log(taxdetail)
             this.create('mEmployeePermissions', taxdetail, false).then(r=>{
                 this.saveEmpPermissions(tidx+1, idx, data, model, syncedRows, req, res, next);
             })

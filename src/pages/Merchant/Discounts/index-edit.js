@@ -117,7 +117,7 @@ export default class Discount extends React.Component{
                     let idx = required.indexOf('mOwnerDivision') 
                     required.splice(idx,1)
                 }
-                console.log("OWNER CHAGEEE")
+                // console.log("OWNER CHAGEEE")
             }
             else if(values.mDiscountDivisionType !== 'Both' && field.name === 'mEmployeeDivision'){
                 field.format = 'percentage'
@@ -127,7 +127,7 @@ export default class Discount extends React.Component{
                     let idx = required.indexOf('mEmployeeDivision') 
                     required.splice(idx,1)
                 }
-                console.log(required)
+                // console.log(required)
             }
             else{ 
                 field.value = values[field.name];
@@ -161,7 +161,7 @@ export default class Discount extends React.Component{
             }
             schemaprops.push(field);
             if(i === properties.length-1){ 
-                console.log(schemaprops)
+                // console.log(schemaprops)
                 schema.properties = schemaprops; 
                 schema.force = true; 
                 this.setState({schema: schema},()=>{
@@ -174,7 +174,7 @@ export default class Discount extends React.Component{
     updateRecord(row, status){ 
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/discounts/updateDiscount`, {mDiscountStatus: status, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -182,7 +182,7 @@ export default class Discount extends React.Component{
     }
     componentDidMount(){ 
         this.setState({schema: schema},()=>{
-            console.log(schema)
+            // console.log(schema)
             this.reloadData();
         })
     }
@@ -224,7 +224,7 @@ export default class Discount extends React.Component{
         var properties = Object.assign([], this.state.schema.properties);
         var props=[];
         properties.forEach((field,i)=>{
-            console.log(field.name, data[field.name])
+            // console.log(field.name, data[field.name])
             field.value = data[field.name];
             props.push(field);
             if(i === properties.length-1){
@@ -274,7 +274,7 @@ export default class Discount extends React.Component{
         }
         this.setState({isLoading: true, addForm: false},()=>{
             this.httpManager.getRequest(`merchant/discounts/getDiscount`).then(response=>{
-                console.log(response)
+                // console.log(response)
                 this.setState({discountlist: response.data, isLoading: false});
             })
 
@@ -312,7 +312,7 @@ export default class Discount extends React.Component{
                     schemaobj.properties = props;
                 }
             });
-            console.log(schemaobj)
+            // console.log(schemaobj)
             schemaobj.force= true;
             this.setState({schema:schemaobj}, ()=>{
                 this.setState({addForm: true}) 

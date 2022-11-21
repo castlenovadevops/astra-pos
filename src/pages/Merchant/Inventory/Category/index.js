@@ -63,7 +63,7 @@ export default class Category extends React.Component{
     updateRecord(row, status){ 
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/category/update`, {mCategoryStatus: status, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -149,7 +149,7 @@ export default class Category extends React.Component{
         }
         this.setState({isLoading: true, addForm: false},()=>{
             this.httpManager.postRequest(`merchant/category/get`, {data:"GET CATEGORY"}).then(response=>{
-                console.log(response)
+                // console.log(response)
                 this.setState({categorylist: response.data, isLoading: false});
             })
         })

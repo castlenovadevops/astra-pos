@@ -53,7 +53,7 @@ module.exports = class DiscountController extends baseController{
 
     saveDiscount = async(req,res,next)=>{
         var input = req.input; 
-        input.merchantId = req.userData.merchantId
+        input.merchantId = req.deviceDetails.merchantId
         input.mDiscountStatus = 1;
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate();
@@ -61,7 +61,7 @@ module.exports = class DiscountController extends baseController{
         input.updatedBy= req.userData.id;
         input.updatedDate = this.getDate(); 
         if(input.id != undefined){
-            console.log(input)
+            // console.log(input)
             this.updateWithNew('mDiscounts', input, {where:{id:input.id}}, 'mDiscountStatus', 'id').then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
             })
@@ -77,7 +77,7 @@ module.exports = class DiscountController extends baseController{
             ['createdDate','ASC']
         ],
         where:{ 
-            merchantId:req.userData.merchantId,
+            merchantId:req.deviceDetails.merchantId,
             mDiscountStatus:1,
             id:{
                 [Sequelize.Op.in]:Sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
@@ -97,7 +97,7 @@ module.exports = class DiscountController extends baseController{
             ['createdDate','ASC']
         ],
         where:{ 
-            merchantId:req.userData.merchantId,
+            merchantId:req.deviceDetails.merchantId,
             id:{
                 [Sequelize.Op.in]:Sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
             }

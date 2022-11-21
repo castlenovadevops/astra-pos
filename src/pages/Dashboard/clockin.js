@@ -58,7 +58,7 @@ export default function Clockin(props) {
         // window.location.href="/app"
         props.handleCloseDialog();
       }).catch(e=>{
-        console.log(e)
+        // console.log(e)
         setFormError(e.message || 'Error Occurred. Please try again later');
         setShowFormError(true) 
       })
@@ -75,7 +75,8 @@ export default function Clockin(props) {
 
     <Container maxWidth="sm">
       <ContentStyle >  
-          <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={handleChangeCode} onSubmit={loginEmp}  clearPasscode={clearPasscode => console.log(clearPasscode)}/>
+          <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={handleChangeCode} onSubmit={loginEmp}  clearPasscode={clearPasscode => {// console.log(clearPasscode)
+          }}/>
       </ContentStyle>
     </Container>
 

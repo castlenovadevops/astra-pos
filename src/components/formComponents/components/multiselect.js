@@ -26,7 +26,7 @@ export default class FMultiSelect extends React.Component{
           this.httpManager.postRequest(this.props.data,{data:"MULTI SELECT COMPonent"}).then(response=>{
             var options = [];  
             response.data.forEach(el=>{ 
-              console.log(el)
+              // console.log(el)
                 options.push({
                     label:this.getLabel(el),
                     value:this.getValue(el)
@@ -45,7 +45,7 @@ export default class FMultiSelect extends React.Component{
     getValue(item){  
         var valuekey = this.props.dataformat !== undefined ? this.props.dataformat.value : 'value';
         if(valuekey === 'all'){
-          console.log(item)
+          // console.log(item)
           return item;
         }
         return item[valuekey];

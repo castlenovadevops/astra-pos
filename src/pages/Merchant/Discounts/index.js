@@ -159,7 +159,7 @@ export default class Discount extends React.Component{
             }
             schemaprops.push(field);
             if(i === properties.length-1){ 
-                console.log(schemaprops)
+                // console.log(schemaprops)
                 schema.properties = schemaprops; 
                 schema.force = true; 
                 this.setState({schema: schema},()=>{
@@ -172,7 +172,7 @@ export default class Discount extends React.Component{
     updateRecord(row, status){ 
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/discounts/updateDiscount`, {mDiscountStatus: status, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -180,7 +180,7 @@ export default class Discount extends React.Component{
     }
     componentDidMount(){ 
         this.setState({schema: schema},()=>{
-            console.log(schema)
+            // console.log(schema)
             this.reloadData();
         })
     }
@@ -270,7 +270,7 @@ export default class Discount extends React.Component{
         }
         this.setState({isLoading: true, addForm: false},()=>{
             this.httpManager.getRequest(`merchant/discounts/getDiscount`).then(response=>{
-                console.log(response)
+                // console.log(response)
                 this.setState({discountlist: response.data, isLoading: false});
             })
 
@@ -308,7 +308,7 @@ export default class Discount extends React.Component{
                     schemaobj.properties = props;
                 }
             });
-            console.log(schemaobj)
+            // console.log(schemaobj)
             schemaobj.force= true;
             this.setState({schema:schemaobj}, ()=>{
                 this.setState({addForm: true}) 

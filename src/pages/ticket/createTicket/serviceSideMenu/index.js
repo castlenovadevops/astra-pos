@@ -1,6 +1,8 @@
 import React from 'react';
 import { Grid } from '@mui/material';
+import HTTPManager from '../../../../utils/httpRequestManager';
 export default class ServiceSideMenu extends  React.Component{
+    httpManager = new HTTPManager();
     constructor(props){
         super(props);
         this.state={
@@ -16,7 +18,9 @@ export default class ServiceSideMenu extends  React.Component{
                 {id:7 , label:"Request" },
                 {id:8 , label:"Discount" },
                 {id:9 , label:"Tax" }
-            ]
+            ],
+            categories:[],
+            serices:[]
         }
     }
 
@@ -30,6 +34,26 @@ export default class ServiceSideMenu extends  React.Component{
         this.getCategories()
     }
 
+    getCategories(){
+        this.httpManager.postRequest('merchant/category/get',{data:"GET CATEGORY"}).then(res=>{
+            this.setState({categories: res.data}, ()=>{
+                if(this.state.categories.length > 0){
+                    this.getProductsByCategory(this.state.categories[0].id)
+                }
+                else{
+                    this.setState({services:[]})
+                }
+            })
+        })
+    }
+
+
+
+    getProductsByCategory(catid){
+        this.httpManager.postRequest('merchant/product/getbyCategory',{categoryId: catid}).then(res=>{
+            this.setState({services: res.data})
+        })
+    }
 
     render(){
         return <Grid container style={{height:'100%'}}>

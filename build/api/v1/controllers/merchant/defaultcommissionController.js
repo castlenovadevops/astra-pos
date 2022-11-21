@@ -29,31 +29,31 @@ module.exports = class DefaultCommissionController extends baseController{
 
     save = async(req,res,next)=>{
         var input = req.input;
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.status = 1;
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate();
         delete input.id;
         input.updatedBy= req.userData.id;
         input.updatedDate = this.getDate();  
-        this.update('mDefaultCommission', {status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{merchantId: req.userData.merchantId}}).then(resa=>{
+        this.update('mDefaultCommission', {status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{merchantId: req.deviceDetails.merchantId}}).then(resa=>{
             this.create('mDefaultCommission', input).then(resp=>{
                 this.readOne({where:{
                     mEmployeeId:{
-                        [Sequelize.Op.in]:Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.userData.merchantId+"' and roleName='Owner'))")
+                        [Sequelize.Op.in]:Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.deviceDetails.merchantId+"' and roleName='Owner'))")
                     }
                 },
             include:[
                 {
                     model:this.models.mEmployeeCommission,
-                    where:{status:1, merchantId: req.userData.merchantId},
+                    where:{status:1, merchantId: req.deviceDetails.merchantId},
                     required: false 
                 }
             ]}, 'merchantEmployees').then(owner=>{
-                console.log(owner.dataValues)
+                // console.log(owner.dataValues)
                     if(owner.dataValues.mEmployeeCommissions.length === 0){ 
                         var empInput = {
-                            merchantId: req.userData.merchantId,
+                            merchantId: req.deviceDetails.merchantId,
                             mEmployeeId: owner.mEmployeeId,
                             minimumSalary:'',
                             mOwnerPercentage: input.mOwnerPercentage,
@@ -67,7 +67,7 @@ module.exports = class DefaultCommissionController extends baseController{
                             createdDate: this.getDate(),
                             updatedDate: this.getDate()
                         } 
-                        this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.userData.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
+                        this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
                             this.create('mEmployeeCommission', empInput).then(r=>{
                                 this.sendResponse({message:"Commission details saved successfully."}, res, 200);
                             })
@@ -85,7 +85,7 @@ module.exports = class DefaultCommissionController extends baseController{
         let commission = await this.readAll({
             where:{
                 "status": 1,
-                merchantId: req.userData.merchantId
+                merchantId: req.deviceDetails.merchantId
             },
         }, 'mDefaultCommission')
         this.sendResponse({ data: commission}, res, 200);

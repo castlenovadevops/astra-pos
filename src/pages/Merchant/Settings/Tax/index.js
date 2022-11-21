@@ -123,7 +123,7 @@ export default class Tax extends React.Component{
     saveForm(data){
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/tax/save`, data).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -133,7 +133,7 @@ export default class Tax extends React.Component{
     updateRecord(row, status){ 
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/tax/update`, {cnUserStatus: status, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -161,7 +161,7 @@ export default class Tax extends React.Component{
                 schemaobj.force = true
                 schemaobj.required = required
                 schemaobj.properties = props; 
-                console.log(props)
+                // console.log(props)
                 this.setState({showForm: true,schema: Object.assign({},schemaobj)},()=>{
                     this.reloadData();
                 })
@@ -220,7 +220,7 @@ export default class Tax extends React.Component{
     removeDefault(row){
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/tax/updateTaxDefault`, {isDefault: 0, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -231,11 +231,11 @@ export default class Tax extends React.Component{
         this.setState({isLoading: true, selectedtaxes: row}, ()=>{
             input.id = row.id
             this.httpManager.postRequest(`merchant/tax/updateTaxDefault`, input).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false, selectedtaxes: {},showFormActionError: false,  formActionError:''});
                 this.reloadData(res.message);
             }).catch(e=>{
-                console.log(e) 
+                // console.log(e) 
                     this.setState({isLoading: false, showFormActionError: true, formActionError:e.message}) 
             })
         })
@@ -248,7 +248,7 @@ export default class Tax extends React.Component{
         properties.forEach((field,i)=>{
             field.value = data[field.name];
             if(field.name === 'isDefault'){
-                console.log(data)
+                // console.log(data)
                 var obj = []
                 obj.push(data[field.name]);
                 field.value = obj;
@@ -277,7 +277,7 @@ export default class Tax extends React.Component{
                       "placeholder":"mTaxId",
                       "value":data.mTaxId
                     })
-                    console.log(properties)
+                    // console.log(properties)
                     schemaobj.properties = props; 
                 this.setState({schema: schemaobj,selectedtaxes: data},()=>{
                     this.setState({addForm: true})
@@ -301,8 +301,8 @@ export default class Tax extends React.Component{
         }
         this.setState({isLoading: true, addForm: false},()=>{
             this.httpManager.postRequest(`merchant/tax/get`,{data:"GEGT TAX"}).then(response=>{
-                console.log("RESPONSE")
-                console.log(response)
+                // console.log("RESPONSE")
+                // console.log(response)
                 this.setState({taxlist: response.data, isLoading: false, addForm: false});
             })
         })
@@ -332,7 +332,7 @@ export default class Tax extends React.Component{
                 schemaobj.force = true
                 schemaobj.required = required
                 schemaobj.properties = props; 
-                console.log(props)
+                // console.log(props)
                 this.setState({addForm: true,schema: Object.assign({},schemaobj)},()=>{ 
                 })
             }
@@ -343,7 +343,7 @@ export default class Tax extends React.Component{
     renderErrorActionButtons(){
         var buttons = []
         if(this.state.schema.onSubmit !== undefined){
-            console.log(this.state.schema.onSubmit.onError)
+            // console.log(this.state.schema.onSubmit.onError)
             if(this.state.schema.onSubmit.onError.actionButtons){
                 this.state.schema.onSubmit.onError.actionButtons.forEach(btn=>{
                     const {label,  variant} = btn;

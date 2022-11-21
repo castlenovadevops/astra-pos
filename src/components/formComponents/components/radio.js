@@ -32,7 +32,7 @@ export default class FRadio extends React.Component{
               this.setState({options: options})
             })
           }).catch(e=>{
-            console.log("ERROR::::", e)
+            // console.log("ERROR::::", e)
           })
         }
     }

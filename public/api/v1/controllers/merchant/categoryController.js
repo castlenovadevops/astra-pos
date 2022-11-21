@@ -47,13 +47,13 @@ module.exports = class CategoryController extends baseController{
 
     saveCategory = async(req,res,next)=>{
         var input = req.input;
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.mCategoryStatus = 1;
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate(); 
         input.updatedBy=  req.userData.id;
         input.updatedDate = this.getDate();
-        console.log(input)
+        // console.log(input)
         if(input.id != undefined){
             this.update('mCategory', input, {where:{id :input.id}}).then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
@@ -69,7 +69,7 @@ module.exports = class CategoryController extends baseController{
     getCategory = async (req,res,next)=>{ 
         let category = await this.readAll({
             where:{
-                merchantId:req.userData.merchantId
+                merchantId:req.deviceDetails.merchantId
             },
             order: [
             ['createdDate','ASC']

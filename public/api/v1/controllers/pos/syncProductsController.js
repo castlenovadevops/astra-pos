@@ -49,7 +49,7 @@ module.exports = class SyncCategoryController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            console.log("SAVE sync Products CALLED")
+            // console.log("SAVE sync Products CALLED")
             this.apiManager.postRequest('/pos/sync/saveProduct', toBeSynced[idx] , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);

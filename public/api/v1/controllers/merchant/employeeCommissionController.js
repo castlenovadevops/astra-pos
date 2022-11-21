@@ -42,7 +42,7 @@ module.exports = class EmployeeCommissionController extends baseController{
 
         let options = {
             where:{
-                merchantId: req.userData.merchantId,
+                merchantId: req.deviceDetails.merchantId,
                 mEmployeeId: input.mEmployeeId,
                 status:1
             }
@@ -56,13 +56,13 @@ module.exports = class EmployeeCommissionController extends baseController{
 
     saveCommission = async(req, res, next)=>{
         var input = req.input;
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.createdBy = req.userData.id
         input.updatedBy = req.userData.id
         input.createdDate = this.getDate()
         input.updatedDate = this.getDate()
-        console.log(input);
-        this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.userData.merchantId, mEmployeeId: input.mEmployeeId, status:1}}).then(r=>{
+        // console.log(input);
+        this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: input.mEmployeeId, status:1}}).then(r=>{
             this.create('mEmployeeCommission', input).then(r=>{
                 this.sendResponse({message:"Commission details saved successfully."}, res, 200);
             })

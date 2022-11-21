@@ -30,6 +30,12 @@ module.exports = class ProductController extends baseController{
                     authorization:'authorizationAuth'
                 },
                 {
+                    path:this.path+"/getbyCategory",
+                    type:"post",
+                    method: "getByCategory",
+                    authorization:'authorizationAuth'
+                },
+                {
                     path:this.path+"/update",
                     type:"post",
                     method: "updateProduct",
@@ -45,14 +51,14 @@ module.exports = class ProductController extends baseController{
 
     save = async(req,res,next)=>{
         var input = Object.assign({}, req.input);
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.mProductStatus = '1';
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate();
 
         input.updatedBy= req.userData.id;
         input.updatedDate = this.getDate();
-        console.log(input)
+        // console.log(input)
         delete input["mProductCategories"];
         delete input["mProductTaxes"]
         if(input.id != undefined){
@@ -66,14 +72,14 @@ module.exports = class ProductController extends baseController{
         }
         else{ 
             if(input.mProductSKU!== undefined && input.mProductSKU !== ''){ 
-                var productdetail = await this.readAll({where:{mProductSKU: input.mProductSKU, merchantId: req.userData.merchantId }}, 'mProducts')
+                var productdetail = await this.readAll({where:{mProductSKU: input.mProductSKU, merchantId: req.deviceDetails.merchantId }}, 'mProducts')
                 
                 if(productdetail.length > 0){
                     return this.sendResponse({message: this.mproductSkuexists, field:'mProductSKU'}, res, 400);
                 } 
             }
             if(input.mProductCode!== undefined && input.mProductCode !== ''){
-                var productdetail = await this.readAll({where:{mProductCode: input.mProductCode, merchantId: req.userData.merchantId }}, 'mProducts')
+                var productdetail = await this.readAll({where:{mProductCode: input.mProductCode, merchantId: req.deviceDetails.merchantId }}, 'mProducts')
                 
                 if(productdetail.length > 0){
                    return this.sendResponse({message: this.mproductcodeexists, field:'mProductCode'}, res, 400);
@@ -131,9 +137,44 @@ module.exports = class ProductController extends baseController{
                 ['createdDate','ASC']
             ],
             where:{
-                merchantId: req.userData.merchantId,
+                merchantId: req.deviceDetails.merchantId,
                 mProductStatus:{
                     [Sequelize.Op.ne]:'2'
+                }
+            },
+            include:[
+                {
+                    model:this.models.mProductCategory, 
+                    where:{
+                        status:1, 
+                    },
+                    required: false
+                },
+                {
+                    model:this.models.mProductTax, 
+                    where:{
+                        status:1
+                    },
+                    required: false
+                }
+            ]
+            
+        }, 'mProducts')
+        this.sendResponse({ data: products}, res, 200);
+    }
+
+    getByCategory = async (req,res,next)=>{ 
+        let products = await this.readAll({
+            order: [
+                ['createdDate','ASC']
+            ],
+            where:{
+                merchantId: req.deviceDetails.merchantId,
+                mProductStatus:{
+                    [Sequelize.Op.ne]:'2'
+                },
+                mProductId:{
+                    [Sequelize.Op.in]:Sequelize.literal("(select mProductId from mProductCategory where mCategoryId='"+req.input.categoryId+"' and status=1)")
                 }
             },
             include:[
@@ -160,7 +201,7 @@ module.exports = class ProductController extends baseController{
     updateProduct = async(req, res,next)=>{ 
         const input = req.input; 
         const user = req.userData;  
-        console.log(input)
+        // console.log(input)
         var data = {
             mProductStatus: input.mProductStatus,
             updatedBy: user.id,

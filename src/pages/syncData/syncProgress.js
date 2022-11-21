@@ -45,7 +45,7 @@ export default class SyncProgress extends React.Component{
 
         let detail = window.localStorage.getItem("merchantDetail");
         this.setState({ merchantDetail: JSON.parse(detail) })
-        console.log("did mount")
+        // console.log("did mount")
         this.setState({mastertables:[
             
             {

@@ -52,7 +52,7 @@ export default function Login() {
         window.localStorage.setItem('token', res.token);
         window.location.href="/app"
       }).catch(e=>{
-        console.log(e)
+        // console.log(e)
         setFormError(e.message || 'Error Occurred. Please try again later');
         setShowFormError(true) 
       })
@@ -77,7 +77,8 @@ export default function Login() {
 
     <Container maxWidth="sm">
       <ContentStyle className="mobileminautoform">  
-          <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={handleChangeCode} onSubmit={loginEmp}  clearPasscode={clearPasscode => console.log(clearPasscode)}/>
+          <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={handleChangeCode} onSubmit={loginEmp}  clearPasscode={clearPasscode => {// console.log(clearPasscode)
+          }}/>
       </ContentStyle>
     </Container>
 

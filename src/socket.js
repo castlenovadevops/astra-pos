@@ -11,7 +11,7 @@ const [syncRunning, setSyncRunning] = useState(false);
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
     socket.on("startSync", data => {
-        console.log("START SYNC", data)
+        // console.log("START SYNC", data)
       setResponse(data);
       setSyncRunning(true);
     });

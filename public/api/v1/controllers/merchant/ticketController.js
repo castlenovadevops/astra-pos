@@ -54,7 +54,7 @@ module.exports = class TicketController extends baseController{
                 }
                 this.readAll(options, 'tickets').then(rows=>{
                     if(rows.length > 0){
-                        console.log(rows[0].ticketCode)
+                        // console.log(rows[0].ticketCode)
                         var ticketcode = rows[0].ticketCode !== '' && rows[0].ticketCode !== undefined &&rows[0].ticketCode!==null ? rows[0].ticketCode : 0;
                         var count = Number(ticketcode)+1; 
                         var ticketcode =  String(count).padStart(4, '0') 
@@ -83,7 +83,7 @@ module.exports = class TicketController extends baseController{
         }
 
         this.create('tickets', input).then(ticket=>{
-            console.log(ticket)
+            // console.log(ticket)
             this.sendResponse({data: ticket.dataValues}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);

@@ -92,8 +92,8 @@ export default class SelectTechnician extends React.Component {
     
     
     onSelectTech(row) {
-        console.log(row);
-        console.log("TECG CALL")
+        // console.log(row);
+        // console.log("TECG CALL")
         this.props.onSelectTech(row); 
     }
         

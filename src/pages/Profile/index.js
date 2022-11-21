@@ -114,7 +114,7 @@ export default class UserProfile extends React.Component {
                     "placeholder":"id",
                     "value":data.id
                   })
-                console.log(properties)
+                // console.log(properties)
                 schema.properties = properties
                 this.setState({schema: schema},()=>{
                     this.setState({isLoading: false, viewdialog: true})
@@ -126,7 +126,7 @@ export default class UserProfile extends React.Component {
 
   openView(row){
     this.setState({selectedBusiness: row}, function(){
-      console.log("selected row",this.state.selectedBusiness)
+      // console.log("selected row",this.state.selectedBusiness)
     //   this.setState({viewdialog: true})
       // this.handleChangeTab('',1);
       this.setFormDetails()
@@ -197,7 +197,7 @@ export default class UserProfile extends React.Component {
                                         <FormManager formProps={this.state.schema} reloadData={()=>{
                                                 this.reloadData()
                                             }} closeForm={(action='', formData={})=>{
-                                                console.log(action, formData)
+                                                // console.log(action, formData)
                                                 if(action === ''){
                                                     this.setState({viewdialog: false, selectedBusiness: {}})
                                                 }

@@ -91,7 +91,7 @@ module.exports = class EmployeeController extends baseController{
 
     save = async(req,res,next)=>{
         var input = req.input;
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.mEmployeeStatus = '1';
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate();
@@ -99,7 +99,7 @@ module.exports = class EmployeeController extends baseController{
         input.updatedBy= req.userData.id;
         input.updatedDate = this.getDate(); 
 
-        console.log(input)
+        // console.log(input)
         if(input.mEmployeeEmail !== ''){
             this.readOne({where:{email: input.mEmployeeEmail}}, 'email_index').then(async (emailRecord)=>{
                 if(emailRecord !== null && emailRecord.recordType === 'CN'){
@@ -113,7 +113,7 @@ module.exports = class EmployeeController extends baseController{
                 }
                 else if(emailRecord !== null &&  emailRecord.recordType === 'M'){
                     var userdetails = await this.getUserDetailByEmail(input.mEmployeeEmail, emailRecord, res);
-                    console.log(input.mEmployeeEmail, userdetails)
+                    // console.log(input.mEmployeeEmail, userdetails)
                     if(input.mEmployeeRole === 'Admin'){
                         var options = {where:{ 
                             mEmployeeRole: {
@@ -175,7 +175,7 @@ module.exports = class EmployeeController extends baseController{
         var options = {
             where:{
                 mEmployeePasscode: input.mEmployeeCode,
-                merchantId: req.userData.merchantId
+                merchantId: req.deviceDetails.merchantId
             }
         }
         if(input.id){
@@ -184,7 +184,7 @@ module.exports = class EmployeeController extends baseController{
                     [Sequelize.Op.ne]: input.id
                 },
                 mEmployeePasscode: input.mEmployeeCode,
-                merchantId: req.userData.merchantId
+                merchantId: req.deviceDetails.merchantId
             }
         }
 
@@ -203,7 +203,7 @@ module.exports = class EmployeeController extends baseController{
             this.update('merchantEmployees', input, {where:{mEmployeeId :input.id}}).then(resp=>{
                 this.update('mEmpRefMerchant', {mEmployeePasscode: input.mEmployeeCode, mEmployeeRole: input.mEmployeeRole, 
                     updatedBy: req.userData.id,
-                    updatedDate: this.getDate()}, {where:{mEmployeeId: input.id, merchantId: req.userData.merchantId}}).then(resp=>{
+                    updatedDate: this.getDate()}, {where:{mEmployeeId: input.id, merchantId: req.deviceDetails.merchantId}}).then(resp=>{
                     this.sendResponse({message:"Updated sucessfully"}, res, 200)
                 })
             })
@@ -211,7 +211,7 @@ module.exports = class EmployeeController extends baseController{
         else{
             this.create('merchantEmployees', input).then(resp=>{
                 var refinput = {
-                    merchantId: req.userData.merchantId,
+                    merchantId: req.deviceDetails.merchantId,
                     mEmployeeId: resp.mEmployeeId,
                     mEmployeeRole: input.mEmployeeRole,
                     mEmployeePasscode: input.mEmployeeCode,
@@ -248,7 +248,7 @@ module.exports = class EmployeeController extends baseController{
                     createdDate: this.getDate(),
                     updatedDate: this.getDate()
                 } 
-                this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.userData.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
+                this.update('mEmployeeCommission', {status:0, updatedDate: this.getDate(), updatedBy: req.userData.id}, {where:{merchantId: req.deviceDetails.merchantId, mEmployeeId: empInput.mEmployeeId, status:1}}).then(r=>{
                     this.create('mEmployeeCommission', empInput).then(r=>{
                         this.sendResponse({message:"Saved successfully."}, res, 200);
                     })
@@ -270,32 +270,32 @@ module.exports = class EmployeeController extends baseController{
                 `id`
             ],
             [
-                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
                 `mEmployeeRoleName`
             ],
             [
-                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                 `mEmployeeRole`
             ],
             [
-                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                 `mEmployeeStatus`
             ],
             [
-                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                 `mEmployeeCode`
             ],
         ]
     },
         where:{
              mEmployeeId: {
-                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.userData.merchantId+"' and roleName != 'Owner'))")
+                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.deviceDetails.merchantId+"' and roleName != 'Owner'))")
             }
         },
         include:[
             {
                 model:this.models.mEmployeeCommission,
-                where:{status:1, merchantId: req.userData.merchantId},
+                where:{status:1, merchantId: req.deviceDetails.merchantId},
                 required: false 
             }
         ]
@@ -314,32 +314,32 @@ module.exports = class EmployeeController extends baseController{
                 `id`
             ],
             [
-                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
                 `mEmployeeRoleName`
             ],
             [
-                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                 `mEmployeeRole`
             ],
             [
-                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                 `mEmployeeStatus`
             ],
             [
-                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                 `mEmployeeCode`
             ],
         ]
     },
         where:{
              mEmployeeId: {
-                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.userData.merchantId+"' )")
+                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
             }
         },
         include:[
             {
                 model:this.models.mEmployeeCommission,
-                where:{status:1, merchantId: req.userData.merchantId},
+                where:{status:1, merchantId: req.deviceDetails.merchantId},
                 required: false 
             }
         ]
@@ -351,7 +351,7 @@ module.exports = class EmployeeController extends baseController{
     updateEmployee = async(req, res,next)=>{ 
         const input = req.input; 
         const user = req.userData;  
-        console.log(input)
+        // console.log(input)
         var data = {
             mEmployeeStatus: input.mEmployeeStatus,
             updatedBy: user.id,
@@ -369,7 +369,7 @@ module.exports = class EmployeeController extends baseController{
                 if(results !== null){
                     var userData = Object.assign({}, results.dataValues||results); 
                     let payload = { ...userData  }; 
-                    console.log(payload)
+                    // console.log(payload)
                     let token = jwt.sign(payload, jwtOptions.secretOrKey); 
                     return this.sendResponse({  token:token, data: userData}, res, 200);
                 }

@@ -37,10 +37,10 @@ const database = new Sequelize({
   database
   .authenticate()
   .then(function (err) {
-    console.log("Connection established."); 
+    // console.log("Connection established."); 
   })
   .catch(function (err) {
-    console.log("Unable to connect to database: ", err);
+    // console.log("Unable to connect to database: ", err);
   });
 
 const smtp = {

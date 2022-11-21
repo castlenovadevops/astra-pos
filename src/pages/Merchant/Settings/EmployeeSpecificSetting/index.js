@@ -59,7 +59,7 @@ export default class EmployeeSetting extends React.Component{
             }
             schemaprops.push(field);
             if(i === properties.length-1){ 
-                console.log(schemaprops)
+                // console.log(schemaprops)
                 schema.properties = schemaprops; 
                 schema.force = true; 
                 this.setState({schema: schema},()=>{
@@ -98,8 +98,8 @@ export default class EmployeeSetting extends React.Component{
                     schemaobj.properties = props; 
                     schemaobj.force = true;
                     this.setState({schema: schemaobj},()=>{ 
-                        console.log("SCHEMA::::")
-                        console.log(this.state.schema)
+                        // console.log("SCHEMA::::")
+                        // console.log(this.state.schema)
                     })
                 }
             })

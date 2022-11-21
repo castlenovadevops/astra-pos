@@ -32,7 +32,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
 
   useEffect(() => {
     if (isOpenSidebar) {
-        console.log("effect called")
+        // console.log("effect called")
       onCloseSidebar();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

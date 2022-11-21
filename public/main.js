@@ -45,7 +45,7 @@ const createWindow = () => {
     },
   });  
   mainWindow.webContents.on('did-finish-load', function() {
-    console.log("public-did-finish-load")
+    // console.log("public-did-finish-load")
     // splash.destroy();
     mainWindow.show();
   });  
@@ -67,16 +67,16 @@ const createWindow = () => {
   } 
   /**app quit */
   mainWindow.on('quit', function(e){
-    console.log("before-quit")
+    // console.log("before-quit")
   }); 
   mainWindow.once('ready-to-show', () => {
-    console.log("public-ready-to-show")
+    // console.log("public-ready-to-show")
     
   }); 
 
   mainWindow.on('close', function(e){
     // db.close();
-    console.log("Closed event");
+    // console.log("Closed event");
   })
 
 };  

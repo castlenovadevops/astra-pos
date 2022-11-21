@@ -44,8 +44,8 @@ var routesController = new routes()
 routesController.app = app; 
 routesController.initialize().then(router=>{
   app.use('/api/v1', router); 
-  console.log(this.router);
-  app.listen(1818, () => console.log(`Express server listening on port 1818`));
+  // console.log(this.router);
+  app.listen(1818, () => // console.log(`Express server listening on port 1818`));
 
   module.exports = {app};
 })

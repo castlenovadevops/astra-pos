@@ -39,12 +39,12 @@ app.get('*', function (req, res,next) {
 });
 
 app.post('*', function (req, res,next) {
-  console.log("POST",req.url);
+  // console.log("POST",req.url);
   next();
 }); 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  // console.log(req)
+  // // console.log(req)
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -62,11 +62,11 @@ app.use(function(err, req, res) {
 });
 
 process.on("uncaughtException",function(err){
-  console.log("Error occured an caught in uncaughtException",err);
+  // console.log("Error occured an caught in uncaughtException",err);
 });
 
 process.on('unhandledRejection', function(reason, p){
-    console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    // console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
     //process.exit();
     // application specific logging here
 });
@@ -75,7 +75,7 @@ var running_sync_flag = 0
 
 //Whenever someone connects this gets executed
 io.on('connection', function(socket) {
-  console.log('A user connected');
+  // console.log('A user connected');
 
   running_sync_flag = 0
   socket.on('startSync', function(){ 
@@ -87,17 +87,17 @@ io.on('connection', function(socket) {
     socket.emit('stopSync',{data:'success'})
   })
   socket.on('refreshTechnicians', function(){
-    console.log("REFRESH SOCKET CALLED")
+    // console.log("REFRESH SOCKET CALLED")
     socket.emit('refreshTechnicians',{data:'success'})
   })
 
   //Whenever someone disconnects this piece of code executed
   socket.on('disconnect', function () {
-     console.log('A user disconnected');
+     // console.log('A user disconnected');
   });
 });
   
 http.listen(appPort, function() {
-    console.log('app listening on port ' + appPort.toString());
+    // console.log('app listening on port ' + appPort.toString());
 });
  

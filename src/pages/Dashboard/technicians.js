@@ -27,10 +27,10 @@ export default class Technicians extends React.Component{
     }
 
     componentDidMount(){
-        console.log("SOCKETTTTTT")
-        console.log(this.socket)
+        // console.log("SOCKETTTTTT")
+        // console.log(this.socket)
         this.socket.on("refreshTechnicians", data => {
-            console.log("SOCKET REFRESHHHHH")
+            // console.log("SOCKET REFRESHHHHH")
             this.getData();
         });
 

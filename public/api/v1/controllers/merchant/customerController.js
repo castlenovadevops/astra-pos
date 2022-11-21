@@ -26,14 +26,14 @@ module.exports = class CustomerController extends baseController{
 
     saveCustomer = async(req,res,next)=>{
         var input = req.input;
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.mCustomerStatus = 1;
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate();
 
         input.updatedBy= req.userData.id;
         input.updatedDate = this.getDate();
-        console.log(input)
+        // console.log(input)
         if(input.id != undefined){
             this.update('mCustomers', input, {where:{mCustomerId :input.id}}).then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
@@ -55,7 +55,7 @@ module.exports = class CustomerController extends baseController{
             `id`
         ], ]},
         where:{
-            merchantId:req.userData.merchantId
+            merchantId:req.deviceDetails.merchantId
         }
         }, 'mCustomers')
         this.sendResponse({ data: customers}, res, 200);

@@ -42,7 +42,7 @@ export default class CommissionPayment extends React.Component{
     }
     componentDidMount(){  
         this.setState({schema: schema},()=>{
-            console.log(this.state.schema)
+            // console.log(this.state.schema)
             this.reloadData();
         })
     }
@@ -75,7 +75,7 @@ export default class CommissionPayment extends React.Component{
             }
             schemaprops.push(field);
             if(i === properties.length-1){ 
-                console.log(schemaprops)
+                // console.log(schemaprops)
                 schema.properties = schemaprops; 
                 schema.force = true; 
                 this.setState({schema: schema},()=>{
@@ -135,8 +135,8 @@ export default class CommissionPayment extends React.Component{
                   })
                 schema.properties = props; 
                 this.setState({schema: schema,selectedcommission: data, isLoading: false},()=>{
-                   console.log("SCHEMA")
-                    console.log(this.state.schema)
+                   // console.log("SCHEMA")
+                    // console.log(this.state.schema)
                 })
             }
         })

@@ -29,7 +29,7 @@ export default class TicketTopBar extends React.Component{
     }
 
     openTechnician(){
-        console.log("OPEN TECH 2")
+        // console.log("OPEN TECH 2")
         this.setState({selectTechnicianPopup: true})
     } 
 
@@ -38,7 +38,7 @@ export default class TicketTopBar extends React.Component{
     }
 
     onSelectTechnician(obj){ 
-        console.log("TOPBAR CALL")
+        // console.log("TOPBAR CALL")
         this.props.data.setTicketOwner(obj); 
         this.setState({selectTechnicianPopup : false})
     }
@@ -65,13 +65,13 @@ export default class TicketTopBar extends React.Component{
 
     render(){
         const actionbuttons=<Button onClick={()=>{
-            console.log("BUTTON CLICKED")
+            // console.log("BUTTON CLICKED")
         }}>Click</Button>
         return  <div style={{height:'100%', width:'100%'}}>
                     <Grid className='fullHeightTicket padd20' item xs={12} spacing={2}   alignItems="baseline"> 
                         <Grid item xs={9}  style={{display:'flex'}} alignItems="center">
                                 <div className={this.props.data.isDisabled ? "topbtn disabled" : "topbtn" } onClick={()=>{
-                                            console.log("OPEN TECH")
+                                            // console.log("OPEN TECH")
                                         if(!this.props.data.isDisabled) {
                                             this.openTechnician()
                                         }

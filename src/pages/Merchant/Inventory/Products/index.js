@@ -80,7 +80,7 @@ export default class ProductService extends React.Component{
 
 
     onStateChange(values){
-        console.log("STATE CHANGE CALLED")
+        // console.log("STATE CHANGE CALLED")
         var schema = Object.assign({}, this.state.schema);
         var properties = Object.assign([], this.state.schema.properties);
         var props=[];
@@ -139,7 +139,7 @@ export default class ProductService extends React.Component{
     updateRecord(row, status){ 
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/product/update`, {mProductStatus: status, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -243,14 +243,14 @@ export default class ProductService extends React.Component{
                 this.setState({defaultTaxes: taxids})
             })
             this.httpManager.postRequest(`merchant/product/get`,{data:"GET PRODUCT"}).then(response=>{ 
-                console.log(response.data)
+                // console.log(response.data)
                 this.setCategory(0, response.data, [])
             })
         })
     }
 
     setCategory(idx, products, finalResult){
-        console.log("CATEGORU")
+        // console.log("CATEGORU")
         if(idx < products.length){
             var obj = Object.assign({}, products[idx]);
             if(products[idx].mProductCategories.length > 0){
@@ -269,7 +269,7 @@ export default class ProductService extends React.Component{
                 })
             }
             else{
-                console.log("ELSE COND", idx)
+                // console.log("ELSE COND", idx)
                 if(finalResult[idx]){
                     finalResult[idx]= obj
                 }
@@ -280,14 +280,14 @@ export default class ProductService extends React.Component{
             }
         }
         else{
-            console.log(finalResult)
+            // console.log(finalResult)
             this.setTax(0, products, finalResult)
         }
     }
 
 
     setTax(idx, products, finalResult){
-        console.log("TAX")
+        // console.log("TAX")
         if(idx < products.length){
             var obj = Object.assign({}, finalResult[idx]);
             if(products[idx].mProductTaxes.length > 0){

@@ -52,7 +52,7 @@ module.exports = class RoutesController{
             })
         }
         else{
-            console.log("ALL API REGISTEREd")
+            // console.log("ALL API REGISTEREd")
             
             this.app.use('/static/css',express.static(path.join(__dirname,'../../../../static/css')));
             this.app.use('/static/js',express.static(path.join(__dirname,'../../../../static/js')));
@@ -72,7 +72,7 @@ module.exports = class RoutesController{
 
             this.app._router.stack.forEach(function(r){
   if (r.route && r.route.path){
-    console.log(r.route.path)
+    // console.log(r.route.path)
   }
 })
             resolve("success");

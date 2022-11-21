@@ -73,12 +73,12 @@ const corsOptions ={
             })
         }
         else{
-            console.log("ALL API REGISTEREd", router)  
+            // console.log("ALL API REGISTEREd", router)  
         }
     }
 
    function initializeRoutes(idx, routes, index ){
-    console.log("IDX", idx)
+    // console.log("IDX", idx)
         if(idx < routes.length){
             var controller = contollers[index];
             var route = Object.assign({},routes[idx])
@@ -101,7 +101,7 @@ const corsOptions ={
                 }
             }
             else{
-                console.log("ELSE CONN 92 D")
+                // console.log("ELSE CONN 92 D")
             }
             initializeRoutes(idx+1, routes, index);
         }

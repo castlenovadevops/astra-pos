@@ -26,7 +26,7 @@ export default class FSelect extends React.Component{
 
           this.httpManager.postRequest(this.props.data,{data:"SELECT COMPONENT"}).then(response=>{
             var options = []; 
-            console.log(response);
+            // console.log(response);
             response.data.forEach(el=>{ 
               options.push({
                 label:this.getLabel(el),
@@ -35,7 +35,7 @@ export default class FSelect extends React.Component{
               this.setState({options: options})
             })
           }).catch(e=>{
-            console.log("ERROR::::", e)
+            // console.log("ERROR::::", e)
           })
         }
     }
@@ -48,7 +48,7 @@ export default class FSelect extends React.Component{
     getValue(item){  
         var valuekey = this.props.dataformat !== undefined ? this.props.dataformat.value : 'value';
         if(valuekey === 'all'){
-          console.log(item)
+          // console.log(item)
           return item;
         }
         return item[valuekey];

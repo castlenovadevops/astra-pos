@@ -33,7 +33,7 @@ module.exports = class DefaultDiscountController extends baseController{
     save = async(req,res,next)=>{
         var input = req.input;
 
-        input.merchantId = req.userData.merchantId;
+        input.merchantId = req.deviceDetails.merchantId;
         input.status = 1;
         input.createdBy= req.userData.id;
         input.createdDate = this.getDate();
@@ -41,7 +41,7 @@ module.exports = class DefaultDiscountController extends baseController{
         input.updatedBy= req.userData.id;
         input.updatedDate = this.getDate();
         delete input["id"]
-        this.update('mDefaultDiscountDivision', {status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{merchantId: req.userData.merchantId}}).then(resa=>{
+        this.update('mDefaultDiscountDivision', {status:0, updatedBy: req.userData.id, updatedDate: this.getDate()}, {where:{merchantId: req.deviceDetails.merchantId}}).then(resa=>{
             this.create('mDefaultDiscountDivision', input).then(resp=>{
                 this.sendResponse({message:"Saved sucessfully"}, res, 200)
             }) 
@@ -52,10 +52,10 @@ module.exports = class DefaultDiscountController extends baseController{
         let commission = await this.readAll({
             where:{
                 "status": "1",
-                merchantId: req.userData.merchantId
+                merchantId: req.deviceDetails.merchantId
             },
         }, 'mDefaultDiscountDivision')
-        console.log(commission)
+        // console.log(commission)
         this.sendResponse({ data: commission}, res, 200);
     }
 

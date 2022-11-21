@@ -77,7 +77,7 @@ export default class Customer extends React.Component{
     updateRecord(row, status){ 
         this.setState({isLoading: true}, ()=>{
             this.httpManager.postRequest(`merchant/customers/updateCustomer`, {mCustomerStatus: status, id: row.id}).then(res=>{
-                console.log(res.message);
+                // console.log(res.message);
                 this.setState({isLoading: false});
                 this.reloadData(res.message);
             })
@@ -92,7 +92,7 @@ export default class Customer extends React.Component{
         this.setState({addForm: false})
     }
     getActions(params){
-        console.log("params",params);
+        // console.log("params",params);
         var detail = window.localStorage.getItem('userdetail')
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
@@ -149,7 +149,7 @@ export default class Customer extends React.Component{
         })
     }
     reloadData(msg=''){
-        console.log("111")
+        // console.log("111")
         if(msg !== ''){ 
             toast.dismiss();
             toast.success(msg, {
@@ -165,13 +165,13 @@ export default class Customer extends React.Component{
         }
         this.setState({isLoading: true, addForm: false},()=>{
             this.httpManager.getRequest(`merchant/customers/getCustomer`).then(response=>{
-                console.log(response)
+                // console.log(response)
                 this.setState({customerlist: response.data, isLoading: false});
             })
 
             // this.httpManager.getRequest(`merchant/customers/getCustomer`).then(response=>{
             //     var data = [];
-            //     console.log("response",response.data);
+            //     // console.log("response",response.data);
             //     if(response.data.length > 0){
             //         response.data.forEach((elmt, i)=>{ 
             //             elmt.id = elmt.mCustomerId;
