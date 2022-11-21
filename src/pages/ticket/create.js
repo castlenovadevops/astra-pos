@@ -21,10 +21,75 @@ export default class CreateTicketComponent extends React.Component{
             customer_detail:{},
             selectedServices:[],
             seletedRow:-1,
-
+            defaultTaxes:[]
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
+        this.onSelectService  = this.onSelectService.bind(this);
+        this.calculateTaxForService = this.calculateTaxForService.bind(this);
+        this.calculateDiscountForService = this.calculateDiscountForService.bind(this);
     } 
+
+    onSelectService(service){
+        var obj = {
+            serviceDetail: service,
+            qty: 1,
+            originalPrice: service.price,
+            subTotal: service.price,
+            ticketservicetaxes:[],
+            ticketservicediscounts:[],
+            totalTax:0,
+            totalDiscount:0
+        }
+        if(service.mProductTaxType === 'default'){
+            obj.ticketservicetaxes = Object.assign([], this.state.defaultTaxes)
+        }
+        else{
+            obj.ticketservicetaxes = Object.assign([], service.mProductTaxes)
+        }
+        this.calculateTaxForService(obj);
+    }
+
+    calculateTaxForService(obj, i=0){
+        if(i < obj.ticketservicetaxes.length){
+            var taxdetail = obj.ticketservicetaxes[i];
+            if(taxdetail.mTaxType === 'Percentage'){
+                taxdetail["mTaxAmount"] = (taxdetail.mTaxValue/100)*obj.subTotal;
+            }
+            else{
+                taxdetail["mTaxAmount"] = taxdetail.mTaxValue;
+            }
+            obj.ticketservicetaxes[i] = taxdetail;
+            obj.totalTax = obj.totalTax+taxdetail["mTaxAmount"];
+            this.calculateTaxForService(obj, i+1);
+
+        }
+        else{
+            this.calculateDiscountForService(obj)
+        }
+    }
+
+
+    calculateDiscountForService(obj, i=0){
+        if(i < obj.ticketservicediscounts.length){ 
+            var discountdetail = obj.ticketservicediscounts[i];
+            if(discountdetail.mDiscountType === 'Percentage'){
+                discountdetail["mDiscountAmount"] = (discountdetail.mDiscountValue/100)*obj.subTotal;
+            }
+            else{
+                discountdetail["mDiscountAmount"] = discountdetail.mDiscountValue;
+            }
+            obj.ticketservicetaxes[i] = discountdetail;
+            obj.totalDiscount = obj.totalDiscount+discountdetail["mDiscountAmount"];
+            this.calculateDiscountForService(obj, i+1);
+        }
+        else{
+            var selectedservices = Object.assign([], this.state.selectedServices);
+            selectedservices.push(obj);
+            this.setState({selectedServices: selectedservices}, ()=>{
+                console.log(this.state.selected)
+            })
+        }
+    }
 
     setTicketOwner(detail){
         this.setState({selectedTech: detail})
@@ -50,6 +115,10 @@ export default class CreateTicketComponent extends React.Component{
                 
             })
         }
+
+        this.httpManager.postRequest('merchant/tax/getByType/default', {data:"TICKET"}).then(res=>{
+            this.setState({defaultTaxes: res.data})
+        })
     }
 
     render(){
@@ -84,6 +153,7 @@ export default class CreateTicketComponent extends React.Component{
                                         <ServiceSideMenu data={{
                                             selectedRow:this.state.selectedRow,
                                             selectedServices: this.state.selectedServices, 
+                                            onSelectService: this.onSelectService
                                         }} />
                                 </Grid>
                             </Grid>
