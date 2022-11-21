@@ -238,11 +238,11 @@ export default class ProductService extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/tax/getByType/default`).then(response=>{ 
+            this.httpManager.postRequest(`merchant/tax/getByType`, {type:'default'}).then(response=>{ 
                 var taxids = response.data.map(e=>e.mTaxId)
                 this.setState({defaultTaxes: taxids})
             })
-            this.httpManager.getRequest(`merchant/product/get`).then(response=>{ 
+            this.httpManager.postRequest(`merchant/product/get`,{data:"GET PRODUCT"}).then(response=>{ 
                 console.log(response.data)
                 this.setCategory(0, response.data, [])
             })

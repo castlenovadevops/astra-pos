@@ -9,6 +9,7 @@ module.exports = class CustomerController extends baseController{
     path = "/merchant/customers";
     router = express.Router();
     msgController = new MsgController();
+    routes=[];
     constructor(props){
         super(props);
     }

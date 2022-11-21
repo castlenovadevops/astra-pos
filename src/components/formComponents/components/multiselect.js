@@ -23,7 +23,7 @@ export default class FMultiSelect extends React.Component{
             this.setState({options: this.props.data})
         }
         else if(this.props.data !== ''){
-          this.httpManager.getRequest(this.props.data).then(response=>{
+          this.httpManager.postRequest(this.props.data,{data:"MULTI SELECT COMPonent"}).then(response=>{
             var options = [];  
             response.data.forEach(el=>{ 
               console.log(el)

@@ -148,7 +148,7 @@ export default class Category extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/category/get`).then(response=>{
+            this.httpManager.postRequest(`merchant/category/get`, {data:"GET CATEGORY"}).then(response=>{
                 console.log(response)
                 this.setState({categorylist: response.data, isLoading: false});
             })

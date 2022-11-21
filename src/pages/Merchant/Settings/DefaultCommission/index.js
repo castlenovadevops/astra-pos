@@ -100,7 +100,7 @@ export default class CommissionPayment extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/defaultcommission/get`).then(response=>{ 
+            this.httpManager.postRequest(`merchant/defaultcommission/get`,{data:"GET COMMISSION"}).then(response=>{ 
                 // this.openEdit(response.data); 
                 if(response.data.length > 0){
                     this.setState({selectedcommission: response.data[0] }, ()=>{

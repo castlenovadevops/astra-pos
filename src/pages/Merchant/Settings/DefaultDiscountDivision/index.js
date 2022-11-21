@@ -69,7 +69,7 @@ export default class DefaultDiscountDivision extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/defaultdiscount/get`).then(response=>{
+            this.httpManager.postRequest(`merchant/defaultdiscount/get`,{data:"GET DISCOUNT DIVISION"}).then(response=>{
                 if(response.data.length > 0){
                     this.setState({selectedDiscount: response.data[0] }, ()=>{
                         this.openEdit(this.state.selectedDiscount)

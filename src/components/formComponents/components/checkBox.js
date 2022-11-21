@@ -23,7 +23,7 @@ export default class FCheckBox extends React.Component{
         }
         else if(this.props.data !== ''){ 
 
-          this.httpManager.getRequest(this.props.data).then(response=>{
+          this.httpManager.postRequest(this.props.data,{data:"CHECKBOX COMPONENT"}).then(response=>{
             var options = [];  
             response.data.forEach(el=>{ 
               options.push({

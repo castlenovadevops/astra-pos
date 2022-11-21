@@ -9,6 +9,7 @@ module.exports = class DiscountController extends baseController{
     path = "/merchant/discounts";
     router = express.Router();
     msgController = new MsgController();
+    routes=[];
     constructor(props){
         super(props);
     }

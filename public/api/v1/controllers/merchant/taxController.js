@@ -30,9 +30,21 @@ module.exports = class RegistrationController extends baseController{
                     authorization:"authorizationAuth"
                 },
                 {
-                    path:this.path+"/getByType/:type",
+                    path:this.path+"/getByType/",
                     type:"post",
                     method: "getByType",
+                    authorization:"authorizationAuth"
+                },
+                {
+                    path:this.path+"/getByType/default",
+                    type:"post",
+                    method: "getDefaulttax",
+                    authorization:"authorizationAuth"
+                },
+                {
+                    path:this.path+"/getByType/all",
+                    type:"post",
+                    method: "getAlltax",
                     authorization:"authorizationAuth"
                 },
                 {
@@ -102,34 +114,95 @@ module.exports = class RegistrationController extends baseController{
         })
     }
     getByType= async (req,res,next)=>{ 
-        // var type = req.params.type;
-        // var where = {
-        //     merchantId: req.userData.merchantId,
-        //     mTaxStatus:{
-        //         [Sequelize.Op.ne]:2
-        //     },
-        // }
-        // if(type === 'default'){
-        //     where = {
-        //         merchantId: req.userData.merchantId,
-        //         mTaxStatus:{
-        //             [Sequelize.Op.ne]:2
-        //         },
-        //         isDefault:1
-        //     }
-        // }
-        // let tax = await this.readAll({where: where, order: [
-        //     ['createdDate','ASC']
-        // ],
-        // // attributes:{include: [ [
-        // //     Sequelize.col('mTaxId'),
-        // //     `id`
-        // // ], ]}
-        // }, 'mTax')
+        var type = req.input.type;
+        var where = {
+            merchantId: req.userData.merchantId,
+            mTaxStatus:{
+                [Sequelize.Op.ne]:2
+            },
+        }
+        if(type === 'default'){
+            where = {
+                merchantId: req.userData.merchantId,
+                mTaxStatus:{
+                    [Sequelize.Op.ne]:2
+                },
+                isDefault:1
+            }
+        }
+        let tax = await this.readAll({where: where, order: [
+            ['createdDate','ASC']
+        ],
+        // attributes:{include: [ [
+        //     Sequelize.col('mTaxId'),
+        //     `id`
+        // ], ]}
+        }, 'mTax')
         // var tax=[];
         // console.log("TAX SERVICE CALLED::::::")
-        // this.sendResponse({ data: tax}, res, 200);
-        res.send({statsu:200, data:"SUCCESS"})
+        this.sendResponse({ data: tax}, res, 200);
+        // res.send({statsu:200, data:"SUCCESS"})
+    }
+
+    getDefaulttax= async (req,res,next)=>{ 
+        var type = "default";
+        var where = {
+            merchantId: req.userData.merchantId,
+            mTaxStatus:{
+                [Sequelize.Op.ne]:2
+            },
+        }
+        if(type === 'default'){
+            where = {
+                merchantId: req.userData.merchantId,
+                mTaxStatus:{
+                    [Sequelize.Op.ne]:2
+                },
+                isDefault:1
+            }
+        }
+        let tax = await this.readAll({where: where, order: [
+            ['createdDate','ASC']
+        ],
+        // attributes:{include: [ [
+        //     Sequelize.col('mTaxId'),
+        //     `id`
+        // ], ]}
+        }, 'mTax')
+        // var tax=[];
+        // console.log("TAX SERVICE CALLED::::::")
+        this.sendResponse({ data: tax}, res, 200);
+        // res.send({statsu:200, data:"SUCCESS"})
+    }
+    getAlltax= async (req,res,next)=>{ 
+        var type = "all";
+        var where = {
+            merchantId: req.userData.merchantId,
+            mTaxStatus:{
+                [Sequelize.Op.ne]:2
+            },
+        }
+        if(type === 'default'){
+            where = {
+                merchantId: req.userData.merchantId,
+                mTaxStatus:{
+                    [Sequelize.Op.ne]:2
+                },
+                isDefault:1
+            }
+        }
+        let tax = await this.readAll({where: where, order: [
+            ['createdDate','ASC']
+        ],
+        // attributes:{include: [ [
+        //     Sequelize.col('mTaxId'),
+        //     `id`
+        // ], ]}
+        }, 'mTax')
+        // var tax=[];
+        // console.log("TAX SERVICE CALLED::::::")
+        this.sendResponse({ data: tax}, res, 200);
+        // res.send({statsu:200, data:"SUCCESS"})
     }
 
     getTax = async (req,res,next)=>{ 

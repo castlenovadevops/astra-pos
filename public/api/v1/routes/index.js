@@ -78,6 +78,7 @@ const corsOptions ={
     }
 
    function initializeRoutes(idx, routes, index ){
+    console.log("IDX", idx)
         if(idx < routes.length){
             var controller = contollers[index];
             var route = Object.assign({},routes[idx])

@@ -300,7 +300,7 @@ export default class Tax extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/tax/get`).then(response=>{
+            this.httpManager.postRequest(`merchant/tax/get`,{data:"GEGT TAX"}).then(response=>{
                 console.log("RESPONSE")
                 console.log(response)
                 this.setState({taxlist: response.data, isLoading: false, addForm: false});

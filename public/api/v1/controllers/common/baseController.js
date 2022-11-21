@@ -9,7 +9,9 @@ const sequelize = require('sequelize');
 const settings = require('../../config/settings');
 const db = settings.database;
 const pkfields = {
-    'mTax':"id"
+    'mTax':"id",
+    "mCategory":"id",
+    "mProducts":"id"
 }
 
 module.exports = class baseController extends MsgController{

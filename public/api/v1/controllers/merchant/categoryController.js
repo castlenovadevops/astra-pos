@@ -9,6 +9,7 @@ module.exports = class CategoryController extends baseController{
     path = "/merchant/category";
     router = express.Router();
     msgController = new MsgController(); 
+    routes = [];
     constructor(props){
         super(props);
     }

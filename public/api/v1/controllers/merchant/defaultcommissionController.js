@@ -21,8 +21,8 @@ module.exports = class DefaultCommissionController extends baseController{
                     authorization:'authorizationAuth'
                 }, 
             ]
-            this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
-            this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
+            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 
+            // this.router.get(this.path+"/get", authenticate.authorizationAuth, this.get); 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     }  

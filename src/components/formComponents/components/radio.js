@@ -22,7 +22,7 @@ export default class FRadio extends React.Component{
         }
         else if(this.props.data !== ''){ 
 
-          this.httpManager.getRequest(this.props.data).then(response=>{
+          this.httpManager.postRequest(this.props.data,{data:"RADION COMPONENT"}).then(response=>{
             var options = [];  
             response.data.forEach(el=>{ 
               options.push({

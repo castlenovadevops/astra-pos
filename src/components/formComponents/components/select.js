@@ -24,7 +24,7 @@ export default class FSelect extends React.Component{
         }
         else if(this.props.data !== ''){ 
 
-          this.httpManager.getRequest(this.props.data).then(response=>{
+          this.httpManager.postRequest(this.props.data,{data:"SELECT COMPONENT"}).then(response=>{
             var options = []; 
             console.log(response);
             response.data.forEach(el=>{ 
