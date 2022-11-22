@@ -22,7 +22,14 @@ module.exports = class TicketController extends baseController{
                     type:"post",
                     method: "getTicketcode",
                     authorization:'authorizationAuth'
-                }
+                },
+                {
+                    path:this.path+"/void",
+                    type:"post",
+                    method: "voidTicket",
+                    authorization:'authorizationAuth'
+                },
+                
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
@@ -88,5 +95,19 @@ module.exports = class TicketController extends baseController{
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
         })
+    }
+
+    voidTicket= async(req,res, next)=>{
+        let ticket = await this.readOne({where:{ticketId: req.input.data}}, 'tickets')
+        if(ticket.dataValues.isDraft === 0 || ticket.isDraft===0){
+            this.delete('tickets',{where:{ticketId: req.input.ticketId}}).then(resp=>{
+                this.sendResponse({message:"Voided successfully."}, res, 200);
+            })
+        }
+        else{
+            this.update('tickets', {ticketStatus:'Voided'},{where: {ticketId: req.input.ticketId}}).then(resp=>{
+                this.sendResponse({message:"Voided successfully."}, res, 200);
+            })
+        }
     }
 }

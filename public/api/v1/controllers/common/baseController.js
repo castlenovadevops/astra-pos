@@ -111,13 +111,13 @@ module.exports = class baseController extends MsgController{
             await this.models[model].update({[statusfield]: 2}, where).then(async (r)=>{
                 var input = Object.assign({}, data);
                 delete input[pkfield];
+                console.log("SAVE INPUT")
+                console.log(input)
                 let results = await this.models[model].create(input);
-                console.log("RESULTS TOBE SYNCED")
-                console.log(results)
                 if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){ 
                     var input = {
                         syncTable: model,
-                        tableRowId: results[pkfield],
+                        tableRowId: data[pkfield],
                         merchantId: data["merchantId"] || ''
                     }
                     await this.models["toBeSynced"].create(input);

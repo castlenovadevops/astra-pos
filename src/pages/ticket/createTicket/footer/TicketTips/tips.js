@@ -1,29 +1,40 @@
 import React from 'react';
-import { Grid, Typography, Button,Box,  InputAdornment, FormControl, FormLabel, FormControlLabel, RadioGroup, Radio} from '@material-ui/core/';
+import { Grid, Typography, Button,Box,  InputAdornment, FormControl, FormControlLabel, RadioGroup, Radio} from '@material-ui/core/';
 import TextField from '@mui/material/TextField'; 
 
-import NumberFormat from "react-number-format";
-function NumberFormatCustom(props) {
-  const { inputRef, onChange, ...other } = props;
+import {NumericFormat} from "react-number-format";
 
-  return (
-    <NumberFormat
-      {...other}
-      maxLength="5" 
-      getInputRef={inputRef}
-      onValueChange={values => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value
-          }
-        });
-      }}
-      thousandSeparator
-      // isNumericString
-    />
-  );
-}
+function NumberFormatCustom(props) {
+    const { inputRef, onChange, ...other } = props;
+  
+    return (
+      <NumericFormat
+        {...other}
+        maxLength={props.maxLength} 
+        getInputRef={inputRef}
+        onChange={
+            event =>{
+                  onChange({
+                        target: {
+                        name: props.name,
+                        value: event.target.value
+                        }
+                    });
+            }
+        }
+        // onValueChange={values => {
+        //   onChange({
+        //     target: {
+        //       name: props.name,
+        //       value: values.value
+        //     }
+        //   });
+        // }}
+        allowLeadingZeros thousandSeparator="," 
+        // isNumericString
+      />
+    );
+  }
 
 class Tips extends React.Component {
     constructor(props) {
@@ -33,7 +44,7 @@ class Tips extends React.Component {
             tips_type:'equal',
             isemp_selected: false,
             individual_tips_amount:[],
-            service_selected: [],
+            selectedServices: [],
             selected_emp: [{service:{},tips_amt:0}],
             tips_percent: 0,
             total_tips: 0,
@@ -45,21 +56,17 @@ class Tips extends React.Component {
         this.saveTips = this.saveTips.bind(this)
         this.handleemp_selected = this.handleemp_selected.bind(this)
     }
-    componentDidMount(){ 
-
-       
-       
-
-        if(this.props.service_selected !== undefined){
-            this.setState({service_selected : this.props.service_selected, total_tips : this.props.total_tips, tips_type:this.props.tips_type, tips_percent:this.props.tips_percent});
+    componentDidMount(){  
+        if(this.props.selectedServices !== undefined){
+            this.setState({selectedServices : this.props.selectedServices, total_tips : this.props.total_tips, tips_type:this.props.tips_type, tips_percent:this.props.tips_percent});
             var indtips =[];
             // console.log(this.props)
-            this.props.service_selected.forEach((e,idx)=>{
+            this.props.selectedServices.forEach((e,idx)=>{
                 var obj = Object.assign({}, e); 
                 if(obj["tips_amount"] === undefined)
                     obj["tips_amount"] = 0;
                 indtips.push(obj);
-                if(idx === this.props.service_selected.length-1){
+                if(idx === this.props.selectedServices.length-1){
                     if(this.props.total_tips > 0){
                         var percent = this.props.total_tips
                         if(this.props.tips_type === 'percent'){
@@ -69,7 +76,7 @@ class Tips extends React.Component {
                             this.calculateTips();
                         });
                     }
-                    this.setState({service_selected:indtips},function(){
+                    this.setState({selectedServices:indtips},function(){
                         // this.setState({tips_type: 'equal'});
                     })
                 }
@@ -81,20 +88,7 @@ class Tips extends React.Component {
             },2000)
         }
 
-    } 
-
-
-    getEmployeeName(id){
-        var empname = '';
-        for(var i=0;i<this.props.employee_list.length;i++){
-            var obj = this.props.employee_list[i];
-            if(obj["id"] === id){
-                empname = obj['firstName']+" "+obj['lastName'];
-            }
-        }
-        return empname;
-    }
-
+    }  
     handlechangeTips_percent(e){
         if((e.target.value.match( "^.{"+6+","+6+"}$")===null)) {
         this.resetTips();
@@ -107,12 +101,12 @@ class Tips extends React.Component {
     resetTips(){
         var amtfields = [];
         this.setState({tips_amount:0, tips_percent:0, total_tips:0});
-        //console.log("reset tips",this.state.service_selected);
-        this.state.service_selected.forEach((elmt, i)=>{
+        //console.log("reset tips",this.state.selectedServices);
+        this.state.selectedServices.forEach((elmt, i)=>{
             elmt["tips_amount"] = 0;
             amtfields.push(elmt);
-            if(i === this.state.service_selected.length-1){
-                this.setState({service_selected:amtfields });
+            if(i === this.state.selectedServices.length-1){
+                this.setState({selectedServices:amtfields });
             }
         });
     }
@@ -120,13 +114,13 @@ class Tips extends React.Component {
     calculateTips(){ 
         console.log("caliling")
         if(this.state.tips_type === 'equal'){
-            var amount =( this.state.tips_amount / this.state.service_selected.length).toFixed(2);
+            var amount =( this.state.tips_amount / this.state.selectedServices.length).toFixed(2);
             var amtfields = [];
-            this.state.service_selected.forEach((elmt, i)=>{                
-                elmt["tips_amount"] = amount;
+            this.state.selectedServices.forEach((elmt, i)=>{                
+                elmt["totalTips"] = amount;
                 amtfields.push(elmt);
-                if(i === this.state.service_selected.length-1){
-                    this.setState({service_selected:amtfields }, ()=>{
+                if(i === this.state.selectedServices.length-1){
+                    this.setState({selectedServices:amtfields }, ()=>{
                         this.calcaulateTotal()
                     });
                 }
@@ -136,18 +130,18 @@ class Tips extends React.Component {
             var amtfields = [];
             var totalamt = 0;
             var totaltipsamt = 0
-            this.state.service_selected.forEach((elmt, i)=>{ 
+            this.state.selectedServices.forEach((elmt, i)=>{ 
                 totalamt+=Number(elmt.perunit_cost)
 
             })
 
-            this.state.service_selected.forEach((elmt, i)=>{ 
+            this.state.selectedServices.forEach((elmt, i)=>{ 
                 var amount = ( (elmt.perunit_cost/totalamt) * (this.state.tips_percent)).toFixed(2);
-                elmt["tips_amount"] = amount;
+                elmt["totalTips"] = amount;
                 amtfields.push(elmt);
                 totaltipsamt+= ( (elmt.perunit_cost/totalamt) * (this.state.tips_percent))
-                if(i === this.state.service_selected.length-1){
-                    this.setState({service_selected:amtfields, total_tips:Number(totaltipsamt).toFixed(2) }, ()=>{
+                if(i === this.state.selectedServices.length-1){
+                    this.setState({selectedServices:amtfields, total_tips:Number(totaltipsamt).toFixed(2) }, ()=>{
                         this.calcaulateTotal()
                     });
                 }
@@ -160,12 +154,12 @@ class Tips extends React.Component {
         else{
             var amtfields = [];  
 
-            this.state.service_selected.forEach((elmt, i)=>{ 
+            this.state.selectedServices.forEach((elmt, i)=>{ 
                 var amount = 0.00;
-                elmt["tips_amount"] = amount;
+                elmt["totalTips"] = amount;
                 amtfields.push(elmt); 
-                if(i === this.state.service_selected.length-1){
-                    this.setState({service_selected:amtfields, total_tips:Number(totaltipsamt).toFixed(2) }, function() {
+                if(i === this.state.selectedServices.length-1){
+                    this.setState({selectedServices:amtfields, total_tips:Number(totaltipsamt).toFixed(2) }, function() {
                         this.calcaulateTotal();
                     });
                 }
@@ -178,19 +172,19 @@ class Tips extends React.Component {
         //     var amtfields = [];
         //     var totalamt = 0;
         //     var totaltipsamt = 0
-        //     this.state.service_selected.forEach((elmt, i)=>{ 
+        //     this.state.selectedServices.forEach((elmt, i)=>{ 
         //         totalamt+=Number(elmt.perunit_cost)
 
         //     })
         //     console.log("totalamt:",totalamt)
 
-        //     // this.state.service_selected.forEach((elmt, i)=>{ 
+        //     // this.state.selectedServices.forEach((elmt, i)=>{ 
         //     //     var amount = ( (elmt.perunit_cost/totalamt) * (this.state.tips_percent)).toFixed(2);
-        //     //     elmt["tips_amount"] = amount;
+        //     //     elmt["totalTips"] = amount;
         //     //     amtfields.push(elmt);
         //     //     totaltipsamt+= ( (elmt.perunit_cost/totalamt) * (this.state.tips_percent))
-        //     //     if(i === this.state.service_selected.length-1){
-        //     //         this.setState({service_selected:amtfields, total_tips:Number(totaltipsamt).toFixed(2) }, function() {
+        //     //     if(i === this.state.selectedServices.length-1){
+        //     //         this.setState({selectedServices:amtfields, total_tips:Number(totaltipsamt).toFixed(2) }, function() {
         //     //         });
         //     //     }
                
@@ -204,23 +198,21 @@ class Tips extends React.Component {
 
     handlekeypress(e){
         // console.log("handlekeypress", e.target.value)
-        if(e.key == 'e'  || e.key == "+" || e.key == "-"){
+        if(e.key === 'e'  || e.key === "+" || e.key === "-"){
             e.preventDefault();
         }
-        if(e.key == "." && (e.target.value=="" || e.target.value.length==0) ) {
+        if(e.key === "." && (e.target.value==="" || e.target.value.length===0) ) {
             
             e.preventDefault();
            
         }
+        
     }
 
     handlechangeTips_amt(e){ 
-
-        if((e.target.value.match( "^.{"+6+","+6+"}$")===null)) {
         this.setState({tips_amount: e.target.value, tips_percent:e.target.value, total_tips: e.target.value}, function(){
             this.calculateTips()
         });
-        }
     }
     handleCloseTips(){
         this.resetTips();
@@ -248,18 +240,20 @@ class Tips extends React.Component {
         this.setState({showError: false})
         console.log("calcaulateTotal caliling")
         var isfilled=0
-        this.state.service_selected.forEach((elmt, i)=>{ 
-            total += Number(elmt.tips_amount);
-            if(Number(elmt.tips_amount) > 0){
+        this.state.selectedServices.forEach((elmt, i)=>{ 
+            total += Number(elmt.totalTips);
+            if(Number(elmt.totalTips) > 0){
                 isfilled +=1;
             }
-            if(i === this.state.service_selected.length-1){
+            if(i === this.state.selectedServices.length-1){
                 this.setState({total_tips:total },function(){
-                    console.log("total_tips",this.state.total_tips);
-                    console.log("tips_amount",this.state.tips_amount);
                     if(this.state.total_tips !== Number(this.state.tips_amount) && this.state.tips_type === 'manual'){
                         this.setState({isDisable: true});
-                        if(this.state.service_selected.length === isfilled  && this.state.tipe_type==='manual'){
+                        console.log("total_tips",this.state.total_tips);
+                        console.log("totalTips",this.state.tips_amount, isfilled);
+                        if(this.state.selectedServices.length === isfilled  && this.state.tips_type==='manual'){
+                            console.log("total_tips 1",this.state.total_tips);
+                            console.log("totalTips 1",this.state.tips_amount);
                             this.setState({showError: true})
                         }
                     }
@@ -272,10 +266,10 @@ class Tips extends React.Component {
     }
     handlechangeTips_individual_amt(e,index){
         if((e.target.value.match( "^.{"+6+","+6+"}$")===null)) {
-        var tips = Object.assign([], this.state.service_selected);
-        tips[index].tips_amount = e.target.value;
-        this.setState({service_selected: tips}, function(){
-            //console.log(this.state.service_selected)
+        var tips = Object.assign([], this.state.selectedServices);
+        tips[index].totalTips = e.target.value;
+        this.setState({selectedServices: tips}, function(){
+            //console.log(this.state.selectedServices)
             this.calcaulateTotal();
         });
         }
@@ -289,9 +283,9 @@ class Tips extends React.Component {
 
         var tips_input = {
             tips_type: this.state.tips_type,
-            tips_amount: Number(this.state.total_tips), 
+            totalTips: Number(this.state.total_tips), 
             tips_percent:  Number(this.state.tips_percent),
-            service_selected: this.state.service_selected
+            selectedServices: this.state.selectedServices
         }
         
         this.props.afterSubmitTips('Added Sucessfully',tips_input);
@@ -303,16 +297,16 @@ class Tips extends React.Component {
 
     render() {
         return (
-            <Box style={{padding: 20}}>
+            <Box>
                 <Grid container spacing={0}>  
                    
-                   {this.state.tips_type === 'equal' && <Grid container xs={12} style={{marginTop: 0, padding:'0 10px'}}>
-                        <Grid item xs={6} style={{padding:'10px'}}>
+                   {this.state.tips_type === 'equal' && <Grid container xs={12} style={{marginTop: 0 }}>
+                        <Grid item xs={6} >
                         <Typography variant="subtitle1" align="left"> 
                             Tip amount ($)
                         </Typography>
                         </Grid>
-                        <Grid item xs={6} style={{padding:'10px'}}>
+                        <Grid item xs={6} >
                         <TextField  fullWidth
                                             id="tips_amount" 
                                             required 
@@ -330,6 +324,10 @@ class Tips extends React.Component {
                                                 this.handlechangeTips_amt(e)
                                             }}
                                             onKeyDown={(e)=>{
+                                                if(e.target.value.length >=6   && e.keyCode !== 8 && e.keyCode !== 9 && e.keyCode !== 46  && e.keyCode !== 37 && e.keyCode !== 39){
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                }
                                                 this.handlekeypress(e)
                                             }}
                                             
@@ -338,13 +336,13 @@ class Tips extends React.Component {
                                         />
                         </Grid>
                     </Grid> }
-                    {this.state.tips_type === 'percent' && <Grid container xs={12} style={{marginTop: 0, padding:'0 10px'}}>
-                        <Grid item xs={6} style={{padding:'10px'}}>
+                    {this.state.tips_type === 'percent' && <Grid container xs={12} style={{marginTop: 0 }}>
+                        <Grid item xs={6} >
                         <Typography variant="subtitle1" align="left"> 
                             Tip amount ($)
                         </Typography>
                         </Grid>
-                        <Grid item xs={6} style={{padding:'10px'}}>
+                        <Grid item xs={6} >
                         <TextField  fullWidth
                         
                                             id="tips_percent" 
@@ -369,7 +367,7 @@ class Tips extends React.Component {
                                         />
                         </Grid>
                     </Grid> }
-                    {this.state.tips_type === 'manual' && <Grid container xs={12} style={{marginTop: 0, padding:'0 10px'}}>
+                    {this.state.tips_type === 'manual' && <Grid container xs={12} style={{marginTop: 0 }}>
                         <Grid item xs={6} style={{padding:'10px'}}>
                         <Typography variant="subtitle1" align="left"> 
                             Tip amount ($)
@@ -400,10 +398,8 @@ class Tips extends React.Component {
                                             
                                         />
                         </Grid>
-                    </Grid> }
-
-
-                    {this.state.service_selected.length>1 &&
+                    </Grid> } 
+                    {this.state.selectedServices.length>1 &&
                     <Grid container xs={12} style={{marginTop: 0, padding:'0 10px'}}>
                         <Grid item xs={12} style={{padding:'10px', paddingLeft: 0}}>
                             <FormControl component="fieldset">
@@ -449,23 +445,23 @@ class Tips extends React.Component {
                         </Grid>
                     <div style={{ width: '100%', height: '100%',overflow: 'hidden'}}>
                     <div style={{width: '100%', height:'auto',maxHeight:  200,paddingLeft: 0,paddingTop: 10,paddingBottom: 10,overflow:'hidden auto'}}>
-                    {this.state.service_selected.map((v,index)=>{
+                    {this.state.selectedServices.map((v,index)=>{
                         return (
                             <Grid container xs={12} >
                                     <Grid item xs={3} style={{padding:'10px', paddingLeft: 20}}>
                                     <Typography variant="subtitle1" align="left"> 
-                                            {v.servicedetail.name}
+                                            {v.serviceDetail.mProductName}
                                     </Typography>
                                     </Grid>
                                     <Grid item xs={3} style={{padding:'10px',paddingLeft: 20}}>
                                     <Typography variant="subtitle1" align="left"> 
-                                            {this.getEmployeeName(v.employee_id)} 
+                                            {v.technician.mEmployeeFirstName+v.technician.mEmployeeLastName} 
                                     </Typography>
                                     </Grid>
                                     <Grid item xs={3} style={{padding:'10px',paddingLeft: 20}}>
                                     <Typography variant="subtitle1" align="left"> 
                                         {/* {v.perunit_cost+" X "+v.qty}   */}
-                                        {v.subtotal}
+                                        {v.subTotal}
                                     </Typography>
                                     </Grid>
                                     <Grid item xs={3} style={{padding:'10px',paddingLeft: 20}}> 
@@ -473,7 +469,7 @@ class Tips extends React.Component {
                                             required 
                                             // type="number" 
                                             placeholder="Enter Amount" 
-                                            value={this.state.service_selected[index].tips_amount}
+                                            value={this.state.selectedServices[index].totalTips}
                                             color="secondary"   
                                             variant="standard" 
                                             disabled={this.checkStatus()}

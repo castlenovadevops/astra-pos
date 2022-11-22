@@ -436,3 +436,14 @@
 .nobottomborder{
     height:50%;
 }
+
+.notespopup .MuiDialog-paper{
+    width:500px;
+    height:300px;
+}
+
+
+.tipspopup .MuiDialog-paper{
+    width:500px;
+    height:500px;
+}

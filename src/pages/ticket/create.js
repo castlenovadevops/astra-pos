@@ -54,8 +54,28 @@ export default class CreateTicketComponent extends React.Component{
         this.selectDiscount = this.selectDiscount.bind(this)
         this.selectTax = this.selectTax.bind(this);
         this.onSaveSplit = this.onSaveSplit.bind(this)
-        this.voidTicket = this.voidTicket.bind(this)
+        this.voidTicket = this.voidTicket.bind(this);
+        this.onUpdateNotes = this.onUpdateNotes.bind(this);
+        this.handleCloseTips = this.handleCloseTips.bind(this);
+        this.saveTicket = this.saveTicket.bind(this);
     } 
+
+    saveTicket(option){
+        console.log("AAAA")
+        this.httpManager.postRequest('merchant/ticket/save',{ticketDetail:Object.assign({}, this.state.ticketDetail), selectedServices: Object.assign([], this.state.selectedServices)}).then(resp=>{
+            console.log(resp)
+        })
+    }
+    
+    handleCloseTips(msg, tipsInput){
+        console.log(tipsInput)
+    }
+
+    onUpdateNotes(e){
+        var ticket = Object.assign({}, this.state.ticketDetail);
+        ticket.ticketNotes = e.target.value;
+        this.setState({ticketDetail: ticket});
+    }
 
     onSaveSplit(splittedservices){
         var services= Object.assign([], this.state.selectedServices);
@@ -384,6 +404,8 @@ export default class CreateTicketComponent extends React.Component{
                                                                             customer_detail: this.state.customer_detail,
                                                                             saveTicket: this.saveTicket,
                                                                             reloadTicket: this.reloadTicket,
+                                                                            price: this.state.totalValues,
+                                                                            onUpdateNotes:this.onUpdateNotes,
                                                                             printTicket: (option)=>{
                                                                                 this.setState({printtype:option},()=>{
                                                                                     this.printTicket();
@@ -397,7 +419,7 @@ export default class CreateTicketComponent extends React.Component{
                                                                             },
                                                                             price: this.state.totalValues,
                                                                             voidTicket:()=>{
-                                                                                this.props.voidTicket()
+                                                                                this.voidTicket()
                                                                             },
                                                                             saveNotes:(notes)=>{
                                                                                 this.saveNotes(notes);

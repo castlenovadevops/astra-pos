@@ -1,12 +1,12 @@
 import React from 'react';
 import { Grid, Button} from '@material-ui/core/';  
 import VoidModal from './voidticket'; 
-// import TicketTipsModal from '../TicketTips';
+import TicketTipsModal from './TicketTips';
 // import PaymentModal from '../TicketPayment';
-// import NotesModal from '../notes';
+import NotesModal from './notes';
 // import CombineTicket from './combineticket';
 
-// import AlertModal from '../../../../components/Modal/alertModal'; 
+import AlertModal from '../../../../components/Dialog'; 
 // import TicketDiscount from './ticketDiscount'; 
 
 export default class TicketFooterComponent extends React.Component{  
@@ -61,11 +61,11 @@ export default class TicketFooterComponent extends React.Component{
 
     handlechangeNotes(e){
         ////////console.log"handlechangeNotes",e)
-        this.setState( {notes: e, notesupdate: true})
+        // this.setState( {notes: e, notesupdate: true})
+        this.props.data.onUpdateNotes(e)
     }
 
-    saveNotes() {
-        this.props.data.saveNotes(this.state.notes);
+    saveNotes() { 
         this.handleCloseAddNotes();
     }
 
@@ -117,34 +117,7 @@ export default class TicketFooterComponent extends React.Component{
                     this.setState({openPayment:true,ticketDetail:detail})
                     this.props.data.setLoader(false);
                 })
-           })
-    //    if(this.props.data.isTicketEdit){
-    //        var detail = Object.assign({}, this.props.data.ticketDetail);
-    //        detail["ticketref_id"] = detail.sync_id;
-    //        var input = {
-    //            ticketDetail: Object.assign({}, this.props.data.ticketDetail), 
-    //            ticketowner: this.props.data.ticketowner,
-    //            customer_detail: this.props.data.customer_detail,
-    //            price: this.props.data.price,
-    //            selectedServices : this.props.data.selectedServices, 
-    //            ticketDiscount: this.props.data.price.ticketDiscount
-    //        } 
-    //        this.ticketServiceController.saveTicket(input).then(r=>{ 
-    //             this.ticketServiceController.saveTicketServices(input).then(r=>{ 
-    //                 this.setState({openPayment:true,ticketDetail:detail})
-    //                 this.props.data.setLoader(false);
-    //             })
-    //        })
-             
-    //    }
-    //    else{
-    //         this.ticketServiceController.saveTicket(input).then(r=>{ 
-    //             this.ticketServiceController.saveTicketServices(input).then(r=>{ 
-    //                 this.setState({openPayment:true,ticketDetail:detail})
-    //                 this.props.data.setLoader(false);
-    //             })
-    //         })  
-    //    }
+           }) 
     }
 
 
@@ -164,14 +137,7 @@ export default class TicketFooterComponent extends React.Component{
             thisobj.setState({alertPopup:true, alertMsg:"Service Price should not be empty or zero. Please try again.", alertTitle:"Error"})
         }
         else{ 
-            this.ticketServiceController.saveTicket(this.props.data).then(response=>{
-                if(response.status === 200){
-                    thisobj.props.data.saveTicket('close');
-                }
-                else{
-                    thisobj.setState({alertPopup:true, alertMsg:"Error in saving Ticket. Please try again later.", alertTitle:"Error"})
-                }
-            });
+            thisobj.props.data.saveTicket('close');
         }
     }
 
@@ -183,6 +149,9 @@ export default class TicketFooterComponent extends React.Component{
 
 
     render(){
+        var actionsbuttons = <Button onClick={()=>{
+            this.setState({alertPopup: false, alertTitle:'', alertMsg:''})
+        }} />
         return <> 
             <div style={{ marginLeft: 0, height:'100%'}}>
                 {!this.props.data.isTicketEdit && <div style={{height:'100%'}}>
@@ -289,25 +258,23 @@ export default class TicketFooterComponent extends React.Component{
             title="Alert" msg="Are You Sure To Void This Ticket ?"/> }  
             
              {/* Tips popup */}
-           {/*  {this.state.addTips_popup &&
-                <TicketTipsModal handleCloseAddTips={()=>this.handleCloseAddTips()} 
-                employee_list={this.props.data.employee_list} afterSubmitTips={(msg,tipsInput)=>{this.handleCloseTips(msg,tipsInput); }} 
-                service_selected={this.props.data.selectedServices} total_tips={this.props.data.ticketDetail.tips_totalamt || 0} tips_percent={this.props.data.ticketDetail.tips_percent || 0} tips_type={this.props.data.ticketDetail.tips_type || 'equal'}/>
+            {this.state.addTips_popup &&
+                <TicketTipsModal handleCloseAddTips={()=>this.handleCloseAddTips()}  afterSubmitTips={(msg,tipsInput)=>{this.handleCloseTips(msg,tipsInput); }}  selectedServices={this.props.data.selectedServices} total_tips={this.props.data.price.tipsAmount || 0}  tips_type={this.props.data.price.tips_type || 'equal'}/>
             }
 
  
-            {this.state.openPayment && <PaymentModal  
+            {/*this.state.openPayment && <PaymentModal  
                 handleClosePayment={(msg)=>this.handleClosePayment(msg)} ticketDetail={this.props.data.ticketDetail}>
                     
-                </PaymentModal>}
+            </PaymentModal> */}
  
             {this.state.addNotes_popup &&
-                <NotesModal handleCloseAddNotes={()=>this.handleCloseAddNotes()} notes={this.state.notes} handlechangeNotes={(e)=>this.handlechangeNotes(e)} saveNotes={()=>this.saveNotes()}/>
+                <NotesModal handleCloseAddNotes={()=>this.handleCloseAddNotes()} notes={this.props.data.ticketDetail.ticketNotes} handlechangeNotes={(e)=>this.handlechangeNotes(e)} saveNotes={()=>this.saveNotes()}/>
             }
 
-            {this.state.alertPopup &&  <AlertModal title={this.state.alertTitle} msg={this.state.alertMsg} handleCloseAlert={()=>this.setState({alertPopup:false})}/>}
+            {this.state.alertPopup &&  <AlertModal title={this.state.alertTitle} children={this.state.alertMsg} actionsbuttons={actionsbuttons} onClose={()=>this.setState({alertPopup:false})} open={this.state.alertPopup}/>}
 
-            {this.state.isCombine && <CombineTicket data={{
+            {/*this.state.isCombine && <CombineTicket data={{
                                 closeCombine: ()=>{
                                     this.setState({isCombine:false})
                                 },

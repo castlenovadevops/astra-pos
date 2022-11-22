@@ -30,6 +30,12 @@ module.exports = class RegistrationController extends baseController{
                     authorization:"authorizationAuth"
                 },
                 {
+                    path:this.path+"/getActive/",
+                    type:"post",
+                    method: "getActive",
+                    authorization:"authorizationAuth"
+                },
+                {
                     path:this.path+"/getByType/",
                     type:"post",
                     method: "getByType",
@@ -174,6 +180,26 @@ module.exports = class RegistrationController extends baseController{
         this.sendResponse({ data: tax}, res, 200);
         // res.send({statsu:200, data:"SUCCESS"})
     }
+
+    getActive= async (req,res,next)=>{  
+        var  where = {
+                merchantId: req.deviceDetails.merchantId,
+                mTaxStatus:1, 
+            } 
+        let tax = await this.readAll({where: where, order: [
+            ['createdDate','ASC']
+        ],
+        // attributes:{include: [ [
+        //     Sequelize.col('mTaxId'),
+        //     `id`
+        // ], ]}
+        }, 'mTax')
+        // var tax=[];
+        // // console.log("TAX SERVICE CALLED::::::")
+        this.sendResponse({ data: tax}, res, 200);
+        // res.send({statsu:200, data:"SUCCESS"})
+    }
+
     getAlltax= async (req,res,next)=>{ 
         var type = "all";
         var where = {

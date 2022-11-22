@@ -22,7 +22,14 @@ module.exports = class TicketController extends baseController{
                     type:"post",
                     method: "getTicketcode",
                     authorization:'authorizationAuth'
-                }
+                },
+                {
+                    path:this.path+"/void",
+                    type:"post",
+                    method: "voidTicket",
+                    authorization:'authorizationAuth'
+                },
+                
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
@@ -87,6 +94,29 @@ module.exports = class TicketController extends baseController{
             this.sendResponse({data: ticket.dataValues}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
+        })
+    }
+
+    voidTicket= async(req,res, next)=>{
+        this.readOne({where:{ticketId: req.input.data}}, 'tickets').then(ticket=>{  
+            console.log("TICKET:::")
+            console.log(ticket)
+            if(ticket.dataValues.isDraft === '1' || ticket.isDraft=== '1'){
+                console.log("DELETE API CALLEd")
+                this.delete('tickets',{ticketId: req.input.data}).then(resp=>{
+                    this.sendResponse({message:"Voided successfully."}, res, 200);
+                }).catch(e=>{
+                    console.log(e)
+                })
+            }
+            else{
+                this.update('tickets', {ticketStatus:'Voided'},{where: {ticketId: req.input.data}}).then(resp=>{
+                    this.sendResponse({message:"Voided successfully."}, res, 200);
+                })
+            }
+        }).catch(e=>{
+            console.log(e)
+            this.sendResponse({message:"Error Occurred."}, res, 400);
         })
     }
 }

@@ -60,7 +60,7 @@ module.exports = class DiscountController extends baseController{
 
         input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate(); 
-        if(input.id !== undefined){
+        if(input.id != undefined){
             // console.log(input)
             this.updateWithNew('mDiscounts', input, {where:{id:input.id}}, 'mDiscountStatus', 'id').then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
