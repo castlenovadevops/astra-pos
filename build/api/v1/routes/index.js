@@ -20,6 +20,7 @@ const SyncEmployeesController = require('../controllers/pos/syncEmployeeControll
 
 const ClockInController = require('../controllers/merchant/clockinController');
 const TicketController = require('../controllers/merchant/ticketController');
+const SaveTicketController = require('../controllers/merchant/saveticketController');
 
 
 const express = require('express');
@@ -49,6 +50,7 @@ const corsOptions ={
         new MEmployeeCommissionController(), 
         new ClockInController(),
         new TicketController(),
+        new SaveTicketController(),
 
         new SyncController(),
         new SyncTaxController(),

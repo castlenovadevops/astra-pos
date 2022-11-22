@@ -62,7 +62,7 @@ export default class CreateTicketComponent extends React.Component{
 
     saveTicket(option){
         console.log("AAAA")
-        this.httpManager.postRequest('merchant/ticket/save',{ticketDetail:Object.assign({}, this.state.ticketDetail), selectedServices: Object.assign([], this.state.selectedServices)}).then(resp=>{
+        this.httpManager.postRequest('merchant/ticket/saveTicket',{ticketDetail:Object.assign({}, this.state.ticketDetail), selectedServices: Object.assign([], this.state.selectedServices)}).then(resp=>{
             console.log(resp)
         })
     }
