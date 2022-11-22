@@ -17,7 +17,7 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.UUIDV4
         }, 
         technicianId: {
-             field: 'tipsType', 
+             field: 'technicianId', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,

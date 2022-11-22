@@ -106,6 +106,10 @@ module.exports = class ClockInController extends baseController{
                     'id'
                 ],
                 [
+                    Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                    "mCommissionId"
+                ], 
+                [
                     Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
                     "mOwnerPercentage"
                 ], 

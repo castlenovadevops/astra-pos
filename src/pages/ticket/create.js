@@ -69,6 +69,8 @@ export default class CreateTicketComponent extends React.Component{
     
     handleCloseTips(msg, tipsInput){
         console.log(tipsInput)
+
+        // "tipsType": ticketDetail.tipsType,
     }
 
     onUpdateNotes(e){
@@ -243,8 +245,9 @@ export default class CreateTicketComponent extends React.Component{
                 obj.totalTax = 0
             }
             var taxdetail = obj.ticketservicetaxes[i];
-            if(taxdetail.mTaxType === 'Percentage'){
+            if(taxdetail.mTaxType === 'Percentage'){ 
                 taxdetail["mTaxAmount"] = Number((taxdetail.mTaxValue/100)*obj.subTotal).toFixed(2);
+                console.log(taxdetail["mTaxAmount"])
             }
             else{
                 taxdetail["mTaxAmount"] = Number(taxdetail.mTaxValue).toFixed(2);
@@ -283,8 +286,10 @@ export default class CreateTicketComponent extends React.Component{
 
 
     calculateDiscountForService(obj, i=0, idx=-1){
+        var ticketDetail = Object.assign({}, this.state.ticketDetail);
         if(i < obj.ticketservicediscounts.length){ 
             if(i===0){
+                obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
                 obj.totalDiscount = 0
             }
             var discountdetail = obj.ticketservicediscounts[i];
@@ -297,10 +302,19 @@ export default class CreateTicketComponent extends React.Component{
             }
             obj.ticketservicediscounts[i] = discountdetail;
             obj.totalDiscount = Number(obj.totalDiscount)+Number(discountdetail["mDiscountAmount"]);
+            obj.subTotal= Number(obj.subTotal)-Number(obj.totalDiscount)
+            ticketDetail.serviceDiscountApplied = 1
+            this.setState({ticketDetail: ticketDetail});
             this.calculateDiscountForService(obj, i+1, idx);
         }
-        else{
+        else if( obj.ticketservicediscounts.length === 0){
             obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
+            ticketDetail.serviceDiscountApplied = 0
+            this.setState({ticketDetail: ticketDetail});
+            this.calculateTaxForService(obj,i, idx);
+        }
+        else{
+            // obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
             this.calculateTaxForService(obj,i, idx);
         }
     }
@@ -316,15 +330,34 @@ export default class CreateTicketComponent extends React.Component{
                 price.servicePrice = Number(price.servicePrice)+(Number(service.qty)* Number(service.perunit_cost))
             }
             price.ticketSubTotal =  Number(price.ticketSubTotal)+(Number(service.subTotal))
-            price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
+            // price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
             price.taxAmount = Number(price.taxAmount)+Number(service.totalTax)
             price.tipsAmount = Number(price.tipsAmount)+Number(service.totalTips)
             this.calculateTicketTotal(price, i+1);
         }
         else{
             console.log(price.ticketSubTotal, "-",  price.ticketDiscount, "+", price.taxAmount, "+", price.tipsAmount)
+            
             price.grandTotal = price.ticketSubTotal -  price.ticketDiscount + price.taxAmount + price.tipsAmount
-            this.setState({totalValues: price})
+            var ticketDetail = Object.assign({}, this.state.ticketDetail)
+            var ticketinput = {  
+                "ticketId": this.state.ticketDetail.ticketId,
+                "ownerTechnician" : this.state.selectedTech.mEmployeeId,
+                "technician" : this.state.selectedTech,
+                "customerId" : this.state.customer_detail.mCustomerId,
+                "taxApplied": Number(price.taxAmount) > 0 ? 1 : 0, 
+                "ticketDiscountApplied"	: Number(price.ticketDiscount) > 0 ? 1 : 0,
+                "serviceDiscountApplied": this.state.ticketDetail.serviceDiscountApplied, 
+                "tipsAmount":  price.tipsAmount,
+                "taxAmount"	: price.taxAmount,
+                "serviceAmount"	: price.ticketSubTotal,
+                "ticketTotalAmount"	: price.grandTotal,
+                "ticketNotes": ticketDetail.ticketNotes, 
+                "paymentStatus":"Pending",
+                "isDraft":0, 
+            }
+
+            this.setState({totalValues: price, ticketDetail: ticketinput})
         }
     }
 

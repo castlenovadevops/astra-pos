@@ -57,6 +57,13 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false,
         }, 
+        status: {
+             field: 'status', 
+             type: DataTypes.INTEGER, 
+             primaryKey: false, 
+             allowNull: false,
+             defaultValue:1
+        }, 
         createdDate: {
              field: 'createdDate', 
              type: DataTypes.STRING(255), 
