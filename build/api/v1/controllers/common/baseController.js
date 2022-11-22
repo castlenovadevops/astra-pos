@@ -61,7 +61,7 @@ module.exports = class baseController extends MsgController{
 
     async create(model,data, updateTobeSync=true){ 
         return new Promise(async (resolve) => { 
-            let results =  await this.models[model].create(data);
+            let results =  await this.models[model].create(data).catch(e=>{console.log(e)});
             if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){
                  var pkfield = pkfields[model]
                 var input = {

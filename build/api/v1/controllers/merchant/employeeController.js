@@ -365,7 +365,43 @@ module.exports = class EmployeeController extends baseController{
 
     loginEmployee = async(req,res, next)=>{
         if(req.input.passCode !== ''){
-            this.readOne({where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1}}, 'merchantEmployees').then(results=>{
+            let options={
+                where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1},
+                attributes:{
+                    include:[
+
+                        [
+                            Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mCommissionId"
+                        ], 
+                        [
+                            Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mOwnerPercentage"
+                        ], 
+                        [
+                            Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mEmployeePercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mCashPercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mCheckPercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mTipsCashPercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mTipsCheckPercentage"
+                        ]
+                    ]
+                }
+            }
+            this.readOne( options, 'merchantEmployees').then(results=>{
                 if(results !== null){
                     var userData = Object.assign({}, results.dataValues||results); 
                     let payload = { ...userData  }; 

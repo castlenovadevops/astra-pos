@@ -106,7 +106,7 @@ module.exports = class TicketController extends baseController{
                 })
             }
             else{
-                this.create('ticketservices', serviceinput, true).then(r=>{
+                this.create('ticketservices', serviceinput, true).then(r=>{ 
                     var ticketServiceId = r.dataValues.ticketServiceId || r.ticketServiceId
                     this.saveTicketServiceTax(req,res,next,ticketServiceId,idx,0)
                 })
@@ -118,7 +118,7 @@ module.exports = class TicketController extends baseController{
     }
 
     saveTicketServiceTax= async (req,res,next,ticketServiceId,idx,tid)=>{
-        var service = req.input.selectedServices[idx];
+        var service = req.input.selectedServices[idx]; 
         if(tid < service.ticketservicetaxes.length){
             var input = service.ticketservicetaxes[tid];
             var taxinput = {
@@ -131,18 +131,21 @@ module.exports = class TicketController extends baseController{
                 status:1,
                 createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate(),
-            }
-            this.create('ticketservicetax', taxinput, true).then(r=>{
+            } 
+            this.create('ticketservicetax', taxinput, true).then(r=>{ 
                 this.saveTicketServiceTax(req, res, next, ticketServiceId, idx, tid+1)
+            }).catch(e=>{
+                console.log("ERROR", e)
             })
         }
-        else{
-            this.saveTicketServiceDiscount(req,res,next,idx, 0)
+        else{ 
+            this.saveTicketServiceDiscount(req,res,next,ticketServiceId,idx, 0)
         }
     }
 
     saveTicketServiceDiscount= async (req,res,next,ticketServiceId,idx,tid)=>{
         var service = req.input.selectedServices[idx];
+        console.log("DISCOUNT SAVE CALLED")
         if(tid < service.ticketservicediscounts.length){
             var input = service.ticketservicediscounts[tid];
             var disinput = {
@@ -153,12 +156,13 @@ module.exports = class TicketController extends baseController{
                 mDiscountValue: input.mDiscountValue,
                 mDiscountAmount: input.mDiscountAmount,
                 mDiscountDivisionType: input.mDiscountDivisionType,
-                mDiscountOwnerDivision: input.mDiscountOwnerDivision,
-                mDiscountEmployeeDivision: input.mDiscountEmployeeDivision,
+                mDiscountOwnerDivision: input.mDiscountOwnerDivision||'',
+                mDiscountEmployeeDivision: input.mDiscountEmployeeDivision||'',
                 status:1,
                 createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate(),
             }
+            console.log("DISCOUNT SAVE CALLED", disinput)
             this.create('ticketservicediscount', disinput, true).then(r=>{
                 var ownerPercentage = 0;
                 var empPercentage = 0;
@@ -187,6 +191,7 @@ module.exports = class TicketController extends baseController{
             })
         }
         else{
+            console.log("DISCOUNT SAVE ENDED")
             this.saveTicketServiceCommission(req,res,next,idx)
         }
     }

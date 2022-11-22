@@ -1,10 +1,7 @@
 import React from 'react';
-import Moment from 'moment';
-import { Grid, Typography, Button,Box, FormControl,FormLabel,FormControlLabel,Radio,RadioGroup} from '@material-ui/core/'; 
-import LoadingModal from '../../../../components/Modal/loadingmodal';
-import CloseIcon from '@mui/icons-material/Close'; 
-import AlertModal from '../../../../components/Modal/alertModal';
-import PaymentController from '../../../../controller/paymentController';
+import LoadingModal from '../../../../../components/Loader';
+import { Grid, Typography, Button,Box, FormControl,FormLabel,FormControlLabel,Radio,RadioGroup} from '@material-ui/core/';  
+import CloseIcon from '@mui/icons-material/Close';  
 import TicketFullPayment from './payfull';
 import TicketSplitPayment from './splitpay';
 import './tab.css';
@@ -24,8 +21,7 @@ const paymentStyle = {
 };
 
 export default class TicketPayment extends React.Component  {
-
-    paymentController = new PaymentController();
+ 
 
     constructor(props){
         super(props);

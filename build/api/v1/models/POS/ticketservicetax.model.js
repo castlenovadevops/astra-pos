@@ -15,32 +15,32 @@ module.exports = (sequelize) => {
             type: DataTypes.UUID,
             primaryKey: false
         }, 
-        taxId: {
-             field: 'taxId', 
+        mTaxId: {
+             field: 'mTaxId', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        taxName: {
-             field: 'taxName', 
+        mTaxName: {
+             field: 'mTaxName', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        taxAmount: {
-             field: 'taxAmount', 
+        mTaxAmount: {
+             field: 'mTaxAmount', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        taxType: {
-             field: 'taxType', 
+        mTaxType: {
+             field: 'mTaxType', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        taxValue: {
-             field: 'taxValue', 
+        mTaxValue: {
+             field: 'mTaxValue', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,

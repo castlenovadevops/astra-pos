@@ -2,12 +2,12 @@ import React from 'react';
 import { Grid, Button} from '@material-ui/core/';  
 import VoidModal from './voidticket'; 
 import TicketTipsModal from './TicketTips';
-// import PaymentModal from '../TicketPayment';
+import PaymentModal from './TicketPayment';
 import NotesModal from './notes';
 // import CombineTicket from './combineticket';
 
 import AlertModal from '../../../../components/Dialog'; 
-// import TicketDiscount from './ticketDiscount'; 
+import TicketDiscount from './TicketDiscount'; 
 
 export default class TicketFooterComponent extends React.Component{  
     constructor(props){
@@ -46,6 +46,7 @@ export default class TicketFooterComponent extends React.Component{
     }
 
     addDiscounts(){
+        console.log("RICKET DISCOUNT CALLED")
         this.setState({discountPopup: true})
     }
 
@@ -112,12 +113,12 @@ export default class TicketFooterComponent extends React.Component{
                ticketDiscount: this.props.data.price.ticketDiscount,
                ticketref_id: detail["ticketref_id"]
            } 
-           this.ticketServiceController.saveTicket(input).then(r=>{  
-                this.ticketServiceController.saveTicketServices(input).then(r=>{ 
+        //    this.ticketServiceController.saveTicket(input).then(r=>{  
+        //         this.ticketServiceController.saveTicketServices(input).then(r=>{ 
                     this.setState({openPayment:true,ticketDetail:detail})
-                    this.props.data.setLoader(false);
-                })
-           }) 
+        //             this.props.data.setLoader(false);
+        //         })
+        //    }) 
     }
 
 
@@ -263,10 +264,10 @@ export default class TicketFooterComponent extends React.Component{
             }
 
  
-            {/*this.state.openPayment && <PaymentModal  
+            {this.state.openPayment && <PaymentModal  
                 handleClosePayment={(msg)=>this.handleClosePayment(msg)} ticketDetail={this.props.data.ticketDetail}>
                     
-            </PaymentModal> */}
+            </PaymentModal>}
  
             {this.state.addNotes_popup &&
                 <NotesModal handleCloseAddNotes={()=>this.handleCloseAddNotes()} notes={this.props.data.ticketDetail.ticketNotes} handlechangeNotes={(e)=>this.handlechangeNotes(e)} saveNotes={()=>this.saveNotes()}/>
@@ -290,19 +291,18 @@ export default class TicketFooterComponent extends React.Component{
                                 selectedServices : this.props.data.selectedServices,
                                 selectedRowService: this.props.selectedRowService,
                                 selectedRowServiceIndex: this.props.data.selectedRowServiceIndex
-                            }}/>}
+                            }}/>}*/}
 
             {this.state.discountPopup && <TicketDiscount data={{
-                ticketowner: this.props.data.ticketowner,
+                ticketowner: this.props.data.selectedTech,
                 ticketDetail: this.props.data.ticketDetail,
                 price: this.props.data.price,
-                customer_detail: this.props.data.customer_detail,
-                discountsList: this.state.discountsList,
+                customer_detail: this.props.data.customer_detail, 
                 handleCloseDiscount:()=>{
                     this.setState({discountPopup: false})
                 },
                 discountUpdated:this.props.data.discountUpdated
-            }} />} */}
+            }} />} 
         </>
     }
 }

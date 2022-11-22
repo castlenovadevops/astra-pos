@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, Typography, Button} from '@material-ui/core/';
 import Box from '@material-ui/core/Box'; 
+import HTTPManager from '../../../../../utils/httpRequestManager';
 const service = {
     // border:'2px solid #f0f0f0',
     // padding: 10,
@@ -12,6 +13,7 @@ const service = {
 }
 
 class Discounts extends React.Component {
+    httpManager = new HTTPManager()
     constructor(props) {
         super(props);
         this.state={
@@ -33,23 +35,24 @@ class Discounts extends React.Component {
             this.setState({ticket_grandTotal: this.props.ticket_service_total});
         }
         console.log("sfdsfds",this.props.discount_selected, this.props.ticket_service_total);
-        if(this.props.discount_selected.discount_id !== undefined && this.props.discount_selected.discount_id !== null){
-            var grandTotal = Number(this.props.ticket_service_total) + Number(this.props.discount_selected.discount_totalamt);
-            console.log(grandTotal,this.props.ticket_service_total ,this.props.discount_selected.discount_totalamt );
-            var per_dis = 0;
-            var ticket_with_dis = 0
-            if(this.props.discount_selected.discount_type === 'percentage'){
-                per_dis = (this.props.discount_selected.discount_value/100)* grandTotal;
-            }else{
-                per_dis = this.props.discount_selected.discount_value;
-            }
-            ticket_with_dis = Number(this.props.ticket_service_total);
-            this.setState({selected_discount: this.props.discount_selected.discount_id,selected_disDetails:this.props.discount_selected,isApply: true, ticket_grandTotal: grandTotal,discount_value: per_dis,ticket_with_dis : ticket_with_dis}); 
-        }
-    }
+        // if(this.props.discount_selected.discount_id !== undefined && this.props.discount_selected.discount_id !== null){
+        //     var grandTotal = Number(this.props.ticket_service_total) + Number(this.props.discount_selected.discount_totalamt);
+        //     console.log(grandTotal,this.props.ticket_service_total ,this.props.discount_selected.discount_totalamt );
+        //     var per_dis = 0;
+        //     var ticket_with_dis = 0
+        //     if(this.props.discount_selected.discount_type === 'percentage'){
+        //         per_dis = (this.props.discount_selected.discount_value/100)* grandTotal;
+        //     }else{
+        //         per_dis = this.props.discount_selected.discount_value;
+        //     }
+        //     ticket_with_dis = Number(this.props.ticket_service_total);
+        //     this.setState({selected_discount: this.props.discount_selected.discount_id,selected_disDetails:this.props.discount_selected,isApply: true, ticket_grandTotal: grandTotal,discount_value: per_dis,ticket_with_dis : ticket_with_dis}); 
+        // } 
 
-    
-
+        this.httpManager.postRequest("merchant/discounts/get",{data:"TICKET"}).then(res=>{
+         this.setState({discount_list: res.data})
+        })
+     }
     getDiscount(id){
         this.resetDiscount();
         if(this.state.selected_discount === id){ 

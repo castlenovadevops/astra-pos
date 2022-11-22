@@ -1,12 +1,9 @@
 import React from 'react';   
 import {Grid,  Typography, Button,Box,   InputAdornment } from '@material-ui/core/'; 
-import TextField from '@mui/material/TextField'; 
-import PaymentController from '../../../../controller/paymentController'; 
-import ModalTitleBar from '../../../../components/Modal/Titlebar'; 
+import TextField from '@mui/material/TextField';  
  
 
-export default class TicketSplitPayment extends React.Component  {
-    paymentController = new PaymentController();
+export default class TicketSplitPayment extends React.Component  { 
 
     constructor(props){
         super(props);
@@ -45,8 +42,7 @@ export default class TicketSplitPayment extends React.Component  {
         return <div className="modalbox">
                 <div className='modal_backdrop'>
                 </div>
-                <div className='modal_container' style={{height:'250px', width:'500px'}}> 
-                    <ModalTitleBar onClose={()=> this.setState({splitCustomAmount:0, splitCustomPopup: false})} title="Custom Payment"/> 
+                <div className='modal_container' style={{height:'250px', width:'500px'}}>  
                     <Box style={{padding: 20}}>
                         <Grid container spacing={2}>    
                             <Grid container justify="center" xs={12} style={{  alignContent: 'center'}}>         

@@ -1,16 +1,12 @@
 import React from 'react';   
-import {Grid,  Typography, Button,Box,   InputAdornment } from '@material-ui/core/'; 
-import TextField from '@mui/material/TextField'; 
-import PaymentController from '../../../../controller/paymentController';
+import {Grid,  Typography, Button,Box,   InputAdornment, TextareaAutosize } from '@material-ui/core/'; 
+import TextField from '@mui/material/TextField';  
 import CreditCard from '@mui/icons-material/CreditCard';
-import Currency from '@mui/icons-material/LocalAtm';
-import ModalTitleBar from '../../../../components/Modal/Titlebar';
-import TextareaAutosizeContent from '../../../../components/formComponents/TextAreaAutosize';
+import Currency from '@mui/icons-material/LocalAtm'; 
 
 import './tab.css'; 
 
-export default class TicketFullPayment extends React.Component  {
-    paymentController = new PaymentController();
+export default class TicketFullPayment extends React.Component  { 
 
     constructor(props){
         super(props);
@@ -44,9 +40,9 @@ export default class TicketFullPayment extends React.Component  {
             <div className='modal_backdrop'>
             </div>
             <div className='modal_container' style={{height:'400px', width:'600px'}}> 
-                <ModalTitleBar onClose={()=> this.setState({notesPopup: false}) } title="Notes"/>  
+                {/* <ModalTitleBar onClose={()=> this.setState({notesPopup: false}) } title="Notes"/>   */}
                 <Grid item xs={12} style={{display:'flex',margin :10}}>
-                        <TextareaAutosizeContent 
+                        <TextareaAutosize 
                             fullWidth
                             label="Notes"
                             name="Notes"
@@ -94,10 +90,10 @@ export default class TicketFullPayment extends React.Component  {
             <div className='modal_backdrop'>
             </div>
             <div className='modal_container' style={{height:'400px', width:'600px'}}> 
-                <ModalTitleBar onClose={()=>  {
+                {/* <ModalTitleBar onClose={()=>  {
                     this.setState({completionPopup: false});
                      this.props.data.completePayment();
-                }} title="Payment Completion"/>  
+                }} title="Payment Completion"/>   */}
                 <Grid item xs={12} style={{display:'flex',margin :10}}>  
                     <Grid item xs={2}></Grid>
                     <Grid item xs={8} style={{display: 'flex',flexDirection:'column', justifyContent:'center', alignItems:'center'}}> 
@@ -242,7 +238,7 @@ export default class TicketFullPayment extends React.Component  {
                 <div className='modal_backdrop'>
                 </div>
                 <div className='modal_container' style={{height:'250px', width:'500px'}}> 
-                    <ModalTitleBar onClose={()=> this.setState({cashCustomAmount:0, CashCustomPopup: false})} title="Custom Payment"/> 
+                    {/* <ModalTitleBar onClose={()=> this.setState({cashCustomAmount:0, CashCustomPopup: false})} title="Custom Payment"/>  */}
                     <Box style={{padding: 20}}>
                         <Grid container spacing={2}>    
                             <Grid container justify="center" xs={12} style={{  alignContent: 'center'}}>         
