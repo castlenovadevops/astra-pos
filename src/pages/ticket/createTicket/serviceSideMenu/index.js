@@ -1,8 +1,18 @@
 import React from 'react';
-import { Grid,TextField, IconButton } from '@mui/material';
+import { Grid,TextField, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 import HTTPManager from '../../../../utils/httpRequestManager';
 
 import Iconify from '../../../../components/Iconify';
+
+import TechniciansComponent from './technicians';
+import QuantityComponent from './quantity';
+import PriceComponent from './price';
+import ServiceNotesComponent from './specialrequest';
+import DiscountsListComponent from './discounts';
+import { TaxListComponent } from './taxes';
+import SplitService from '../splitService';
+import DialogComponent from '../../../../components/Dialog';
+
 const getIcon = (name) => <Iconify style={{color:'#d0d0d0', marginLeft:'5px'}} icon={name} width={22} height={22} />;
 export default class ServiceSideMenu extends  React.Component{
     httpManager = new HTTPManager();
@@ -26,6 +36,7 @@ export default class ServiceSideMenu extends  React.Component{
             categories:[],
             services:[]
         }
+        this.onChangeTechnician = this.onChangeTechnician.bind(this)
     }
 
     static getDerivedStateFromProps(nextProps, prevState) { 
@@ -49,6 +60,10 @@ export default class ServiceSideMenu extends  React.Component{
                 }
             })
         })
+    }
+
+    onChangeTechnician(detail){
+        this.props.data.onChangeTechnician(detail);
     }
 
 
@@ -93,7 +108,9 @@ export default class ServiceSideMenu extends  React.Component{
                     {this.state.selectedRow !== -1 &&
                         <Grid container>
                             {this.state.menulist.map(menu=>{ 
-                                return <Grid item xs={12}>
+                                return <Grid item xs={12} className={menu.id === this.props.data.selectedMenu ? 'activeSideOption sideOption':'sideOption'} onClick={()=>{
+                                    this.props.data.onSelectSideMenu(menu.id)
+                                }}>
                                     {menu.label}
                                 </Grid> }) 
                             }
@@ -137,8 +154,110 @@ export default class ServiceSideMenu extends  React.Component{
                             }
                         </Grid>
                     }
+                    {
+                        this.state.selectedRow !== -1 &&<div>
+                            {this.props.data.selectedMenu === 1 && <TechniciansComponent data={{ 
+                                onChangeTechnician: this.props.data.onChangeTechnician
+                            }} />}
+
+                            {this.props.data.selectedMenu === 3 && <QuantityComponent data={{
+                                qty: this.props.data.selectedServices[this.props.data.selectedRow].qty,
+                                onUpdateQuantity: this.props.data.onUpdateQuantity
+                            }} />} 
+                            {this.props.data.selectedMenu === 4 && <PriceComponent data={{
+                                perunit_cost: this.props.data.selectedServices[this.props.data.selectedRow].perunit_cost,
+                                price: this.props.data.selectedServices[this.props.data.selectedRow].originalPrice,
+                                onUpdatePrice: this.props.data.onUpdatePrice
+                            }} />} 
+                            {this.props.data.selectedMenu === 7 &&  this.props.data.selectedServices[this.props.data.selectedRow].isSpecialRequest===1 && <ServiceNotesComponent data={{
+                                serviceNotes: this.props.data.selectedServices[this.props.data.selectedRow].serviceNotes, 
+                                onUpdateSpecialRequest: this.props.data.removeSpecialRequest,
+                                onUpdateRequestNotes: this.props.data.onUpdateRequestNotes
+                            }} />} 
+                            {this.props.data.selectedMenu === 8 && <DiscountsListComponent data={{
+                                selectDiscount: this.props.data.selectDiscount,
+                                selectedRow: this.props.data.selectedRow,
+                                selectedServices: this.props.data.selectedServices  
+                            }}/>}
+                            {this.props.data.selectedMenu === 9 && <TaxListComponent data={{
+                                selectTax: this.props.data.selectTax,
+                                selectedRow: this.props.data.selectedRow,
+                                selectedServices: this.props.data.selectedServices  
+                            }}/>}
+                        </div>
+                    }
                 </Grid>
             </Grid>
+            <Dialog
+                                open={this.props.data.selectedMenu===5}
+                                onClose={()=>{
+                                    this.props.data.selectedMenu(1)
+                                }}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                                style={{zIndex:'99999'}}
+                            >
+                                <DialogTitle id="alert-dialog-title">
+                                    Confirmation
+                                </DialogTitle>
+                                <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Are you sure to void this item?
+                                </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button variant="contained" onClick={()=>{
+                                        this.props.data.onVoidItem()
+                                    }}>Yes </Button> 
+                                    <Button variant="contained" onClick={()=>{
+                                        this.props.data.onSelectSideMenu(-1)
+                                    }}>No </Button> 
+                                </DialogActions>
+                            </Dialog>
+
+
+            <Dialog
+                                open={this.props.data.selectedMenu===7 && this.props.data.selectedServices[this.props.data.selectedRow].isSpecialRequest===0}
+                                onClose={()=>{
+                                    this.props.data.selectedMenu(1)
+                                }}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                                style={{zIndex:'99999'}}
+                            >
+                                <DialogTitle id="alert-dialog-title">
+                                    Confirmation
+                                </DialogTitle>
+                                <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Are you sure to make this as specal request?
+                                </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button variant="contained" onClick={()=>{
+                                        this.props.data.makeSpecialRequest()
+                                    }}>Yes </Button> 
+                                    <Button variant="contained" onClick={()=>{
+                                        this.props.data.onSelectSideMenu(-1)
+                                    }}>No </Button> 
+                                </DialogActions>
+                            </Dialog>
+
+                                    
+                        
+                            <DialogComponent open={this.props.data.selectedMenu===6} onClose={()=>{
+                                this.props.data.onSelectSideMenu(1)
+                            }} actions={<></>}>
+                              <SplitService  data={{
+                                selectedRow: this.props.data.selectedRow,
+                                selectedServices: this.props.data.selectedServices ,
+                                closeSplit:()=>{
+                                    this.props.data.onSelectSideMenu(1)
+                                },
+                                onSaveSplit:this.props.data.onSaveSplit
+                              }}/>
+                        </DialogComponent>  
+
         </Grid>
     }
 }

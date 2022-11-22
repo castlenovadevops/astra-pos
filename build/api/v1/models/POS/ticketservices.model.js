@@ -69,6 +69,12 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false,
         }, 
+        isSpecialRequest:{
+          field: 'isSpecialRequest', 
+          type: DataTypes.INTEGER, 
+          primaryKey: false, 
+          allowNull: false,
+        },
         createdDate: {
              field: 'createdDate', 
              type: DataTypes.STRING(255), 

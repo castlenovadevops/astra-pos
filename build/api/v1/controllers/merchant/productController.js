@@ -58,7 +58,6 @@ module.exports = class ProductController extends baseController{
 
         input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate();
-        // console.log(input)
         console.log("PRODUCT SAVE CALLED")
         console.log(input)
         delete input["mProductCategories"];
@@ -189,6 +188,22 @@ module.exports = class ProductController extends baseController{
                 },
                 {
                     model:this.models.mProductTax, 
+                    attributes:{
+                        include:[
+                            [
+                                Sequelize.literal("(select mTaxName from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                "mTaxName"
+                            ], 
+                            [
+                                Sequelize.literal("(select mTaxType from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                "mTaxType"
+                            ],
+                            [
+                                Sequelize.literal("(select mTaxValue from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                "mTaxValue"
+                            ]
+                        ]
+                    },
                     where:{
                         status:1
                     },

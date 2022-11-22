@@ -43,7 +43,7 @@
 }
 
 .ticketfooterbtn, .ticketfooterbtn.MuiButtonBase-root.MuiButton-contained{
-    height:71px !important;
+    /* height:71px !important; */
     border-radius:0 !important
 }
 

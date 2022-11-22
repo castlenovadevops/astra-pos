@@ -398,8 +398,41 @@
     align-items: center;
     justify-content: center;
     border:1px solid #dfdfdf; 
+    cursor:pointer;
 }
 
 .searchfld input{
     padding:10px !important;
+} 
+.selectedServicesContainer{
+    border-bottom:1px solid #dfdfdf;
+}
+.selectedServicesContainer .MuiTypography-subtitle2 {
+    font-weight: 400 !important;
+}
+
+.activeSideOption{
+    background-color: #bee1f7;
+}
+
+.sideOption{
+    cursor: pointer;
+}
+
+.MuiMenu-root{
+    z-index: 9999999;
+}
+
+.MuiMenu-root .MuiMenuItem-root{
+    width: 100%;
+    justify-content: left;
+    padding:5px
+}
+.footerbtn, .footerbtn button,.ticketfooterbtn{
+    height:100% !important;
+    border-radius: 0;
+}
+
+.nobottomborder{
+    height:50%;
 }

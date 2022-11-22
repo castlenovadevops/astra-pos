@@ -269,7 +269,7 @@ export default class Discount extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/discounts/getDiscount`).then(response=>{
+            this.httpManager.postRequest(`merchant/discounts/getDiscount`,{data:"DISCOUNT LIST"}).then(response=>{
                 // console.log(response)
                 this.setState({discountlist: response.data, isLoading: false});
             })

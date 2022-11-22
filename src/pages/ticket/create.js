@@ -5,6 +5,9 @@ import HTTPManager from "../../utils/httpRequestManager";
 import ServiceSideMenu from "./createTicket/serviceSideMenu";
 import './createTicket/css/common.css';
 import './createTicket/css/topbar.css';
+import SelectedServicesComponent from './createTicket/selectedServices';
+import TicketTotalComponent from './createTicket/ticketTotal';
+import TicketFooterComponent from "./createTicket/footer";
 
 export default class CreateTicketComponent extends React.Component{
     httpManager = new HTTPManager();
@@ -21,24 +24,189 @@ export default class CreateTicketComponent extends React.Component{
             customer_detail:{},
             selectedServices:[],
             selectedRow:-1,
-            defaultTaxes:[]
+            selectedMenu: 1,
+            defaultTaxes:[],
+            isDisabled: false, 
+            totalValues:{
+                retailPrice:0,
+                servicePrice:0,
+                ticketSubTotal:0,
+                ticketDiscount:0,
+                taxAmount:0,
+                tipsAmount:0,
+                grandTotal:0
+            }
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
         this.onSelectService  = this.onSelectService.bind(this);
         this.calculateTaxForService = this.calculateTaxForService.bind(this);
         this.calculateDiscountForService = this.calculateDiscountForService.bind(this);
+        this.onSelectRowService = this.onSelectRowService.bind(this);
+        this.onSelectSideMenu = this.onSelectSideMenu.bind(this);
+        this.calculateAllServices = this.calculateAllServices.bind(this);
+        this.onChangeTechnician = this.onChangeTechnician.bind(this);
+        this.onUpdateQuantity = this.onUpdateQuantity.bind(this);
+        this.onVoidItem = this.onVoidItem.bind(this)
+        this.onUpdatePrice = this.onUpdatePrice.bind(this)
+        this.makeSpecialRequest = this.makeSpecialRequest.bind(this)
+        this.removeSpecialRequest = this.removeSpecialRequest.bind(this)
+        this.onUpdateRequestNotes = this.onUpdateRequestNotes.bind(this)
+        this.selectDiscount = this.selectDiscount.bind(this)
+        this.selectTax = this.selectTax.bind(this);
+        this.onSaveSplit = this.onSaveSplit.bind(this)
+        this.voidTicket = this.voidTicket.bind(this)
     } 
+
+    onSaveSplit(splittedservices){
+        var services= Object.assign([], this.state.selectedServices);
+        services.splice(this.state.selectedRow, 1);
+        splittedservices.forEach(elmt=>{
+            services.push(elmt)
+        })
+        this.setState({selectedServices: services, selectedRow:-1, selectedMenu:-1},()=>{
+            this.calculateAllServices(0);
+        })
+    }
+
+    selectTax(tax){ 
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+
+        var servicetaxes = this.state.selectedServices[this.state.selectedRow].ticketservicetaxes.map(t=>t.mTaxId.toString());
+        if(servicetaxes.indexOf(tax.mTaxId) === -1){
+            service.ticketservicetaxes.push(tax);
+        }
+        else{
+            var idx = servicetaxes.indexOf(tax.mTaxId);
+            service.ticketservicetaxes.splice(idx,1)
+        }
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services},()=>{
+            this.calculateAllServices(0);
+        });
+    }
+
+    selectDiscount(dis){ 
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        var servicetaxes = this.state.selectedServices[this.state.selectedRow].ticketservicediscounts.map(t=>t.mDiscountId);
+        if(servicetaxes.indexOf(dis.mDiscountId) === -1){
+            service.ticketservicediscounts.push(dis);
+        }
+        else{
+            var idx = servicetaxes.indexOf(dis.mDiscountId);
+            service.ticketservicediscounts.splice(idx,1)
+        }
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services},()=>{
+            this.calculateAllServices(0);
+        });
+    }
+
+    onUpdateRequestNotes(val){
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        service.serviceNotes = val;
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services});
+    }
+
+    makeSpecialRequest(){ 
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        service.isSpecialRequest = 1;
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services});
+    }
+    removeSpecialRequest(){ 
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        service.isSpecialRequest = 0;
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services, selectedMenu:1});
+    }
+
+
+    onVoidItem(){
+        var services = Object.assign([], this.state.selectedServices);
+        services.splice(this.state.selectedRow,1)
+        this.setState({selectedServices: services, selectedMenu: -1, selectedRow:-1})
+    }
+
+    onChangeTechnician(tech){
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        service.technician = tech;
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services});
+    }
+
+    onUpdateQuantity(qty){
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        service.qty = qty;
+        service.subTotal = Number(qty)*Number(service.perunit_cost)
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services},()=>{
+            this.calculateAllServices(0);
+        });
+    }
+
+    onUpdatePrice(price){
+        var service = Object.assign({}, this.state.selectedServices[this.state.selectedRow]);
+        service.perunit_cost = price;
+        service.subTotal = Number(service.qty)*Number(service.perunit_cost)
+        var services = Object.assign([], this.state.selectedServices);
+        services[this.state.selectedRow]= service;
+        this.setState({selectedServices: services},()=>{
+            this.calculateAllServices(0);
+        });
+    }
+
+    calculateAllServices(i){
+        if(i< this.state.selectedServices.length){
+            var obj = Object.assign({}, this.state.selectedServices[i]); 
+            this.calculateDiscountForService(obj, 0 , i)
+        }
+        else{  
+            this.calculateTicketTotal({
+                retailPrice:0,
+                servicePrice:0,
+                ticketSubTotal:0,
+                ticketDiscount:0,
+                taxAmount:0,
+                tipsAmount:0,
+                grandTotal:0
+            }); 
+        }
+    }
+
+    onSelectSideMenu(mindex){
+        if(mindex > 0)
+            this.setState({selectedMenu: mindex})
+        else
+            this.setState({selectedMenu:-1, selectedRow: -1})
+    }
+
+    onSelectRowService(rowIndex){
+        this.setState({selectedRow: rowIndex})
+    }
 
     onSelectService(service){
         var obj = {
             serviceDetail: service,
             qty: 1,
+            perunit_cost: Number(service.mProductPrice),
             originalPrice:  Number(service.mProductPrice),
             subTotal: Number(service.mProductPrice),
             ticketservicetaxes:[],
             ticketservicediscounts:[],
             totalTax:0,
-            totalDiscount:0
+            totalDiscount:0,
+            totalTips:0,
+            isSpecialRequest: 0,
+            serviceNotes:'',
+            technician: this.state.selectedTech
         }
         if(service.mProductTaxType === "Default"){
             obj.ticketservicetaxes = Object.assign([], this.state.defaultTaxes)
@@ -46,48 +214,97 @@ export default class CreateTicketComponent extends React.Component{
         else{
             obj.ticketservicetaxes = Object.assign([], service.mProductTaxes)
         }
-        this.calculateTaxForService(obj);
+        this.calculateDiscountForService(obj)
     }
 
-    calculateTaxForService(obj, i=0){
+    calculateTaxForService(obj, i=0, idx=-1){
         if(i < obj.ticketservicetaxes.length){
+            if(i===0){
+                obj.totalTax = 0
+            }
             var taxdetail = obj.ticketservicetaxes[i];
             if(taxdetail.mTaxType === 'Percentage'){
-                taxdetail["mTaxAmount"] = (taxdetail.mTaxValue/100)*obj.subTotal;
+                taxdetail["mTaxAmount"] = Number((taxdetail.mTaxValue/100)*obj.subTotal).toFixed(2);
             }
             else{
-                taxdetail["mTaxAmount"] = taxdetail.mTaxValue;
+                taxdetail["mTaxAmount"] = Number(taxdetail.mTaxValue).toFixed(2);
             }
             obj.ticketservicetaxes[i] = taxdetail;
-            obj.totalTax = obj.totalTax+taxdetail["mTaxAmount"];
-            this.calculateTaxForService(obj, i+1);
+            obj.totalTax = Number(obj.totalTax)+Number(taxdetail["mTaxAmount"]);
+            this.calculateTaxForService(obj, i+1, idx);
 
         }
-        else{
-            this.calculateDiscountForService(obj)
+        else{ 
+            if(idx > -1){
+                var selectedservices = Object.assign([], this.state.selectedServices); 
+                selectedservices[idx] = obj
+                this.setState({selectedServices: selectedservices}, ()=>{
+                    this.calculateAllServices(idx+1)
+                })
+            }
+            else{
+                console.log("IDX", idx)
+                var selectedservices1 = Object.assign([], this.state.selectedServices); 
+                selectedservices1.push(obj);
+                this.setState({selectedServices: selectedservices1}, ()=>{ 
+                    this.calculateTicketTotal({
+                        retailPrice:0,
+                        servicePrice:0,
+                        ticketSubTotal:0,
+                        ticketDiscount:0,
+                        taxAmount:0,
+                        tipsAmount:0,
+                        grandTotal:0
+                    });
+                })
+            }
         }
     }
 
 
-    calculateDiscountForService(obj, i=0){
+    calculateDiscountForService(obj, i=0, idx=-1){
         if(i < obj.ticketservicediscounts.length){ 
+            if(i===0){
+                obj.totalDiscount = 0
+            }
             var discountdetail = obj.ticketservicediscounts[i];
+            console.log(discountdetail)
             if(discountdetail.mDiscountType === 'Percentage'){
-                discountdetail["mDiscountAmount"] = (discountdetail.mDiscountValue/100)*obj.subTotal;
+                discountdetail["mDiscountAmount"] = Number((discountdetail.mDiscountValue/100)*obj.subTotal).toFixed(2);
             }
             else{
-                discountdetail["mDiscountAmount"] = discountdetail.mDiscountValue;
+                discountdetail["mDiscountAmount"] = Number(discountdetail.mDiscountValue).toFixed(2);
             }
-            obj.ticketservicetaxes[i] = discountdetail;
-            obj.totalDiscount = obj.totalDiscount+discountdetail["mDiscountAmount"];
-            this.calculateDiscountForService(obj, i+1);
+            obj.ticketservicediscounts[i] = discountdetail;
+            obj.totalDiscount = Number(obj.totalDiscount)+Number(discountdetail["mDiscountAmount"]);
+            this.calculateDiscountForService(obj, i+1, idx);
         }
         else{
-            var selectedservices = Object.assign([], this.state.selectedServices);
-            selectedservices.push(obj);
-            this.setState({selectedServices: selectedservices}, ()=>{
-                console.log(this.state.selectedServices)
-            })
+            obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
+            this.calculateTaxForService(obj,i, idx);
+        }
+    }
+
+
+    calculateTicketTotal(price, i=0){
+        if(i < this.state.selectedServices.length){
+            var service =  Object.assign({}, this.state.selectedServices[i])
+            if(service.serviceDetail.mProductType==='Product'){
+                price.retailPrice = Number(price.retailPrice)+(Number(service.qty)* Number(service.perunit_cost))
+            }
+            else{
+                price.servicePrice = Number(price.servicePrice)+(Number(service.qty)* Number(service.perunit_cost))
+            }
+            price.ticketSubTotal =  Number(price.ticketSubTotal)+(Number(service.subTotal))
+            price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
+            price.taxAmount = Number(price.taxAmount)+Number(service.totalTax)
+            price.tipsAmount = Number(price.tipsAmount)+Number(service.totalTips)
+            this.calculateTicketTotal(price, i+1);
+        }
+        else{
+            console.log(price.ticketSubTotal, "-",  price.ticketDiscount, "+", price.taxAmount, "+", price.tipsAmount)
+            price.grandTotal = price.ticketSubTotal -  price.ticketDiscount + price.taxAmount + price.tipsAmount
+            this.setState({totalValues: price})
         }
     }
 
@@ -121,6 +338,12 @@ export default class CreateTicketComponent extends React.Component{
         })
     }
 
+    voidTicket(){
+        this.httpManager.postRequest("merchant/ticket/void",{data: this.state.ticketDetail.ticketId}).then(r=>{
+            this.props.data.closeCreateTicket()
+        })
+    }
+
     render(){
         return  <Grid container className='fullWidth fullHeight' style={{background:'#fff', borderTop:'1px solid #f0f0f0'}}>
                     <Grid item xs={12}  className='fullWidth fullHeight'>
@@ -138,22 +361,72 @@ export default class CreateTicketComponent extends React.Component{
                             </Grid>
                             <Grid item xs={12} style={{height:'calc(100% - 100px)', display:'flex', borderTop:'1px solid #dfdfdf' }} className='fullWidth'>
                                 <Grid item xs={7} className='fullHeight'>
-                                    <Grid item xs={12} style={{height:'calc(100% - 300px)' }} className='fullWidth'>
-
+                                    <Grid item xs={12} style={{height:'calc(100% - 263px)' }} className='fullWidth'>
+                                        <SelectedServicesComponent data={{
+                                            onSelectRowService: this.onSelectRowService,
+                                            selectedServices: this.state.selectedServices,
+                                            selectedRow: this.state.selectedRow,
+                                            isDisabled: this.state.isDisabled
+                                        }} />
                                     </Grid>
-                                    <Grid item xs={12} style={{height:'200px', background:'gray'}} className='fullWidth'>
-
+                                    <Grid item xs={12} style={{height:'163px', borderTop:'1px solid #d0d0d0' }} className='fullWidth'>
+                                        <TicketTotalComponent data={{price: this.state.totalValues}} />
                                     </Grid>
 
-                                    <Grid item xs={12} style={{height:'100px', background:'green'}} className='fullWidth'>
-
+                                    <Grid item xs={12} style={{height:'100px' }} className='fullWidth'>
+                                    <TicketFooterComponent data={{
+                                                                            tipsAdjust: this.state.tipsAdjust,
+                                                                            isDisabled: this.state.isPaidOnOpen,
+                                                                            isTicketEdit: this.props.isTicketEdit,
+                                                                            selectedServices: this.state.selectedServices,
+                                                                            selectedTech: this.state.selectedTech,
+                                                                            ticketDetail: this.state.ticketDetail, 
+                                                                            customer_detail: this.state.customer_detail,
+                                                                            saveTicket: this.saveTicket,
+                                                                            reloadTicket: this.reloadTicket,
+                                                                            printTicket: (option)=>{
+                                                                                this.setState({printtype:option},()=>{
+                                                                                    this.printTicket();
+                                                                                });
+                                                                            },
+                                                                            showCloseTicketPrint:()=>{
+                                                                                this.setState({closedticketprint: true})
+                                                                            },
+                                                                            setLoader:(boolval)=>{
+                                                                                this.setState({isLoading: boolval})
+                                                                            },
+                                                                            price: this.state.totalValues,
+                                                                            voidTicket:()=>{
+                                                                                this.props.voidTicket()
+                                                                            },
+                                                                            saveNotes:(notes)=>{
+                                                                                this.saveNotes(notes);
+                                                                            },
+                                                                            handleCloseTips:(msg, tipsInput)=>{
+                                                                                this.handleCloseTips(msg, tipsInput);
+                                                                            },
+                                                                            discountUpdated:this.discountUpdated
+                                                                        }} />
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={5} style={{height:'100%', overflow:'hidden', borderLeft:'1px solid #dfdfdf'}} className='fullHeight'>
                                         <ServiceSideMenu data={{
                                             selectedRow:this.state.selectedRow,
                                             selectedServices: this.state.selectedServices, 
-                                            onSelectService: this.onSelectService
+                                            selectedMenu: this.state.selectedMenu,
+                                            onSelectSideMenu: this.onSelectSideMenu,
+                                            onSelectService: this.onSelectService,
+                                            onChangeTechnician: this.onChangeTechnician,
+                                            onUpdateQuantity: this.onUpdateQuantity,
+                                            onVoidItem: this.onVoidItem,
+                                            onUpdatePrice: this.onUpdatePrice,
+                                            makeSpecialRequest: this.makeSpecialRequest,
+                                            removeSpecialRequest: this.removeSpecialRequest,
+                                            onUpdateRequestNotes: this.onUpdateRequestNotes,
+                                            selectDiscount: this.selectDiscount,
+                                            selectTax: this.selectTax,
+                                            onSaveSplit: this.onSaveSplit
+
                                         }} />
                                 </Grid>
                             </Grid>

@@ -1,0 +1,18 @@
+.paymentTabContainer{
+    display:flex;
+    flex-direction:row;
+    align-items: center;
+    justify-content: center;
+}
+
+.paymenttab{
+    text-transform: uppercase;
+    font-size:14px;
+    font-weight: 700;
+    margin:10px;
+    cursor: pointer;
+}
+
+.paymenttab.active{
+    border-bottom: 3px solid #bee1f7;
+}
