@@ -42,6 +42,8 @@ const modelDefiners = [
 	require('./POS/ticketservices.model'),
 	require('./POS/ticketservicetax.model'),
 	require('./POS/tickettips.model'), 
+	require('./POS/ticketdiscountcommission.model'),
+	require('./POS/ticketservicediscountcommission.model')
 ];
 
 // We define all models according to their files.

@@ -10,20 +10,20 @@ module.exports = (sequelize) => {
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
-        ticketServiceId:{
-            field:'ticketServiceId',
+        ticketId:{
+            field:'ticketId',
             type: DataTypes.UUID,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         }, 
         technicianId: {
-             field: 'tipsType', 
+             field: 'technicianId', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        totalServiceCost: {
-             field: 'totalServiceCost', 
+        totalDiscountAmount: {
+             field: 'totalDiscountAmount', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
@@ -45,19 +45,7 @@ module.exports = (sequelize) => {
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
-        }, 
-        cashPercentage: {
-             field: 'cashPercentage', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        checkPercentage: {
-             field: 'checkPercentage', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        },   
+        },  
     }, {
       freezeTableName: true,
       timestamps: false,
