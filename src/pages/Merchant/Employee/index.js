@@ -65,7 +65,7 @@ export default class Employee extends React.Component{
                   editable: false,
                   renderCell: (params) => (
                       <div>
-                         {params.row.mEmployeeCode === ''? '--' : params.row.mEmployeeCode}
+                         {params.row.mEmployeePasscode === ''? '--' : params.row.mEmployeePasscode}
                       </div>
                   )
                 },
@@ -110,6 +110,7 @@ export default class Employee extends React.Component{
                {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
                 variant="outlined" 
                 size="small" 
+                disabled={ !navigator.onLine }
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
@@ -117,6 +118,7 @@ export default class Employee extends React.Component{
                     <FButton
                     variant="contained" 
                     size="small" 
+                    disabled={ !navigator.onLine }
                     onClick={()=>{this.updateRecord(params.row, '0')}} 
                     label="Deactivate"/>
                 }
@@ -124,6 +126,7 @@ export default class Employee extends React.Component{
                     <FButton
                     variant="contained" 
                     size="small" 
+                    disabled={ !navigator.onLine }
                     onClick={()=>{this.updateRecord(params.row, '1')}} 
                     label="Activate"/>
                 }
@@ -243,6 +246,7 @@ export default class Employee extends React.Component{
                     <FButton 
                     onClick={()=>this.openAdd()}
                     size="large"
+                    disabled={ !navigator.onLine }
                     variant="contained"
                     label="Add Employee"
                     startIcon={getIcon('mdi:plus')}

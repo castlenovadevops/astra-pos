@@ -23,8 +23,11 @@ export default class FSelect extends React.Component{
             this.setState({options: this.props.data})
         }
         else if(this.props.data !== ''){ 
+          var url = this.props.data;
+          if(url.indexOf('https://') === -1){
+            url = process.env.REACT_APP_LOCALAPIURL+url;
 
-          this.httpManager.postRequest(this.props.data,{data:"SELECT COMPONENT"}).then(response=>{
+          this.httpManager.postRequest(url,{data:"SELECT COMPONENT"}).then(response=>{
             var options = []; 
             // console.log(response);
             response.data.forEach(el=>{ 
@@ -37,6 +40,22 @@ export default class FSelect extends React.Component{
           }).catch(e=>{
             // console.log("ERROR::::", e)
           })
+        }
+        else{
+          this.httpManager.getRequest(url).then(response=>{
+            var options = []; 
+            // console.log(response);
+            response.data.forEach(el=>{ 
+              options.push({
+                label:this.getLabel(el),
+                value:this.getValue(el)
+              })
+              this.setState({options: options})
+            })
+          }).catch(e=>{
+            // console.log("ERROR::::", e)
+          })
+        }
         }
     }
 

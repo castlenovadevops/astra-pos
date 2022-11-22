@@ -29,7 +29,9 @@ export default class HTTPManager{
                 // url = process.env.REACT_APP_APIURL+urlREACT_APP_LOCALAPIURL
             // }
 
-            url = process.env.REACT_APP_LOCALAPIURL+url
+            if(url.indexOf('https://') === -1){
+                url = process.env.REACT_APP_LOCALAPIURL+url
+            }
             axios.get( url, {headers: this.getAuthHeader()}).then(response=>{ 
                 // resolve(response.data); 
                 // console.log(response.data)
@@ -49,10 +51,9 @@ export default class HTTPManager{
 
     postRequest(url, input){
         return new Promise((resolve, reject)=>{ 
-            // if(url.indexOf('pos/checkSyncCode') !== -1){
-                // url = process.env.REACT_APP_APIURL+url
-            // }
-            url = process.env.REACT_APP_LOCALAPIURL+url
+            if(url.indexOf('https://') === -1){
+                url = process.env.REACT_APP_LOCALAPIURL+url
+            }
             axios.post(url, {data:this.crypto.AESEncrypt(input)}, {headers: this.getAuthHeader()}).then(response=>{ 
                 var requestresponse = response;
                 // console.log(response)

@@ -269,27 +269,27 @@ module.exports = class EmployeeController extends baseController{
                 Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
                 `id`
             ],
-            [
-                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
-                `mEmployeeRoleName`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeRole`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeStatus`
-            ],
-            [
-                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeCode`
-            ],
+            // [
+            //     Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+            //     `mEmployeeRoleName`
+            // ],
+            // [
+            //     Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     `mEmployeeRole`
+            // ],
+            // [
+            //     Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     `mEmployeeStatus`
+            // ],
+            // [
+            //     Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     `mEmployeeCode`
+            // ],
         ]
     },
         where:{
-             mEmployeeId: {
-                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.deviceDetails.merchantId+"' and roleName != 'Owner'))")
+            mEmployeeRoleName: {
+                [Sequelize.Op.ne] : 'Owner'
             }
         },
         include:[
