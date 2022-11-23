@@ -35,7 +35,10 @@ export default class CreateTicketComponent extends React.Component{
                 taxAmount:0,
                 tipsAmount:0,
                 grandTotal:0
-            }
+            },
+            tips_input:{},
+            ticketdiscounts:[],
+
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
         this.onSelectService  = this.onSelectService.bind(this);
@@ -58,7 +61,16 @@ export default class CreateTicketComponent extends React.Component{
         this.onUpdateNotes = this.onUpdateNotes.bind(this);
         this.handleCloseTips = this.handleCloseTips.bind(this);
         this.saveTicket = this.saveTicket.bind(this);
+        this.updateTicketDiscount = this.updateTicketDiscount.bind(this);
     } 
+
+    updateTicketDiscount(discounts, totalDiscountAmount){
+        var price = Object.assign({}, this.state.totalValues);
+        price.ticketDiscount = totalDiscountAmount; 
+        console.log( Number(price.ticketSubTotal) ,"+", Number(price.taxAmount) ,"+", Number(price.tipsAmount)  ,"-", Number(totalDiscountAmount))
+        price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
+        this.setState({totalValues: price,ticketdiscounts: discounts})
+    }
 
     saveTicket(option){
         console.log("AAAA")
@@ -69,7 +81,14 @@ export default class CreateTicketComponent extends React.Component{
     
     handleCloseTips(msg, tipsInput){
         console.log(tipsInput)
-
+        if(tipsInput !== undefined){
+            this.setState({selectedServices: tipsInput.selectedServices}, ()=>{
+                var tipinputobj = Object.assign(tipsInput);
+                delete tipinputobj.selectedServices
+                this.setState({ tips_input: tipinputobj})
+                this.calculateAllServices(0);
+            })
+        }
         // "tipsType": ticketDetail.tipsType,
     }
 
@@ -195,7 +214,7 @@ export default class CreateTicketComponent extends React.Component{
                 retailPrice:0,
                 servicePrice:0,
                 ticketSubTotal:0,
-                ticketDiscount:0,
+                ticketDiscount:this.state.ticketdiscounts.length ? this.state.totalValues.ticketDiscount :  0,
                 taxAmount:0,
                 tipsAmount:0,
                 grandTotal:0
@@ -274,7 +293,7 @@ export default class CreateTicketComponent extends React.Component{
                         retailPrice:0,
                         servicePrice:0,
                         ticketSubTotal:0,
-                        ticketDiscount:0,
+                        ticketDiscount:this.state.ticketdiscounts.length ? this.state.totalValues.ticketDiscount :  0,
                         taxAmount:0,
                         tipsAmount:0,
                         grandTotal:0
@@ -459,8 +478,8 @@ export default class CreateTicketComponent extends React.Component{
                                                                             },
                                                                             handleCloseTips:(msg, tipsInput)=>{
                                                                                 this.handleCloseTips(msg, tipsInput);
-                                                                            },
-                                                                            discountUpdated:this.discountUpdated
+                                                                            }, 
+                                                                            updateTicketDiscount: this.updateTicketDiscount
                                                                         }} />
                                     </Grid>
                                 </Grid>

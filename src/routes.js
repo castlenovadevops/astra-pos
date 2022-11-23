@@ -28,6 +28,8 @@ import Login from './pages/Login';
 import TicketLayout from './layouts/TicketLayout';
 import CreateTicket from './pages/ticket/create';
 
+import Transactions from './pages/Transactions';
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -61,7 +63,8 @@ export default function Router() {
         { path: 'commissionpayment', element: <CommissionPayment />},
         { path: 'defaultdiscount', element: <DefaultDiscountDivision />},
         { path: 'employeesetting', element: <EmployeeSetting />},
-        { path:'profile', element: <UserProfile/>}
+        { path:'profile', element: <UserProfile/>},
+        { path:'transactions', element: <Transactions/>}
       ],
     }, {
       path: '/ticket/create', 

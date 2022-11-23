@@ -2,18 +2,14 @@ import React from 'react';
 import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@material-ui/core/'; 
 import Discounts from './discounts'; 
 
-export default function DiscountTicketModal({
-        handleCloseAddDiscounts,
-        ticket_discount_selected,
-        ticket_grandTotal,
-        discount_list,
-        afterSubmitDiscount
+export default function DiscountTicketModal({ 
+    data
 }) 
 {
     return (<Dialog
         open={true}
         onClose={()=>{
-            this.props.data.selectedMenu(1)
+           data.closeDiscount()
         }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -24,8 +20,7 @@ export default function DiscountTicketModal({
         Discounts
     </DialogTitle>
     <DialogContent>
-    <Discounts  discount_selected={ticket_discount_selected} ticket_service_total={ticket_grandTotal} 
-                discount_list={discount_list} afterSubmitDiscount={afterSubmitDiscount} ></Discounts>
+    <Discounts  data={data}></Discounts>
     </DialogContent> 
 </Dialog>   
     )

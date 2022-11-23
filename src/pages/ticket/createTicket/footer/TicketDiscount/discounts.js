@@ -17,127 +17,51 @@ class Discounts extends React.Component {
     constructor(props) {
         super(props);
         this.state={
-            discount_list: [],
-            selected_discount:'',
-            selected_disDetails:{},
-            isApply: false,
-            ticket_grandTotal: 0,
-            ticket_with_dis: 0,
-            discount_value: 0,
-            selected_discount_id:0,
+            discount_list: [], 
+            isApply: false, 
+            selectedDiscounts:[],
+            totalDiscountAmount:0
         }
     }
-    componentDidMount(){ 
-        if(this.props.discount_list !== undefined){
-            this.setState({discount_list: this.props.discount_list});
-        }
-        if(this.props.ticket_service_total !== undefined){
-            this.setState({ticket_grandTotal: this.props.ticket_service_total});
-        }
-        console.log("sfdsfds",this.props.discount_selected, this.props.ticket_service_total);
-        // if(this.props.discount_selected.discount_id !== undefined && this.props.discount_selected.discount_id !== null){
-        //     var grandTotal = Number(this.props.ticket_service_total) + Number(this.props.discount_selected.discount_totalamt);
-        //     console.log(grandTotal,this.props.ticket_service_total ,this.props.discount_selected.discount_totalamt );
-        //     var per_dis = 0;
-        //     var ticket_with_dis = 0
-        //     if(this.props.discount_selected.discount_type === 'percentage'){
-        //         per_dis = (this.props.discount_selected.discount_value/100)* grandTotal;
-        //     }else{
-        //         per_dis = this.props.discount_selected.discount_value;
-        //     }
-        //     ticket_with_dis = Number(this.props.ticket_service_total);
-        //     this.setState({selected_discount: this.props.discount_selected.discount_id,selected_disDetails:this.props.discount_selected,isApply: true, ticket_grandTotal: grandTotal,discount_value: per_dis,ticket_with_dis : ticket_with_dis}); 
-        // } 
-
+    componentDidMount(){  
         this.httpManager.postRequest("merchant/discounts/get",{data:"TICKET"}).then(res=>{
          this.setState({discount_list: res.data})
         })
-     }
-    getDiscount(id){
-        this.resetDiscount();
-        if(this.state.selected_discount === id){ 
-            var per_dis = this.state.discount_value; 
-            var ticket_with_dis = Number(this.props.ticket_service_total) + per_dis; 
+     } 
 
-            this.setState({ selected_discount:'',
-            selected_disDetails:{},
-            isApply: false,
-            ticket_grandTotal: ticket_with_dis,
-            ticket_with_dis: ticket_with_dis,
-            discount_value: 0,
-            selected_discount_id:0}, function(){
-                this.saveDiscount()
-            })
-        }
-        else{
-            if(this.state.selected_discount !== undefined){
-                var per_dis = Number(this.state.discount_value); 
-                var ticket_with_dis = Number(this.props.ticket_service_total) + per_dis; 
-    
-                this.setState({ selected_discount:'',
-                selected_disDetails:{},
-                isApply: false,
-                ticket_grandTotal: ticket_with_dis,
-                ticket_with_dis: ticket_with_dis,
-                discount_value: 0,
-                selected_discount_id:0}, function(){
-                    let selected_discount_details = this.state.discount_list.filter(item => item.id === id);
-                    this.setState({selected_discount: id, selected_disDetails: selected_discount_details[0], isApply: true});
-            
-                    var per_dis = 0;
-                    var ticket_with_dis = 0;
-                    //Discount Percentage Amt Calculation
-                    if(selected_discount_details[0].discount_type === 'percentage'){
-                        per_dis = (selected_discount_details[0].discount_value/100)*this.state.ticket_grandTotal;
-                    }else{
-                        per_dis = selected_discount_details[0].discount_value;
-                    }
-                    console.log(this.state.ticket_grandTotal, per_dis);
-                    ticket_with_dis = this.state.ticket_grandTotal - per_dis;
-                    this.setState({ticket_with_dis : ticket_with_dis,discount_value: per_dis }, function(){
-                        this.saveDiscount()
-                    });
-                })
+     addOrRemoveDiscount(discount){
+        var selecteddiscounts = Object.assign([], this.state.selectedDiscounts);
+        var selectedids = selecteddiscounts.map(d=>d.mDiscountId);
+        var discounttotal = 0;
+        let idx = selectedids.indexOf(discount.mDiscountId);
+        if(idx === -1){
+            var discountobj = Object.assign({}, discount);
+            discountobj.mDiscountAmount = 0
+            if(discount.mDiscountType === 'Percentage'){
+                discountobj.mDiscountAmount  = (Number(discount.mDiscountValue)/100) * Number(this.props.data.price.ticketSubTotal)
             }
             else{
-                let selected_discount_details = this.state.discount_list.filter(item => item.id === id);
-                this.setState({selected_discount: id, selected_disDetails: selected_discount_details[0], isApply: true});
-        
-                var per_dis = 0;
-                var ticket_with_dis = 0;
-                //Discount Percentage Amt Calculation
-                if(selected_discount_details[0].discount_type === 'percentage'){
-                    per_dis = Number(selected_discount_details[0].discount_value/100)* Number(this.state.ticket_grandTotal);
-                }else{
-                    per_dis = selected_discount_details[0].discount_value;
-                }
-                ticket_with_dis = Number(this.props.ticket_service_total) - per_dis;
-                this.setState({ticket_with_dis : ticket_with_dis,discount_value: per_dis }, function(){
-                    this.saveDiscount()
-                });
+                discountobj.mDiscountAmount  = discount.mDiscountValue
             }
-            
+            selecteddiscounts.push(discountobj)
         }
-    }
-    handleCloseDiscounts() {
-        this.props.afterSubmitDiscount('');
-    }
-    resetDiscount(){
-        this.setState({ticket_grandTotal: this.props.ticket_service_total,discount_value: 0,ticket_with_dis : 0, selected_discount:'',
-        selected_disDetails:{}}); 
-    }
+        else{
+            selecteddiscounts.splice(idx,1)
+        }
+        selecteddiscounts.forEach(d=>{
+            discounttotal= Number(discounttotal) + Number(d.mDiscountAmount) 
+        })
+        this.setState({selectedDiscounts:selecteddiscounts, totalDiscountAmount: discounttotal}, ()=>{
+            this.props.data.updateTicketDiscount(this.state.selectedDiscounts, this.state.totalDiscountAmount)
+        }) 
+     }
 
-    saveDiscount(){
-        var dis_input = {
-            dis_selected : Object.assign({}, this.state.selected_disDetails),
-            discount_value: this.state.discount_value,
-            ticket_with_discount : this.state.ticket_with_dis
-        }  
-        if(this.props.ticket_service_total < this.state.discount_value){
-            this.resetDiscount()
-        }
-        this.props.afterSubmitDiscount('Applied Sucessfully',dis_input, 'apply');
-    }
+     checkDiscount(discount){ 
+        var selecteddiscounts = Object.assign([], this.state.selectedDiscounts);
+        var selectedids = selecteddiscounts.map(d=>d.mDiscountId); 
+        let idx = selectedids.indexOf(discount.mDiscountId);
+        return idx === -1 ? false : true
+     }
     render() {
         return (
                 <Grid item xs={12} style={{display:'flex', flexWrap:'wrap',height:'450px', overflow:'auto', padding: '0 20px'}}> 
@@ -146,9 +70,11 @@ class Discounts extends React.Component {
                         {this.state.discount_list.map((dis, index) => (
                             <Grid item xs={3} style={{height:'100px', paddingRight: 2,paddingLeft: 2, paddingTop:2,paddingBottom:2
                             }} >
-                                <div style={{'background':(this.state.selected_discount===dis.id ? '#bee1f7':'#F2F2F2'), textTransform:'capitalize',
-                            borderRadius: 10,'color':(this.state.selected_discount===dis.id ? '#000':'#000'), display:'flex', alignItems:'center', justifyContent:'center',
-                            marginLeft:(index>0)?10:0, cursor: 'pointer', height:70 }} onClick={() => this.getDiscount(dis.id)}>
+                                <div style={{'background':(this.checkDiscount(dis)  ? '#bee1f7':'#F2F2F2'), textTransform:'capitalize',
+                            borderRadius: 10,'color':(this.checkDiscount(dis) ? '#000':'#000'), display:'flex', alignItems:'center', justifyContent:'center',
+                            marginLeft:(index>0)?10:0, cursor: 'pointer', height:70 }} onClick={() => {
+                                this.addOrRemoveDiscount(dis)
+                            }}>
                                  
                                          <Box
                                                           fontSize="subtitle2.fontSize"
@@ -158,35 +84,14 @@ class Discounts extends React.Component {
                                                           textOverflow="ellipsis" 
                                                           style={{background:"", maxHeight:'75%', textAlign: 'center', width: '100%',marginLeft:2,marginRight:2 }}  
                                                         >
-                                                          {dis.name}<br/>
-                                                          {dis.discount_type === 'percentage' ? dis.discount_value+"%" : "$"+dis.discount_value}
+                                                          {dis.mDiscountName}<br/>
+                                                          {dis.mDiscountType === 'Percentage' ? dis.mDiscountValue+"%" : "$"+dis.mDiscountValue}
                                                         </Box>
                                         </div>
                             </Grid>
                         ))} 
                         </div>
-                    </Grid> 
-                    {/* <Grid item xs={12} style={{padding:'20px'}}> 
-                        <Grid item xs={12} style={{display:'flex', flexWrap:'wrap'}}>
-                        <Typography variant="subtitle2" align="center">  
-                            Ticket GrandTotal : ${Number(this.state.ticket_grandTotal.toString()).toFixed(2)}
-                         </Typography>
-                        </Grid>
-
-                        <Grid item xs={12} style={{display:'flex', flexWrap:'wrap'}}>
-                        <Typography variant="subtitle2" align="center"> 
-                            Discount value {this.state.selected_disDetails.discount_type === undefined ? '--' : this.state.selected_disDetails.discount_type === 'amount' ? '$ '+this.state.selected_disDetails.discount_value : this.state.selected_disDetails.discount_value+'%'} : ${Number(this.state.discount_value.toString()).toFixed(2)}
-                        </Typography>
-                        </Grid>
-
-                        <Grid item xs={12} style={{display:'flex', flexWrap:'wrap'}}>
-                        <Typography variant="subtitle2" align="center"> 
-                            Ticket With Discount : ${Number(this.state.ticket_with_dis.toString()).toFixed(2)}
-                        </Typography>
-                        </Grid>
-                       
-
-                    </Grid> */}
+                    </Grid>  
                 </Grid>
                
         )

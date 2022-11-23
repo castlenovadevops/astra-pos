@@ -51,6 +51,11 @@ export default class NavigationMenu extends React.Component{
                       icon: getIcon('eva:pie-chart-2-fill'),
                   }, 
                   {
+                      title: 'transactions',
+                      path: '/app/transactions',
+                      icon: getIcon('eva:pie-chart-2-fill'),
+                  }, 
+                  {
                     title: 'Employee',
                     path: '/app/employee',
                     icon: getIcon('mdi:account-cog'), 

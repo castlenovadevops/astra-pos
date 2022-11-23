@@ -53,28 +53,29 @@ export default class TicketPayment extends React.Component  {
             this.setState({isLoading:true,businessdetail:businessdetail}, function(){ 
                 if(this.props.ticketDetail !== undefined){
                     console.log(this.props.ticketDetail.sync_id)
-                    this.paymentController.getTicketDetail(this.props.ticketDetail.sync_id).then(res=>{
-                        if(res.paid_status==='paid'){
-                            this.props.afterSubmit();
-                        }
-                        else{
-                            this.setState({ticketDetail : res}, function(){ 
-                                console.log(this.state.ticketDetail)
-                                if(this.state.ticketDetail.ticketPendingAmount === null || this.state.ticketDetail.ticketPendingAmount === ''){
-                                    var obj = Object.assign({}, this.state.ticketDetail);
-                                    obj.ticketPendingAmount = this.state.ticketDetail.grand_total
-                                    this.setState({remainAmount: this.state.ticketDetail.grand_total, topayamount: this.state.ticketDetail.grand_total,  ticketDetail:obj},()=>{ 
-                                        this.getTicketPayments();
-                                    })
-                                }
-                                else{
-                                    this.setState({remainAmount: this.state.ticketDetail.ticketPendingAmount, topayamount: this.state.ticketDetail.ticketPendingAmount},()=>{ 
-                                        this.getTicketPayments();
-                                    })
-                                }
-                            })
-                        }
-                    })
+                    // this.props.ticketDetail
+                    // this.paymentController.getTicketDetail(this.props.ticketDetail.sync_id).then(res=>{
+                    //     if(res.paid_status==='paid'){
+                    //         this.props.afterSubmit();
+                    //     }
+                    //     else{
+                    //         this.setState({ticketDetail : res}, function(){ 
+                    //             console.log(this.state.ticketDetail)
+                    //             if(this.state.ticketDetail.ticketPendingAmount === null || this.state.ticketDetail.ticketPendingAmount === ''){
+                    //                 var obj = Object.assign({}, this.state.ticketDetail);
+                    //                 obj.ticketPendingAmount = this.state.ticketDetail.grand_total
+                    //                 this.setState({remainAmount: this.state.ticketDetail.grand_total, topayamount: this.state.ticketDetail.grand_total,  ticketDetail:obj},()=>{ 
+                    //                     this.getTicketPayments();
+                    //                 })
+                    //             }
+                    //             else{
+                    //                 this.setState({remainAmount: this.state.ticketDetail.ticketPendingAmount, topayamount: this.state.ticketDetail.ticketPendingAmount},()=>{ 
+                    //                     this.getTicketPayments();
+                    //                 })
+                    //             }
+                    //         })
+                    //     }
+                    // })
                 }
                 var employeedetail = window.localStorage.getItem('employeedetail');
                 if(employeedetail !== undefined){
@@ -83,13 +84,31 @@ export default class TicketPayment extends React.Component  {
             });
         }
     }
+    getPaymentValues(x,n){
+        var values = []; 
+        var x1 = Math.round((x+1) / 10) * 10; 
+        if(x%10 === 0){
+            x1 = Math.round((x+5) / 5) * 5; 
+        }
+        values.push(x1);
+        var x2 = Math.round((x1+10) / 10) * 10;
+        if(x%10 === 0){
+            x2 = Math.round((x+5) / 10) * 10;
+        }
+        values.push(x2);
+        if(n === 3){ 
+            var x3 = Math.round((x2+10) / 10) * 10;
+            values.push(x3);
+        }
+        return values;
+    }
 
     getTicketPayments(){
-        this.paymentController.getTicketPayments(this.state.ticketDetail.sync_id).then(res=>{ 
-            console.log("ASdasdasdasds")
-            console.log(res);
-            this.setState({ticketpayments: res, isLoading:false});
-        })
+        // this.paymentController.getTicketPayments(this.state.ticketDetail.sync_id).then(res=>{ 
+        //     console.log("ASdasdasdasds")
+        //     console.log(res);
+        //     this.setState({ticketpayments: res, isLoading:false});
+        // })
     }
 
     renderPaymentTabs(){

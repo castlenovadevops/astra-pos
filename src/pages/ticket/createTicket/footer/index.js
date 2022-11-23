@@ -264,10 +264,10 @@ export default class TicketFooterComponent extends React.Component{
             }
 
  
-            {this.state.openPayment && <PaymentModal  
+            {/* {this.state.openPayment && <PaymentModal  
                 handleClosePayment={(msg)=>this.handleClosePayment(msg)} ticketDetail={this.props.data.ticketDetail}>
                     
-            </PaymentModal>}
+            </PaymentModal>} */}
  
             {this.state.addNotes_popup &&
                 <NotesModal handleCloseAddNotes={()=>this.handleCloseAddNotes()} notes={this.props.data.ticketDetail.ticketNotes} handlechangeNotes={(e)=>this.handlechangeNotes(e)} saveNotes={()=>this.saveNotes()}/>
@@ -297,11 +297,11 @@ export default class TicketFooterComponent extends React.Component{
                 ticketowner: this.props.data.selectedTech,
                 ticketDetail: this.props.data.ticketDetail,
                 price: this.props.data.price,
-                customer_detail: this.props.data.customer_detail, 
-                handleCloseDiscount:()=>{
+                customer_detail: this.props.data.customer_detail,  
+                updateTicketDiscount: this.props.data.updateTicketDiscount,
+                closeDiscount:()=>{
                     this.setState({discountPopup: false})
-                },
-                discountUpdated:this.props.data.discountUpdated
+                }
             }} />} 
         </>
     }
