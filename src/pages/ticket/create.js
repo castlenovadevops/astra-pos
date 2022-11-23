@@ -376,7 +376,42 @@ export default class CreateTicketComponent extends React.Component{
                 "isDraft":0, 
             }
 
-            this.setState({totalValues: price, ticketDetail: ticketinput})
+            this.setState({totalValues: price, ticketDetail: ticketinput},()=>{
+                if(this.state.ticketdiscounts.length > 0){
+                    this.updateTicketDiscountAmount();
+                }
+            })
+        }
+    }
+
+    updateTicketDiscountAmount(i=0){
+        if(i < this.state.ticketdiscounts.length){
+            var discounts = Object.assign([], this.state.ticketdiscounts); 
+            var discount = discounts[i]
+            var discountobj = Object.assign({}, discount );
+            discountobj.mDiscountAmount = 0
+            if(discount.mDiscountType === 'Percentage'){
+                discountobj.mDiscountAmount  = (Number(discount.mDiscountValue)/100) * Number(this.state.totalValues.ticketSubTotal)
+            }
+            else{
+                discountobj.mDiscountAmount  = discount.mDiscountValue
+            }
+            discounts[i] = discountobj;
+            this.setState({ticketdiscounts: discounts})
+            this.updateTicketDiscountAmount(i+1)
+        } 
+        else{ 
+            var totalDiscountAmount = 0;
+            this.state.ticketdiscounts.forEach((dis,i) =>{
+                totalDiscountAmount = Number(totalDiscountAmount)+Number(dis.mDiscountAmount)
+                if(i=== this.state.ticketdiscounts.length-1){
+                    var price = Object.assign({}, this.state.totalValues);
+                    price.ticketDiscount = totalDiscountAmount; 
+                    console.log( Number(price.ticketSubTotal) ,"+", Number(price.taxAmount) ,"+", Number(price.tipsAmount)  ,"-", Number(totalDiscountAmount))
+                    price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
+                    this.setState({totalValues: price})
+                }
+            })
         }
     }
 
@@ -454,6 +489,7 @@ export default class CreateTicketComponent extends React.Component{
                                                                             selectedTech: this.state.selectedTech,
                                                                             ticketDetail: this.state.ticketDetail, 
                                                                             customer_detail: this.state.customer_detail,
+                                                                            ticketdiscounts: this.state.ticketdiscounts,
                                                                             saveTicket: this.saveTicket,
                                                                             reloadTicket: this.reloadTicket,
                                                                             price: this.state.totalValues,

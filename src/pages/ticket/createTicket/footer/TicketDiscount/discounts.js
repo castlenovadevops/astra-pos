@@ -27,6 +27,9 @@ class Discounts extends React.Component {
         this.httpManager.postRequest("merchant/discounts/get",{data:"TICKET"}).then(res=>{
          this.setState({discount_list: res.data})
         })
+        if(this.props.data.ticketdiscounts.length > 0){
+            this.setState({selectedDiscounts: this.props.data.ticketdiscounts, totalDiscountAmount: this.props.data.price.ticketDiscount})
+        }
      } 
 
      addOrRemoveDiscount(discount){

@@ -299,6 +299,7 @@ export default class TicketFooterComponent extends React.Component{
                 price: this.props.data.price,
                 customer_detail: this.props.data.customer_detail,  
                 updateTicketDiscount: this.props.data.updateTicketDiscount,
+                ticketdiscounts: this.props.data.ticketdiscounts,
                 closeDiscount:()=>{
                     this.setState({discountPopup: false})
                 }
