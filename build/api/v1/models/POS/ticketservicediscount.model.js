@@ -45,14 +45,14 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false,
         },
-        mDiscountOwnerDivision: {
-             field: 'mDiscountOwnerDivision', 
+        mOwnerDivision: {
+             field: 'mOwnerDivision', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        mDiscountEmployeeDivision: {
-             field: 'mDiscountEmployeeDivision', 
+        mEmployeeDivision: {
+             field: 'mEmployeeDivision', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,

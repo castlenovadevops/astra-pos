@@ -38,7 +38,7 @@ export default class CreateTicketComponent extends React.Component{
             },
             tips_input:{},
             ticketdiscounts:[],
-
+            ticketdiscountcommissions:[]
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
         this.onSelectService  = this.onSelectService.bind(this);
@@ -69,12 +69,64 @@ export default class CreateTicketComponent extends React.Component{
         price.ticketDiscount = totalDiscountAmount; 
         console.log( Number(price.ticketSubTotal) ,"+", Number(price.taxAmount) ,"+", Number(price.tipsAmount)  ,"-", Number(totalDiscountAmount))
         price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
-        this.setState({totalValues: price,ticketdiscounts: discounts})
+        this.setState({totalValues: price,ticketdiscounts: discounts, ticketdiscountcommissions:[]}, ()=>{
+            this.calculateTicketDiscountCommission();
+        })
+    }
+
+    calculateTicketDiscountCommission(i=0){
+        if(i < this.state.ticketdiscounts.length){
+            var discount = Object.assign({}, this.state.ticketdiscounts[i]);
+            var input = {
+                commissionId: discount.mDiscountId,
+                ticketId: this.state.ticketDetail.ticketId
+            }
+            if(discount.mDiscountDivisionType==='Owner'){
+                input.technicianId = this.state.selectedTech.mEmployeeId
+                input.ownerPercentage = discount.mDiscountAmount
+                var commissions = Object.assign([], this.state.ticketdiscountcommissions);
+                commissions.push(input);
+                this.setState({ticketdiscountcommissions: commissions})
+            }
+            else if(discount.mDiscountDivisionType==='Employee'){ 
+                let ownerpercent = 0;
+                let emppercent = discount.mDiscountAmount / this.state.selectedServices.length;
+                this.saveEmpDivision(0,discount, ownerpercent, emppercent)
+            }
+            else if(discount.mOwnerDivision !== '' && discount.mEmployeeDivision !== ''){
+                let ownerpercent =  (discount.mDiscountAmount / this.state.selectedServices.length) * (discount.mOwnerDivision/100);
+                let emppercent = (discount.mDiscountAmount / this.state.selectedServices.length) * (discount.mEmployeeDivision/100)
+                this.saveEmpDivision(0, discount, ownerpercent, emppercent)
+            }
+        } 
+    }
+
+    saveEmpDivision(i,discount, ownerpercent, emppercent){
+        if(i< this.state.selectedServices.length){
+            var input = {
+                commissionId: discount.mDiscountId,
+                ticketId: this.state.ticketDetail.ticketId
+            }
+            input.technicianId = this.state.selectedServices[i].technician.mEmployeeId
+            input.ownerPercentage =  ownerpercent
+            input.employeePercentage = emppercent;
+            var commissions = Object.assign([], this.state.ticketdiscountcommissions);
+            commissions.push(input);
+            this.setState({ticketdiscountcommissions: commissions});
+            this.saveEmpDivision(i+1,discount, ownerpercent, emppercent)
+        } 
     }
 
     saveTicket(option){
         console.log("AAAA")
-        this.httpManager.postRequest('merchant/ticket/saveTicket',{ticketDetail:Object.assign({}, this.state.ticketDetail), selectedServices: Object.assign([], this.state.selectedServices)}).then(resp=>{
+        var ticketinput = {
+            ticketDetail:Object.assign({}, this.state.ticketDetail), 
+            selectedServices: Object.assign([], this.state.selectedServices),
+            ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+            ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+        }
+        console.log(ticketinput)
+        this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
             console.log(resp)
         })
     }

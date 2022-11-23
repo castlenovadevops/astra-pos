@@ -50,8 +50,7 @@ module.exports = class TicketController extends baseController{
 
 
         this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
-            this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{
-                // this.sendResponse({message: "Ticket saved successfully."}, res, 200)
+            this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
                 this.saveTicketServices(req, res, next); 
             })
         })
@@ -113,7 +112,7 @@ module.exports = class TicketController extends baseController{
             }
         }
         else{
-            this.sendResponse({message: "Ticket saved successfully."}, res, 200)
+            this.saveTicketDiscount(req, res, next)
         }
     }
 
@@ -156,8 +155,8 @@ module.exports = class TicketController extends baseController{
                 mDiscountValue: input.mDiscountValue,
                 mDiscountAmount: input.mDiscountAmount,
                 mDiscountDivisionType: input.mDiscountDivisionType,
-                mDiscountOwnerDivision: input.mDiscountOwnerDivision||'',
-                mDiscountEmployeeDivision: input.mDiscountEmployeeDivision||'',
+                mOwnerDivision: input.mOwnerDivision||'',
+                mEmployeeDivision: input.mEmployeeDivision||'',
                 status:1,
                 createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate(),
@@ -175,8 +174,8 @@ module.exports = class TicketController extends baseController{
                     empPercentage = input.mDiscountAmount;
                 }
                 else{ 
-                    ownerPercentage = Number(input.mDiscountAmount) * (Number(input.mDiscountOwnerDivision)/100)
-                    empPercentage = Number(input.mDiscountAmount) * (Number(input.mDiscountEmployeeDivision)/100)
+                    ownerPercentage = Number(input.mDiscountAmount) * (Number(input.mOwnerDivision)/100)
+                    empPercentage = Number(input.mDiscountAmount) * (Number(input.mEmployeeDivision)/100)
                 }
                 var servicediscountcommission_input={
                     technicianId: service.technician.mEmployeeId,
@@ -210,5 +209,50 @@ module.exports = class TicketController extends baseController{
         this.create('ticketcommission', servicecommission_input).then(r=>{
             this.saveTicketServices(req, res, next, idx+1); 
         })
+    }
+
+
+    saveTicketDiscount = async(req, res, next) =>{
+        this.saveTicketDiscountValues(0, req, res, next);
+    }
+
+    saveTicketDiscountValues = async(i, req, res)=>{ 
+        var ticketdiscounts = Object.assign([], req.input.ticketdiscounts);
+        if(i< ticketdiscounts.length){
+            var input = ticketdiscounts[i]
+            var disinput = {
+                ticketId: req.input.ticketDetail.ticketId,
+                mDiscountId: input.mDiscountId,
+                mDiscountName: input.mDiscountName,
+                mDiscountType: input.mDiscountType,
+                mDiscountValue: input.mDiscountValue,
+                mDiscountAmount: input.mDiscountAmount,
+                mDiscountDivisionType: input.mDiscountDivisionType,
+                mOwnerDivision: input.mOwnerDivision||'',
+                mEmployeeDivision: input.mEmployeeDivision||'',
+                status:1,
+                createdBy: req.userData.mEmployeeId,
+                createdDate: this.getDate(),
+            }
+            this.create('ticketdiscount', disinput).then(r=>{
+                this.saveTicketDiscountValues(i+1, req, res)
+            })
+        }
+        else{
+            this.saveTicketDiscountCommission(0, req, res)
+        }
+    }
+
+    saveTicketDiscountCommission = async(i, req, res)=>{
+        var ticketdiscountcommissions = Object.assign([], req.input.ticketdiscounts);
+        if(i< ticketdiscountcommissions.length){
+            var input = ticketdiscountcommissions[i] 
+            this.create('ticketdiscount', input).then(r=>{
+                this.saveTicketDiscountCommission(i+1, req, res)
+            })
+        }
+        else{ 
+            this.sendResponse({message: "Ticket saved successfully."}, res, 200)
+        }
     }
 }  

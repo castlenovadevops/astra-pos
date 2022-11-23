@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("ticketdiscount", {
+	sequelize.define("ticketmDiscount", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -15,44 +15,44 @@ module.exports = (sequelize) => {
             type: DataTypes.UUID,
             primaryKey: true
         }, 
-        discountAmount: {
-             field: 'discountAmount', 
+        mDiscountAmount: {
+             field: 'mDiscountAmount', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        discountId: {
-             field: 'discountId', 
+        mDiscountId: {
+             field: 'mDiscountId', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        discountValue: {
-             field: 'discountValue', 
+        mDiscountValue: {
+             field: 'mDiscountValue', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        discountType: {
-             field: 'discountType', 
+        mDiscountType: {
+             field: 'mDiscountType', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        discountDivisionType: {
-             field: 'discountDivisionType', 
+        mDiscountDivisionType: {
+             field: 'mDiscountDivisionType', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         },
-        discountOwnerDivision: {
-             field: 'discountOwnerDivision', 
+        mOwnerDivision: {
+             field: 'mOwnerDivision', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
         }, 
-        discountEmployeeDivision: {
-             field: 'discountEmployeeDivision', 
+        mEmployeeDivision: {
+             field: 'mEmployeeDivision', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
