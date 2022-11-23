@@ -83,52 +83,67 @@ export default class CreateTicketComponent extends React.Component{
             }
             if(discount.mDiscountDivisionType==='Owner'){
                 input.technicianId = this.state.selectedTech.mEmployeeId
+                input.totalDiscountAmount =  discount.mDiscountAmount
                 input.ownerPercentage = discount.mDiscountAmount
+                input.employeePercentage = 0;
                 var commissions = Object.assign([], this.state.ticketdiscountcommissions);
                 commissions.push(input);
-                this.setState({ticketdiscountcommissions: commissions})
+                this.setState({ticketdiscountcommissions: commissions},()=>{
+                    this.calculateTicketDiscountCommission(i+1);
+                })
             }
             else if(discount.mDiscountDivisionType==='Employee'){ 
                 let ownerpercent = 0;
                 let emppercent = discount.mDiscountAmount / this.state.selectedServices.length;
-                this.saveEmpDivision(0,discount, ownerpercent, emppercent)
+                this.saveEmpDivision(0,i,discount, ownerpercent, emppercent)
             }
             else if(discount.mOwnerDivision !== '' && discount.mEmployeeDivision !== ''){
                 let ownerpercent =  (discount.mDiscountAmount / this.state.selectedServices.length) * (discount.mOwnerDivision/100);
                 let emppercent = (discount.mDiscountAmount / this.state.selectedServices.length) * (discount.mEmployeeDivision/100)
-                this.saveEmpDivision(0, discount, ownerpercent, emppercent)
+                this.saveEmpDivision(0,i, discount, ownerpercent, emppercent)
             }
         } 
     }
 
-    saveEmpDivision(i,discount, ownerpercent, emppercent){
+    saveEmpDivision(i,pi, discount, ownerpercent, emppercent){
         if(i< this.state.selectedServices.length){
             var input = {
                 commissionId: discount.mDiscountId,
                 ticketId: this.state.ticketDetail.ticketId
             }
+            console.log(this.state.selectedServices[i], this.state.selectedServices[i].technician.mEmployeeId)
+            input.totalDiscountAmount =  discount.mDiscountAmount 
             input.technicianId = this.state.selectedServices[i].technician.mEmployeeId
             input.ownerPercentage =  ownerpercent
             input.employeePercentage = emppercent;
-            var commissions = Object.assign([], this.state.ticketdiscountcommissions);
-            commissions.push(input);
-            this.setState({ticketdiscountcommissions: commissions});
-            this.saveEmpDivision(i+1,discount, ownerpercent, emppercent)
+            input.totalDiscountAmount = discount.mDiscountAmount
+            if(input.ownerPercentage !== undefined && input.ownerPercentage !== null && input.employeePercentage !== undefined && input.employeePercentage !== null){
+                var commissions = Object.assign([], this.state.ticketdiscountcommissions);
+                commissions.push(input);
+                this.setState({ticketdiscountcommissions: commissions},()=>{
+                    this.saveEmpDivision(i+1, pi,discount, ownerpercent, emppercent)
+                });
+            }
         } 
+        else{
+            this.calculateTicketDiscountCommission(pi+1)
+        }
     }
 
     saveTicket(option){
-        console.log("AAAA")
-        var ticketinput = {
-            ticketDetail:Object.assign({}, this.state.ticketDetail), 
-            selectedServices: Object.assign([], this.state.selectedServices),
-            ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
-            ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
-        }
-        console.log(ticketinput)
-        this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
-            console.log(resp)
-        })
+        // console.log("AAAA")
+        // var ticketinput = {
+        //     ticketDetail:Object.assign({}, this.state.ticketDetail), 
+        //     selectedServices: Object.assign([], this.state.selectedServices),
+        //     ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+        //     ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+        // }
+        // console.log(ticketinput)
+        // this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+        //     console.log(resp)
+        //     if(option === 'close')
+                this.props.data.closeCreateTicket();
+        // })
     }
     
     handleCloseTips(msg, tipsInput){
@@ -231,7 +246,11 @@ export default class CreateTicketComponent extends React.Component{
         service.technician = tech;
         var services = Object.assign([], this.state.selectedServices);
         services[this.state.selectedRow]= service;
-        this.setState({selectedServices: services});
+        console.log(services)
+        this.setState({selectedServices: services},()=>{
+
+        this.calculateAllServices(0)
+        });
     }
 
     onUpdateQuantity(qty){
@@ -461,7 +480,9 @@ export default class CreateTicketComponent extends React.Component{
                     price.ticketDiscount = totalDiscountAmount; 
                     console.log( Number(price.ticketSubTotal) ,"+", Number(price.taxAmount) ,"+", Number(price.tipsAmount)  ,"-", Number(totalDiscountAmount))
                     price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
-                    this.setState({totalValues: price})
+                    this.setState({totalValues: price, ticketdiscountcommissions:[]},()=>{
+                        this.calculateTicketDiscountCommission()
+                    })
                 }
             })
         }
@@ -472,8 +493,8 @@ export default class CreateTicketComponent extends React.Component{
     }
 
     componentDidMount(){
-        if(this.props.data.ticketDetail !== undefined){
-
+        if(this.props.data.ticketDetail.ticketId !== undefined){
+            this.setState({ticketDetail: this.props.data.ticketDetail});
         }
         else{
             this.httpManager.postRequest("merchant/ticket/getTicketcode",{data:"REQUEST TICKET CODE"}).then(res=>{

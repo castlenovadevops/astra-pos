@@ -33,6 +33,13 @@ module.exports = (sequelize) => {
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
+        },    
+        status: {
+             field: 'status', 
+             type: DataTypes.INTEGER, 
+             primaryKey: false, 
+             allowNull: false,
+             defaultValue:1
         },  
         ownerPercentage: {
              field: 'ownerPercentage', 

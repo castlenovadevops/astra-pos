@@ -51,7 +51,11 @@ module.exports = class TicketController extends baseController{
 
         this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
             this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
-                this.saveTicketServices(req, res, next); 
+                this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+                    this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+                        this.saveTicketServices(req, res, next); 
+                    });
+                });
             })
         })
     }
@@ -79,26 +83,28 @@ module.exports = class TicketController extends baseController{
                 this.update('ticketservices', serviceinput, {where:{ticketServiceId: service.ticketServiceId}} ,true).then(r=>{
                     this.update('ticketservicetax',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
                         this.update('ticketservicediscount',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
-                            this.update('ticketTips',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
-                                // this.saveTicketServices(req, res, next, idx+1);
-                                if(service.totalTips > 0){
-                                    var tipinput = {
-                                        tipsCashPercentage: service.technician.mTipsCashPercentage,
-                                        tipsCheckPercentage: service.technician.mTipsCheckPercentage,
-                                        technicianId:service.technician.technicianId,
-                                        tipsAmount: service.totalTips,
-                                        ticketServiceId: service.ticketServiceId,
-                                        createdBy: req.userData.mEmployeeId,
-                                        createdDate: this.getDate(),
-                                        status:1
+                            this.update('ticketservicediscountcommission',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+                                this.update('ticketTips',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+                                    // this.saveTicketServices(req, res, next, idx+1);
+                                    if(service.totalTips > 0){
+                                        var tipinput = {
+                                            tipsCashPercentage: service.technician.mTipsCashPercentage,
+                                            tipsCheckPercentage: service.technician.mTipsCheckPercentage,
+                                            technicianId:service.technician.mEmployeeId,
+                                            tipsAmount: service.totalTips,
+                                            ticketServiceId: service.ticketServiceId,
+                                            createdBy: req.userData.mEmployeeId,
+                                            createdDate: this.getDate(),
+                                            status:1
+                                        }
+                                        this.create('ticketTips', tipinput).then(rr=>{
+                                            this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
+                                        })
                                     }
-                                    this.create('ticketTips', tipinput).then(rr=>{
+                                    else{
                                         this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
-                                    })
-                                }
-                                else{
-                                    this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
-                                }
+                                    }
+                                })
                             })
                         });
                     })
@@ -107,7 +113,24 @@ module.exports = class TicketController extends baseController{
             else{
                 this.create('ticketservices', serviceinput, true).then(r=>{ 
                     var ticketServiceId = r.dataValues.ticketServiceId || r.ticketServiceId
-                    this.saveTicketServiceTax(req,res,next,ticketServiceId,idx,0)
+                    if(service.totalTips > 0){
+                        var tipinput = {
+                            tipsCashPercentage: service.technician.mTipsCashPercentage,
+                            tipsCheckPercentage: service.technician.mTipsCheckPercentage,
+                            technicianId:service.technician.mEmployeeId,
+                            tipsAmount: service.totalTips,
+                            ticketServiceId:ticketServiceId,
+                            createdBy: req.userData.mEmployeeId,
+                            createdDate: this.getDate(),
+                            status:1
+                        }
+                        this.create('ticketTips', tipinput).then(rr=>{
+                            this.saveTicketServiceTax(req,res,next,ticketServiceId,idx,0)
+                        })
+                    }
+                    else{
+                        this.saveTicketServiceTax(req,res,next,ticketServiceId,idx,0)
+                    } 
                 })
             }
         }
@@ -244,10 +267,11 @@ module.exports = class TicketController extends baseController{
     }
 
     saveTicketDiscountCommission = async(i, req, res)=>{
-        var ticketdiscountcommissions = Object.assign([], req.input.ticketdiscounts);
+        var ticketdiscountcommissions = Object.assign([], req.input.ticketdiscount_commissions);
+        console.log(i,ticketdiscountcommissions.length )
         if(i< ticketdiscountcommissions.length){
-            var input = ticketdiscountcommissions[i] 
-            this.create('ticketdiscount', input).then(r=>{
+            var input = ticketdiscountcommissions[i]  
+            this.create('ticketdiscountcommission', input).then(r=>{
                 this.saveTicketDiscountCommission(i+1, req, res)
             })
         }

@@ -10,8 +10,7 @@ export default class TicketContainer extends React.Component{
         }
     }
 
-    componentDidMount(){
-
+    componentDidMount(){ 
     }
 
     render(){
@@ -19,6 +18,7 @@ export default class TicketContainer extends React.Component{
             ownerTechnician: this.props.ownerTechnician,
             closeCreateTicket: this.props.functions.closeCreateTicket,
             customer_detail:{}, 
+            ticketDetail: this.props.ticketDetail
         }}/>
     }
 }

@@ -29,12 +29,21 @@ export default class MerchantDashboard extends React.Component{
             showClockIn: false,
             showCreateTicket:false,
             ownerTechnician: {},
-            refreshData: false
+            refreshData: false,
+            ticketDetail:{}
         }
         this.loadData = this.loadData.bind(this);  
         this.handleCloseDialog = this.handleCloseDialog.bind(this);
         this.setOwnerTech = this.setOwnerTech.bind(this);
         this.closeCreateTicket = this.closeCreateTicket.bind(this);
+        this.editTicket = this.editTicket.bind(this)
+    }
+
+    editTicket(detail){
+        this.setState({ticketDetail: detail},()=>{
+            console.log(this.state.ticketDetail)
+            this.setState({showCreateTicket: true})
+        })
     }
 
     handleCloseDialog(){
@@ -46,6 +55,11 @@ export default class MerchantDashboard extends React.Component{
         // console.log("SOCKETTTTTT")
         // console.log(this.socket)
         this.socket.on("refreshTechnicians", data => {
+            // console.log("SOCKET REFRESHHHHH")
+            // this.getData();
+            this.setState({refreshData: true})
+        });
+        this.socket.on("refreshTickets", data => {
             // console.log("SOCKET REFRESHHHHH")
             // this.getData();
             this.setState({refreshData: true})
@@ -62,19 +76,21 @@ export default class MerchantDashboard extends React.Component{
     } 
 
     setOwnerTech(obj){
-        this.setState({ownerTechnician: obj},()=>{
+        this.setState({ownerTechnician: obj,ticketDetail: {}},()=>{
             this.setState({showCreateTicket: true})
         })
     }
 
-    closeCreateTicket(){
-        this.setState({showCreateTicket: false})
+    closeCreateTicket(){ 
+            this.socket.emit("refreshTickets", {data:"success"}) 
+        this.setState({showCreateTicket: false, ticketDetail:{}})
     }
 
     render(){
         return <div className="fullHeight" >  
 
-        {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer  ownerTechnician={this.state.ownerTechnician} functions={{
+        {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer ticketDetail={this.state.ticketDetail} 
+        ownerTechnician={this.state.ownerTechnician} functions={{
             closeCreateTicket:this.closeCreateTicket
         }} /></div>}
             {this.state.isLoading && <Loader />}
@@ -85,7 +101,10 @@ export default class MerchantDashboard extends React.Component{
                     this.setState({refreshData: false})}} refreshData={this.state.refreshData} setOwnerTech={this.setOwnerTech}/>
                 </Grid>
                 <Grid item xs={8} className={'dashboardDivider'}>
-                    <TicketListComponent/>
+                    <TicketListComponent  data={{
+                        editTicket : this.editTicket.bind(this)
+                    }} onCompleteRefresh={()=>{// console.log("COMPLETE REFRESH CALLED");
+                    this.setState({refreshData: false})}} refreshData={this.state.refreshData}/>
                 </Grid>
             </Grid>
 

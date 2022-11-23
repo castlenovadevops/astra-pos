@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("ticketmDiscount", {
+	sequelize.define("ticketdiscount", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -56,7 +56,14 @@ module.exports = (sequelize) => {
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false,
-        }, 
+        },   
+        status: {
+             field: 'status', 
+             type: DataTypes.INTEGER, 
+             primaryKey: false, 
+             allowNull: false,
+             defaultValue:1
+        },  
         createdDate: {
              field: 'createdDate', 
              type: DataTypes.STRING(255), 

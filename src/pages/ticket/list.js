@@ -6,6 +6,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import OpenTicketsComponent from "./opentickets";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -49,10 +50,19 @@ export default class TicketListComponent extends React.Component{
             userdetail:{}, 
             isLoading: false,
             value:0, 
+            refreshData:false
         } 
         this.handleChangeIndex = this.handleChangeIndex.bind(this);
         this.handleChange = this.handleChange.bind(this) 
+    } 
+
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+      if(nextProps.refreshData !== prevState.refreshData){
+          return {refreshData: nextProps.refreshData}
+      }
     }
+
 
     handleChange(event, newValue){
         this.setState({value:newValue});
@@ -72,9 +82,8 @@ export default class TicketListComponent extends React.Component{
         variant="fullWidth"
         aria-label="full width tabs example"
         >
-            <Tab label="Item One" {...a11yProps(0)} />
-            <Tab label="Item Two" {...a11yProps(1)} />
-            <Tab label="Item Three" {...a11yProps(2)} />
+            <Tab label="Open Tickets" {...a11yProps(0)} />
+            <Tab label="Closed Tickets" {...a11yProps(1)} /> 
         </Tabs>
         
         <SwipeableViews
@@ -83,14 +92,13 @@ export default class TicketListComponent extends React.Component{
             onChangeIndex={this.handleChangeIndex}
         >
             <TabPanel value={this.state.value} index={0} dir={'ltr'}>
-            Item One
+                <OpenTicketsComponent data={{
+                  editTicket: this.props.data.editTicket
+                }} refreshData={this.state.refreshData} onCompleteRefresh={this.props.onCompleteRefresh}/>
             </TabPanel>
             <TabPanel value={this.state.value} index={1} dir={'ltr'}>
-            Item Two
-            </TabPanel>
-            <TabPanel value={this.state.value} index={2} dir={'ltr'}>
-            Item Three
-            </TabPanel>
+           
+            </TabPanel> 
         </SwipeableViews>
         </Box>
     }

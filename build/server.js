@@ -90,6 +90,11 @@ io.on('connection', function(socket) {
     // console.log("REFRESH SOCKET CALLED")
     socket.emit('refreshTechnicians',{data:'success'})
   })
+  socket.on('refreshTickets', function(){
+    console.log("REFRESH SOCKETTICKET CALLED")
+    socket.emit('refreshTickets',{data:'success'})
+  })
+
 
   //Whenever someone disconnects this piece of code executed
   socket.on('disconnect', function () {

@@ -29,6 +29,12 @@ module.exports = class TicketController extends baseController{
                     method: "voidTicket",
                     authorization:'authorizationAuth'
                 },
+                {
+                    path:this.path+"/getOpenTickets",
+                    type:"post",
+                    method: "getOpenTickets",
+                    authorization:'authorizationAuth'
+                },
                 
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -110,4 +116,11 @@ module.exports = class TicketController extends baseController{
             })
         }
     }
+
+    getOpenTickets = async(req, res)=>{
+        let options = {
+            
+        }
+    }
+
 }

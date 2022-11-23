@@ -15,6 +15,9 @@ function applyExtraSetup(sequelize) {
     models.mEmployeePermissions.belongsTo(models.merchantEmployees, {foreignKey: 'mEmployeeId',targetKey: 'mEmployeeId'});
 
 
+    models.mCustomers.hasMany(models.tickets, {foreignKey: 'customerId',sourceKey: 'mCustomerId'});
+    models.tickets.belongsTo(models.mCustomers, {foreignKey: 'customerId',targetKey: 'mCustomerId'});
+
     models.tickets.hasMany(models.ticketservices, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
     models.ticketservices.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
 

@@ -29,6 +29,20 @@ module.exports = class TicketController extends baseController{
                     method: "voidTicket",
                     authorization:'authorizationAuth'
                 },
+                {
+                    path:this.path+"/getOpenTickets",
+                    type:"post",
+                    method: "getOpenTickets",
+                    authorization:'authorizationAuth'
+                },
+                
+                {
+                    path:this.path+"/getPaidTickets",
+                    type:"post",
+                    method: "getPaidTickets",
+                    authorization:'authorizationAuth'
+                },
+                
                 
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -117,6 +131,124 @@ module.exports = class TicketController extends baseController{
         }).catch(e=>{
             console.log(e)
             this.sendResponse({message:"Error Occurred."}, res, 400);
+        })
+    }
+
+
+    getOpenTickets = async(req, res, next)=>{
+        console.log("GETOPEN TICKET CALLED")
+        let options = {
+            include:[
+                {
+                    model: this.models.mCustomers,
+                    required: false
+                },
+                // {
+                //     model: this.models.ticketservices,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketservicetax,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketservicediscount,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketdiscount,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketservicediscountcommission,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketdiscountcommission,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketcommission,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // },
+                // {
+                //     model: this.models.ticketpayment,
+                //     required: false, 
+                // },
+                // {
+                //     model: this.models.ticketTips,
+                //     required: false,
+                //     where:{
+                //         status:1
+                //     }
+                // }
+            ],
+            where:{
+                ticketStatus:'Active',
+                paymentStatus:{
+                    [Sequelize.Op.in]:['Pending', 'Partially Paid']
+                }
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col('ticketId'),
+                        'id'
+                    ]
+                ]
+            }
+        }
+
+        this.readAll(options, 'tickets').then(results=>{
+            this.sendResponse({data: results}, res, 200);
+        })
+    }
+
+    getPaidTickets = async(req, res)=>{
+        let options = {
+            include:[
+                {
+                    model: this.models.mCustomers,
+                    required: false
+                }
+            ],
+            where:{
+                ticketStatus:'Active',
+                paymentStatus:'Paid'
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col('ticketId'),
+                        'id'
+                    ]
+                ]
+            }
+        }
+
+        this.readAll(options, 'tickets').then(results=>{
+            this.sendResponse({data: results}, res, 200);
         })
     }
 }
