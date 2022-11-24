@@ -468,6 +468,7 @@ export default class CreateTicketComponent extends React.Component{
             price.grandTotal = price.ticketSubTotal -  price.ticketDiscount + price.taxAmount + price.tipsAmount
             var ticketDetail = Object.assign({}, this.state.ticketDetail)
             var ticketinput = {  
+                "ticketCode":this.state.ticketDetail.ticketCode,
                 "ticketId": this.state.ticketDetail.ticketId,
                 "ownerTechnician" : this.state.selectedTech.mEmployeeId,
                 "technician" : this.state.selectedTech,

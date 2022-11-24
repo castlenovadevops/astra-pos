@@ -23,6 +23,7 @@ const TicketController = require('../controllers/merchant/ticketController');
 const SaveTicketController = require('../controllers/merchant/saveticketController');
 const TransferController = require('../controllers/merchant/transferController')
 const PaymentController = require('../controllers/merchant/paymentController')
+const TransactionController = require('../controllers/merchant/transactionsController');
 
 const express = require('express');
 const path = require('path');
@@ -54,7 +55,7 @@ const corsOptions ={
         new SaveTicketController(),
         new TransferController(),
         new PaymentController(),
-
+        new TransactionController(),
         new SyncController(),
         new SyncTaxController(),
         new SyncCategoryController(),

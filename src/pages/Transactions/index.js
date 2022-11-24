@@ -144,7 +144,7 @@ export default class Transactions extends React.Component {
     
     render(){
         return(
-            <Page title="Transactions | Astro POS">
+            <Page title="Transactions | Astra POS">
                  {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
                  <Container maxWidth="xl">
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -196,30 +196,31 @@ export default class Transactions extends React.Component {
                                 })
                             }}>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
-                                {Moment(t.created_at).format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment(t.created_at).format("MM/DD/YYYY")}</span>
+                                {Moment(t.ticketDate).format("HH:mm:ss a")}<br/>
+                                <span style={{color:'#ccc'}}>{Moment(t.ticketDate).format("MM/DD/YYYY")}</span>
                             </Grid>
                             <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                {t.ticket_code}
+                                {t.ticket.ticketCode}
                             </Grid>
                             {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
                                 
                             </Grid> */}
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                <b>Payment</b>
+                                <b>#{t.transactionId}</b>
                             </Grid>
                             <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                <b>${Number(t.paid_amount).toFixed(2)}</b>
+                                <b>${Number(t.ticketPayment).toFixed(2)}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
-                                <b>{t.pay_mode !== null && t.pay_mode.toLowerCase() === 'cash' ? 'Cash Pay' : t.card_type}</b>
+                                <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash Pay' : t.card_type}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
-                                {Moment(t.paid_at).format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment(t.paid_at).format("MM/DD/YYYY")}</span>
+                                {Moment(t.createdDate).format("HH:mm:ss a")}<br/>
+                                <span style={{color:'#ccc'}}>{Moment(t.createdDate).format("MM/DD/YYYY")}</span>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', textTransform:'capitalize'}}> 
-                                {this.getEmpName(t.technician_id)}
+                                {/* {this.getEmpName(t.technician_id)} */}
+                                {t.mEmployeeFirstName+" "+t.mEmployeeLastName}
                             </Grid>
                         </Grid>
                         })}
@@ -230,40 +231,7 @@ export default class Transactions extends React.Component {
                             <p style={{fontSize:'14px', width:'100%', textAlign:'center'}}>No transactions added yet.</p>
                         </div>}
                         </div>}
-                        </Paper>
-                        {this.state.type !== 'paid' &&<>
-                            <Grid container spacing={3}  style={{height:'calc(100% - 100px)', background:'#f0f0f0', width:'100%', margin:'10px 0', padding: 0}}>
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10}}> 
-                                    Date
-                                </Grid> 
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10}}> 
-                                    Ticket code
-                                </Grid>
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10}}> 
-                                    Total
-                                </Grid>
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10}}> 
-                                    Employee 
-                                </Grid>
-                            </Grid>
-                            {this.state.transactions.map(t=>{ 
-                                return <Grid container spacing={3}  style={{height:'calc(100% - 100px)',background:(t.isDelete === 0 ? 'transparent': 'rgba(255,0,0,0.3)'),  width:'100%', margin:0, padding: '10px 0',borderBottom:'1px solid #f0f0f0'}}>
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                    {Moment(t.created_at).format("HH:mm:ss a")}<br/>
-                                    <span style={{color:'#ccc'}}>{Moment(t.created_at).format("MM/DD/YYYY")}</span>
-                                </Grid>
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                    {t.ticket_code}
-                                </Grid> 
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                    <b>${Number(t.grand_total).toFixed(2)}</b>
-                                </Grid> 
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px', textTransform:'capitalize'}}> 
-                                    {this.getEmpName(t.technician_id)}
-                                </Grid>
-                            </Grid>
-                            })}
-                            </>}
+                        </Paper> 
                     </Stack>
                  </Container>
                  <Dialog
@@ -357,17 +325,17 @@ export default class Transactions extends React.Component {
                                         <Grid item xs={3} md={3}><b>Payment</b></Grid>
                                         <Grid item xs={6} md={6}> 
                                             <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                                {Moment(this.state.transactiondetail.created_at).format("HH:mm:ss a MM/DD/YYYY")} <br/><br/>
-                                               <b>Tender:</b> {this.state.transactiondetail.pay_mode.toLowerCase() === 'cash' ? this.state.transactiondetail.pay_mode : this.state.transactiondetail.card_type}<br/>
-                                               <b>Ticket Code:</b> {this.state.transactiondetail.ticket_code}<br/>
-                                               <b>Employee:</b> {this.getEmpName(this.state.transactiondetail.technician_id)}<br/><br/>
+                                                {Moment(this.state.transactiondetail.createdDate).format("HH:mm:ss a MM/DD/YYYY")} <br/><br/>
+                                               <b>Tender:</b> {this.state.transactiondetail.payMode.toLowerCase() === 'cash' ? this.state.transactiondetail.payMode : this.state.transactiondetail.card_type}<br/>
+                                               <b>Ticket Code:</b> {this.state.transactiondetail.ticket.ticketCode}<br/>
+                                               <b>Employee:</b> {this.state.transactiondetail.mEmployeeFirstName+" "+this.state.transactiondetail.mEmployeeLastName}<br/><br/>
                                                {this.state.transactiondetail.notes && <> <b>Notes:</b><br/> {this.state.transactiondetail.notes}</> }
                                             </Grid>
                                         </Grid>
 
                                         <Grid item xs={3}  md={3}>
                                             <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                                <b>${Number(this.state.transactiondetail.grand_total).toFixed(2)}</b>
+                                                <b>${Number(this.state.transactiondetail.ticketPayment).toFixed(2)}</b>
                                             </Grid> 
                                         </Grid>
                                     </Grid> }

@@ -34,8 +34,8 @@ module.exports = class TicketController extends baseController{
 
         let options = {
             where:{
-                ticketId:{
-                    [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where createdDate between Date('"+input.from_date+"') and Date('"+input.to_date+"') )")
+                id:{
+                    [Sequelize.Op.in] : Sequelize.literal("(select id from ticketpayment where Date(createdDate) between Date('"+input.from_date+"') and Date('"+input.to_date+"') )")
                 }
             },
             include:[
@@ -43,7 +43,23 @@ module.exports = class TicketController extends baseController{
                     model:this.models.tickets,
                     required: false
                 }
-            ]
+            ],
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col( '`ticket`.`createdDate`'),
+                        'ticketDate'
+                    ],
+                    [
+                        Sequelize.literal("(select mEmployeeFirstName from merchantEmployees where mEmployeeId=`ticketpayment`.`createdBy`)"),
+                        'mEmployeeFirstName'
+                    ],
+                    [
+                        Sequelize.literal("(select mEmployeeLastName from merchantEmployees where mEmployeeId=`ticketpayment`.`createdBy`)"),
+                        'mEmployeeLastName'
+                    ]
+                ]
+            }
         }
 
         this.readAll(options, 'ticketpayment').then(results=>{

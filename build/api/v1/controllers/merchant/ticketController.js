@@ -138,6 +138,11 @@ module.exports = class TicketController extends baseController{
     getOpenTickets = async(req, res, next)=>{
         console.log("GETOPEN TICKET CALLED")
         let options = {
+            order:[
+                [
+                    'createdDate', 'desc'
+                ]
+            ],
             include:[
                 {
                     model: this.models.mCustomers,
