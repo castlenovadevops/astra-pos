@@ -7,7 +7,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import OpenTicketsComponent from "./opentickets";
-
+import ClosedTicketsComponent from "./closedtickets";
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -98,6 +98,9 @@ export default class TicketListComponent extends React.Component{
             </TabPanel>
             <TabPanel value={this.state.value} index={1} dir={'ltr'}>
            
+            <ClosedTicketsComponent data={{
+                  editTicket: this.props.data.editTicket
+                }} refreshData={this.state.refreshData} onCompleteRefresh={this.props.onCompleteRefresh}/>
             </TabPanel> 
         </SwipeableViews>
         </Box>

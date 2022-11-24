@@ -13,8 +13,7 @@ module.exports = (sequelize) => {
         ticketServiceId:{
             field:'ticketServiceId',
             type: DataTypes.UUID,
-            primaryKey: true,
-            defaultValue: DataTypes.UUIDV4
+            primaryKey: true
         }, 
         technicianId: {
              field: 'technicianId', 

@@ -6,15 +6,11 @@ import TableView from "../../components/table/tableView";
 import * as Moment from 'moment';
 import HTTPManager from "../../utils/httpRequestManager";
 import Loader from "../../components/Loader";
-import PaymentModal from "./createTicket/footer/TicketPayment";
-export default class OpenTicketsComponent extends React.Component{
+export default class ClosedTicketsComponent extends React.Component{
     httpManager = new HTTPManager();
     constructor(props){
         super(props);
         this.state = {
-            openPayment: false,
-            price:{},
-            ticketDetail:{},
             columns: [
 
                 {
@@ -72,7 +68,7 @@ export default class OpenTicketsComponent extends React.Component{
                 },
                 {
                     field: 'payment',
-                    headerName: '',
+                    headerName: 'Payment Mode',
                     flex: 1,
                     editable: false,
                     renderCell: (params) => (
@@ -85,8 +81,10 @@ export default class OpenTicketsComponent extends React.Component{
                             size="small"
                             className='bgbtn'
                             style={{ marginLeft: 16 }}
-                            onClick={(event) => { 
-                                this.handleTicketPayment(params.row) 
+                            onClick={(event) => {
+                                // event.nativeEvent.stopPropagation()
+                                this.handleTicketPayment(params.row)
+                                //console.log("payment")
                             }}
                         >
                             Pay
@@ -119,16 +117,8 @@ export default class OpenTicketsComponent extends React.Component{
 
     }
 
-    handleTicketPrint(row){
-        var price = {
-            retailPrice:0,
-            servicePrice:0,
-            ticketSubTotal:0,
-            ticketDiscount:0,
-            taxAmount:0,
-            tipsAmount:0,
-            grandTotal:0
-        }
+    handleTicketPrint(){
+
     }
 
     componentDidMount(){
@@ -137,7 +127,7 @@ export default class OpenTicketsComponent extends React.Component{
 
     loadData(){
         this.setState({isLoading: true})
-        this.httpManager.postRequest('merchant/ticket/getOpenTickets',{data:"FORM DASHBOARD"}).then(res=>{ 
+        this.httpManager.postRequest('merchant/ticket/getPaidTickets',{data:"FORM DASHBOARD"}).then(res=>{ 
             this.setState({isLoading: false, ticketslist: res.data})
             console.log(res.data)
         })
@@ -151,10 +141,6 @@ export default class OpenTicketsComponent extends React.Component{
                 console.log(params)
                 this.props.data.editTicket(params.row)
             }}/>
-
-{this.state.openPayment && <PaymentModal  
-                handleClosePayment={(msg)=>this.handleClosePayment(msg)} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
-            </PaymentModal>}
         </>
     }
 }

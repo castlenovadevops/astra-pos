@@ -23,30 +23,41 @@ export default class PayoutComponent extends React.Component{
             selectedEmp:{},
             columns:[
                 {
-                    field: 'mEmployeeFirstName',
-                    headerName: 'Employee',
+                    field: 'formattedDate',
+                    headerName: '',
                     minWidth: 200,
                     editable: false,
                     renderCell: (params) => (
                     <div>
-                        {params.row.mEmployeeFirstName} {params.row.mEmployeeLastName}
+                        {params.row.formattedDate}
                     </div>
                     )
                 },
                 {
-                    field: 'mEmployeeRoleName',
-                    headerName: 'Role',
+                    field: 'ticketCount',
+                    headerName: 'Ticket Count',
                     minWidth: 100,
                     editable: false,
                     renderCell: (params) => (
                     <div>
-                         {params.row.mEmployeeRoleName} 
+                         {params.row.ticketCount} 
+                    </div>
+                    )
+                },
+                {
+                    field: 'serviceCount',
+                    headerName: 'Service Count',
+                    minWidth: 100,
+                    editable: false,
+                    renderCell: (params) => (
+                    <div>
+                         {params.row.serviceCount} 
                     </div>
                     )
                 },
                 {
                     field: 'totalservice_price',
-                    headerName: 'Total Service Price',
+                    headerName: 'Service Amount',
                     minWidth: 150,
                     editable: false,
                     renderCell: (params) => (
@@ -57,7 +68,7 @@ export default class PayoutComponent extends React.Component{
                 },
                 {
                     field: 'total_tips',
-                    headerName: 'Total Tips',
+                    headerName: 'Tips',
                     minWidth: 150,
                     editable: false,
                     renderCell: (params) => (
@@ -68,7 +79,7 @@ export default class PayoutComponent extends React.Component{
                 },
                 {
                     field: 'total_discount',
-                    headerName: 'Total Discount',
+                    headerName: 'Discount',
                     minWidth: 150,
                     editable: false,
                     renderCell: (params) => (
@@ -76,46 +87,29 @@ export default class PayoutComponent extends React.Component{
                         $  { Number(params.row.Discount).toFixed(2)}  
                     </div>
                     )
-                },
+                }, 
                 {
-                    field: 'Action',
-                    headerName:'Action',
-                    minWidth:200,
+                    field: 'total_discount',
+                    headerName: 'Total',
+                    minWidth: 150,
+                    editable: false,
                     renderCell: (params) => (
-                    <strong>    
-                        {
-                        <Button permission_id = "web_view_salary" permission_label="Show view salary"
-                        variant="contained" 
-                        size="small" 
-                        onClick={()=>this.openReport(params.row)} 
-                        label="View">View</Button> 
-                        }    
-                           
-                    
-                    </strong>
-                    ),
-                }
+                    <div>
+                        $  { Number(params.row.Discount).toFixed(2)}  
+                    </div>
+                    )
+                }, 
                 ],
             from_date:new Date(),
             to_date:new Date(),
+            reportType:'Owner',
+            reportPeriod:'Daily'
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
          this.handlechangeToDate = this.handlechangeToDate.bind(this);
-         this.submiteReport = this.submiteReport.bind(this)
-         this.openReport = this.openReport.bind(this)
-         this.handleCloseReport = this.handleCloseReport.bind(this)
-    }
-
-    handleCloseReport(){
-        this.setState({openModal: false, empSelected:{}, isEmpSelected: false})
-    }
-
-    openReport(row){
-        this.setState({empSelected: row, isEmpSelected: true},()=>{
-            this.setState({openModal: true})
-        })
-    }
+         this.submiteReport = this.submiteReport.bind(this) 
+    } 
 
     handlechangeFromDate(e){
         this.setState({from_date: e});
@@ -124,7 +118,7 @@ export default class PayoutComponent extends React.Component{
         this.setState({to_date: e});
     }
     submiteReport() {
-        this.getPayout();        
+        this.getReports();        
     }
 
 
@@ -132,8 +126,8 @@ export default class PayoutComponent extends React.Component{
         this.getPayout()
     }
 
-    getPayout(){
-        this.httpManager.postRequest('merchant/payout/getPayout', {from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
+    getReports(){
+        this.httpManager.postRequest('merchant/report/getReport', {type:this.state.reportType, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
             console.log(res.data)
             this.setState({employee_reportlist: res.data})
         })
@@ -186,19 +180,7 @@ export default class PayoutComponent extends React.Component{
                         data={this.state.employee_reportlist} 
                         columns={this.state.columns} />
                     </Card> 
-                </Container>
-
-                {this.state.isEmpSelected && <div>
-                    <Dialog open={this.state.openModal} onClose={()=>this.handleCloseReport()} fullWidth maxWidth='md'>
-                        <DialogTitle id="alert-dialog-title"> 
-                        </DialogTitle>
-                        <DialogContent>
-                            <div style={{height:'600px' }}>
-                                <ReportView   empSelected={this.state.empSelected}  from_date={this.state.from_date} to_date={this.state.to_date}/>
-                            </div>
-                        </DialogContent>
-                    </Dialog> 
-                </div>}
+                </Container> 
 
             </Page>
         )

@@ -112,7 +112,9 @@ module.exports = class TicketController extends baseController{
             }
             else{
                 this.create('ticketservices', serviceinput, true).then(r=>{ 
+                    console.log(r)
                     var ticketServiceId = r.dataValues.ticketServiceId || r.ticketServiceId
+                    console.log(ticketServiceId)
                     if(service.totalTips > 0){
                         var tipinput = {
                             tipsCashPercentage: service.technician.mTipsCashPercentage,
@@ -201,6 +203,7 @@ module.exports = class TicketController extends baseController{
                     empPercentage = Number(input.mDiscountAmount) * (Number(input.mEmployeeDivision)/100)
                 }
                 var servicediscountcommission_input={
+                    ticketServiceId: ticketServiceId,
                     technicianId: service.technician.mEmployeeId,
                     commissionId: input.mDiscountId,
                     ownerPercentage: ownerPercentage,
@@ -214,13 +217,14 @@ module.exports = class TicketController extends baseController{
         }
         else{
             console.log("DISCOUNT SAVE ENDED")
-            this.saveTicketServiceCommission(req,res,next,idx)
+            this.saveTicketServiceCommission(req,res,next,idx,ticketServiceId)
         }
     }
 
-    saveTicketServiceCommission = async (req,res,next,idx)=>{
+    saveTicketServiceCommission = async (req,res,next,idx,ticketServiceId)=>{
         var service = req.input.selectedServices[idx];
         var servicecommission_input={
+            ticketServiceId: ticketServiceId,
             technicianId: service.technician.mEmployeeId,
             commissionId: service.technician.mCommissionId,
             ownerPercentage: (Number(service.technician.mOwnerPercentage) / 100) * Number(service.subTotal),

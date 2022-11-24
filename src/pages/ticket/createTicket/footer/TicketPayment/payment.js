@@ -152,7 +152,8 @@ export default class TicketPayment extends React.Component  {
                         topayamount: this.state.splittedAmount,
                         completePayment:()=>{
                             this.setState({splittedAmount: 0, paymentSplitted: false})
-                            // this.props.afterSubmit();
+                            this.props.afterSubmit();
+                            window.location.reload()
                             this.loadData();
                         }
                     }} />
@@ -162,6 +163,8 @@ export default class TicketPayment extends React.Component  {
                             <Grid item xs={4} style={{display: 'flex', justifyContent:'center', alignItems:'center'}}> 
                                 <Button style={{marginRight: 10}} onClick={()=>{
                                     this.setState({splittedAmount: 0, paymentSplitted: false}, ()=>{
+                                        this.props.afterSubmit();
+                                        window.location.reload()
                                         this.loadData();
                                     })
                                 }} color="secondary" variant="contained">Cancel</Button> 

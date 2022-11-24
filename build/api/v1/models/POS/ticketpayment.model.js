@@ -17,10 +17,9 @@ module.exports = (sequelize) => {
         }, 
         transactionId: {
              field: 'transactionId', 
-             type: DataTypes.UUID, 
+             type: DataTypes.STRING(255), 
              primaryKey: false, 
-             allowNull: false,
-             defaultValue: DataTypes.UUIDV4
+             allowNull: false 
         }, 
         customerPaid: {
              field: 'customerPaid', 
