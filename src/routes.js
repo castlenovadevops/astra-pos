@@ -29,7 +29,7 @@ import TicketLayout from './layouts/TicketLayout';
 import CreateTicket from './pages/ticket/create';
 
 import Transactions from './pages/Transactions';
-
+import PayoutComponent from './pages/Payout';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -64,7 +64,8 @@ export default function Router() {
         { path: 'defaultdiscount', element: <DefaultDiscountDivision />},
         { path: 'employeesetting', element: <EmployeeSetting />},
         { path:'profile', element: <UserProfile/>},
-        { path:'transactions', element: <Transactions/>}
+        { path:'transactions', element: <Transactions/>},
+        { path:'payout', element: <PayoutComponent/>}
       ],
     }, {
       path: '/ticket/create', 

@@ -3,10 +3,11 @@ import axios from 'axios';
 import Moment from 'moment';
 
 import { Paper,Grid,Button, Stack, Container, Typography,IconButton,TextField,DialogContentText,Dialog,DialogTitle,DialogContent,DialogActions } from '@mui/material';
-
-import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers';
+// import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
+// import LocalizationProvider from '@mui/lab/LocalizationProvider';
+// import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
 // import {CalendarViewMonthOutlined} from '@mui/icons-material';  
 // import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
@@ -84,7 +85,7 @@ export default class Transactions extends React.Component {
 
         this.httpManager.postRequest(`merchant/ticket/getTransactions`, input).then(res=>{
             console.log(res.data)
-            this.setState({transactions: res.data, isLoading: false})
+            this.setState({transactions: res.data, isLoading: false, showDatePopup: false})
         })
       }
     handleClickInvent(opt){
@@ -212,7 +213,7 @@ export default class Transactions extends React.Component {
                                 <b>${Number(t.ticketPayment).toFixed(2)}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
-                                <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash Pay' : t.card_type}</b>
+                                <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash' : t.paymentType}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
                                 {Moment(t.createdDate).format("HH:mm:ss a")}<br/>
@@ -244,15 +245,13 @@ export default class Transactions extends React.Component {
                         aria-describedby="alert-dialog-description"
                         style={{borderRadius:'10px'}}
                     >
-                        {/* <DialogTitle id="alert-dialog-title">
-                        <ModalHeader title="Select Date" onClose={()=>{
-                            this.setState({showDatePopup: false})
-                        }} />
-                        </DialogTitle> */}
+                        <DialogTitle id="alert-dialog-title">
+                            Select Date
+                        </DialogTitle>
                         <DialogTitle title="Select Date" 
-                        // onClose={()=>{
-                        //     this.setState({showDatePopup: false})
-                        // }}
+                        onClose={()=>{
+                            this.setState({showDatePopup: false})
+                        }}
                         />
                         <DialogContent>
                         <DialogContentText id="alert-dialog-description">
@@ -298,7 +297,7 @@ export default class Transactions extends React.Component {
                         </DialogContentText>
                             </DialogContent>
                         <DialogActions style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'1rem'}}>
-                            <Button variant="contained" onClick={()=>{ this.getTransactions()}} label="Get Transactions" />  
+                            <Button variant="contained" onClick={()=>{ this.getTransactions()}} >Get Transactions</Button>
                         </DialogActions>
             </Dialog>
             <Dialog
