@@ -17,8 +17,7 @@ export default class TicketSplitPayment extends React.Component  {
     }
 
     splitAmount(n){
-        this.props.data.onselectedWays(Number(this.props.data.ticketDetail.ticketPendingAmount)/n);
-
+        this.props.data.onselectedWays(Number(this.props.data.remainAmount)/n); 
     }
 
     handlesplitchange(e){
@@ -115,7 +114,7 @@ export default class TicketSplitPayment extends React.Component  {
                     <Grid item xs={4}></Grid>
                     <Grid item xs={4} style={{display: 'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>  
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'700'}} align="left">Full Amount</Typography>
-                        <Typography  id="modal-modal-title" variant="h5"  style={{"color":'#000', fontWeight:'700'}} align="left">${Number(this.props.data.ticketDetail.ticketPendingAmount).toFixed(2)}</Typography>
+                        <Typography  id="modal-modal-title" variant="h5"  style={{"color":'#000', fontWeight:'700'}} align="left">${Number(this.props.data.remainAmount).toFixed(2)}</Typography>
                     </Grid>
                     <Grid item xs={4}></Grid>
                 </Grid>

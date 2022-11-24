@@ -41,7 +41,7 @@ export default class TicketPayment extends React.Component  {
     }
 
     
-    componentDidMount(){ 
+    componentDidMount(){  
         this.loadData()
     } 
 
@@ -140,6 +140,7 @@ export default class TicketPayment extends React.Component  {
                     {this.state.activeTab==='split' && <TicketSplitPayment data={{
                         ticketDetail:this.props.ticketDetail,
                         topayamount: this.state.topayamount,
+                        remainAmount: this.state.remainAmount,
                         onselectedWays: (splitamt)=>{
                             this.setState({splittedAmount: splitamt, paymentSplitted: true})
                         }
@@ -225,7 +226,7 @@ export default class TicketPayment extends React.Component  {
                     {this.state.ticketpayments.map((p, idx)=>{
                         return <div style={{display:'flex',marginTop:'5px', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                                     <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left">Payment {idx+1}</Typography>
-                                    <Typography id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left"> ${Number(p.ticket_amt).toFixed(2)}</Typography>
+                                    <Typography id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left"> ${Number(p.ticketPayment).toFixed(2)}</Typography>
                             </div>  
                     })}
                    

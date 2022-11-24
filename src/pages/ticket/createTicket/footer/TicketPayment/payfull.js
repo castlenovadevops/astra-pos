@@ -33,7 +33,7 @@ export default class TicketFullPayment extends React.Component  {
     handlechangeDesc(e){
         this.setState({description: e.target.value})
     }
-    componentDidMount(){ 
+    componentDidMount(){  
     }
 
     renderNotes(){
@@ -70,7 +70,7 @@ export default class TicketFullPayment extends React.Component  {
                                 });
                             }}
                         >
-                            <MenuItem value={0}>Select Card Type</MenuItem> 
+                            <MenuItem value={''}>Select Card Type</MenuItem> 
                             <MenuItem value={'VISA'}>VISA</MenuItem> 
                             <MenuItem value={'VISA Master'}>VISA Master</MenuItem>
                             <MenuItem value={'American Express'}>American Express</MenuItem> 
@@ -91,10 +91,10 @@ export default class TicketFullPayment extends React.Component  {
                                 description: this.state.description,
                                 customerPaid:'',
                                 returnedamt:'',
-                                ticketpayment: this.state.topayamount,
+                                ticketpayment: this.props.data.topayamount,
                                 paymentnotes: this.state.description
                             }
-                            this.httpManager.postRequest('merchant/payment/savePayment', {data: input}).then(res=>{
+                            this.httpManager.postRequest('merchant/payment/savePayment', input).then(res=>{
                                 this.setState({notesPopup: false}, ()=>{
                                     this.props.data.completePayment();
                                 })
@@ -113,13 +113,32 @@ export default class TicketFullPayment extends React.Component  {
     
 
     cashPayment(amt){
-        this.setState({tenderedamt: amt}, ()=>{
-            this.paymentController.savePayment(this.props.data.topayamount, this.props.data.ticketDetail, 'cash', '', '').then(r=>{
-                this.setState({notesPopup: false}, ()=>{
-                    this.setState({completionPopup: true})
+        if(this.props.data.topayamount > 0){
+            this.setState({tenderedamt: amt}, ()=>{
+                var input = {
+                    amountpaying: this.props.data.topayamount,
+                    ticketDetail: this.props.data.ticketDetail,
+                    paymode: 'cash',
+                    cardtype: '',
+                    creditordebit: '',
+                    description: this.state.description,
+                    customerPaid:this.state.tenderedamt,
+                    returnedamt:Number(this.state.tenderedamt) - Number(this.props.data.topayamount),
+                    ticketpayment: this.props.data.topayamount,
+                    paymentnotes: this.state.description
+                }
+                this.httpManager.postRequest('merchant/payment/savePayment', input).then(res=>{
+                    this.setState({notesPopup: false}, ()=>{
+                        this.props.data.completePayment();
+                    })
                 })
+                // this.paymentController.savePayment(this.props.data.topayamount, this.props.data.ticketDetail, 'cash', '', '').then(r=>{
+                //     this.setState({notesPopup: false}, ()=>{
+                //         this.setState({completionPopup: true})
+                //     })
+                // })
             })
-        })
+        }
     } 
     
     renderCompletion(){
