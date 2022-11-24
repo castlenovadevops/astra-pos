@@ -88,13 +88,18 @@ export default class ServiceSideMenu extends  React.Component{
 
     onSelectTicket(ticket){
         console.log("TICKET TRANSFER")
-        console.log(ticket)
+        console.log(ticket) 
+        this.httpManager.postRequest(`merchant/transfer/transferService`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+            this.props.data.afterCompleteTransfer()
+           this.props.data.onSelectSideMenu(-1);
+        })
     }
 
     transferToNewTicket(){
         console.log("TRASFER TO NEW TICKET CALLED")
         this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
-            console.log(res)
+            this.props.data.afterCompleteTransfer()
+           this.props.data.onSelectSideMenu(-1);
         })
     }
 

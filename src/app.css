@@ -454,6 +454,12 @@
     max-width:90%;
 }
 
+.paymentpopup .MuiDialog-paper{
+    width:95%;
+    height:95%;
+    max-width:95%;
+}
+
 .bgbtn{
     background-color: #134163 !important;
     color:#fff !important;

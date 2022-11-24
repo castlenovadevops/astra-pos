@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TicketFullPayment from './payfull';
 import TicketSplitPayment from './splitpay';
 import './tab.css';
-
+import HTTPManager from '../../../../../utils/httpRequestManager';
 const paymentStyle = {
     position: 'absolute',
     top: '0', 
@@ -21,7 +21,7 @@ const paymentStyle = {
 };
 
 export default class TicketPayment extends React.Component  {
- 
+    httpManager = new HTTPManager();
 
     constructor(props){
         super(props);
@@ -47,12 +47,12 @@ export default class TicketPayment extends React.Component  {
 
     loadData(){
         this.setState({isLoading: true})
-        var  detail = window.localStorage.getItem('businessdetail');
+        var  detail = window.localStorage.getItem('merchantdetail');
         if(detail !== undefined && detail !== 'undefined'){
             var businessdetail = JSON.parse(detail); 
             this.setState({isLoading:true,businessdetail:businessdetail}, function(){ 
                 if(this.props.ticketDetail !== undefined){
-                    console.log(this.props.ticketDetail.sync_id)
+                    console.log(this.props.ticketDetail)
                     // this.props.ticketDetail
                     // this.paymentController.getTicketDetail(this.props.ticketDetail.sync_id).then(res=>{
                     //     if(res.paid_status==='paid'){
@@ -70,7 +70,7 @@ export default class TicketPayment extends React.Component  {
                     //             }
                     //             else{
                     //                 this.setState({remainAmount: this.state.ticketDetail.ticketPendingAmount, topayamount: this.state.ticketDetail.ticketPendingAmount},()=>{ 
-                    //                     this.getTicketPayments();
+                                        this.getTicketPayments();
                     //                 })
                     //             }
                     //         })
@@ -104,6 +104,9 @@ export default class TicketPayment extends React.Component  {
     }
 
     getTicketPayments(){
+        this.httpManager.postRequest(`merchant/payment/getpayments`, {data: this.props.ticketDetail}).then(res=>{
+            this.setState({ticketpayments: res.data, topayamount: res.remainAmount, remainAmount: res.remainAmount, isLoading:false});
+        })
         // this.paymentController.getTicketPayments(this.state.ticketDetail.sync_id).then(res=>{ 
         //     console.log("ASdasdasdasds")
         //     console.log(res);
@@ -126,7 +129,7 @@ export default class TicketPayment extends React.Component  {
                     </div>
 
                     {this.state.activeTab==='full' && <TicketFullPayment data={{
-                        ticketDetail:this.state.ticketDetail,
+                        ticketDetail:this.props.ticketDetail,
                         topayamount: this.state.topayamount,
                         completePayment:()=>{
                             this.props.afterSubmit();
@@ -135,7 +138,7 @@ export default class TicketPayment extends React.Component  {
 
                     
                     {this.state.activeTab==='split' && <TicketSplitPayment data={{
-                        ticketDetail:this.state.ticketDetail,
+                        ticketDetail:this.props.ticketDetail,
                         topayamount: this.state.topayamount,
                         onselectedWays: (splitamt)=>{
                             this.setState({splittedAmount: splitamt, paymentSplitted: true})
@@ -144,7 +147,7 @@ export default class TicketPayment extends React.Component  {
                 </>}
 
                 {this.state.paymentSplitted && <><TicketFullPayment data={{
-                        ticketDetail:this.state.ticketDetail,
+                        ticketDetail:this.props.ticketDetail,
                         topayamount: this.state.splittedAmount,
                         completePayment:()=>{
                             this.setState({splittedAmount: 0, paymentSplitted: false})
@@ -178,7 +181,7 @@ export default class TicketPayment extends React.Component  {
                 <Grid item xs={12} style={{display:'flex'}}> 
                     <Grid item xs={10}>
                         <Typography id="modal-modal-title" variant="subtitle" align="left" style={{"color":'#000', fontWeight:'500'}}>
-                            Pay Full Amount (${Number(this.state.ticketDetail.grand_total).toFixed(2)})
+                            Pay Full Amount (${Number(this.props.ticketDetail.ticketTotalAmount).toFixed(2)})
                         </Typography>
                     </Grid>
                     <Grid item xs={2}>
@@ -196,27 +199,27 @@ export default class TicketPayment extends React.Component  {
                     </Typography>
                     <div style={{display:'flex', marginTop:'10px', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Order Subtotal</Typography>
-                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.state.ticketDetail.subtotal).toFixed(2)}</Typography>
+                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.ticketSubTotal).toFixed(2)}</Typography>
                    </div> 
                    
                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Tips</Typography>
-                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.state.ticketDetail.tips_totalamt).toFixed(2)}</Typography>
+                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.tipsAmount).toFixed(2)}</Typography>
                    </div>
                    
                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Discount</Typography>
-                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.state.ticketDetail.discount_totalamt).toFixed(2)}</Typography>
+                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.ticketDiscount).toFixed(2)}</Typography>
                    </div>
                    
                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Tax</Typography>
-                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.state.ticketDetail.total_tax).toFixed(2)}</Typography>
+                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.taxAmount).toFixed(2)}</Typography>
                    </div>
                    
                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left">Total</Typography>
-                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.state.ticketDetail.grand_total).toFixed(2)}</Typography>
+                        <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.grandTotal).toFixed(2)}</Typography>
                    </div> 
                              
                     {this.state.ticketpayments.map((p, idx)=>{

@@ -7,7 +7,7 @@ import './createTicket/css/common.css';
 import './createTicket/css/topbar.css';
 import SelectedServicesComponent from './createTicket/selectedServices';
 import TicketTotalComponent from './createTicket/ticketTotal';
-import TicketFooterComponent from "./createTicket/footer";
+import TicketFooterComponent from "./createTicket/footer"; 
 
 export default class CreateTicketComponent extends React.Component{
     httpManager = new HTTPManager();
@@ -62,7 +62,21 @@ export default class CreateTicketComponent extends React.Component{
         this.handleCloseTips = this.handleCloseTips.bind(this);
         this.saveTicket = this.saveTicket.bind(this);
         this.updateTicketDiscount = this.updateTicketDiscount.bind(this);
+        this.afterCompleteTransfer = this.afterCompleteTransfer.bind(this);
+        this.saveTicketPromise = this.saveTicketPromise.bind(this);
     } 
+
+    afterCompleteTransfer(){
+        var services = Object.assign([], this.state.selectedServices)
+        console.log(services);
+        console.log(this.state.selectedRow)
+        services.splice(this.state.selectedRow, 1);
+        console.log(services);
+        this.setState({selectedServices: services},()=>{
+            this.calculateAllServices(0);
+            this.saveTicket()
+        })
+    }
 
     updateTicketDiscount(discounts, totalDiscountAmount){
         var price = Object.assign({}, this.state.totalValues);
@@ -130,20 +144,43 @@ export default class CreateTicketComponent extends React.Component{
         }
     }
 
+    saveTicketPromise = async(req, res, next)=>{
+        return new Promise(async (resolve) => { 
+            if(this.state.selectedServices.length > 0){
+                console.log("AAAA")
+                var ticketinput = {
+                    ticketDetail:Object.assign({}, this.state.ticketDetail), 
+                    selectedServices: Object.assign([], this.state.selectedServices),
+                    ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+                    ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+                }
+                console.log(ticketinput)
+                this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+                    resolve("success")
+                })
+            }
+            else{
+                resolve("Success")
+            }
+        })
+    }
+
     saveTicket(option){
-        // console.log("AAAA")
-        // var ticketinput = {
-        //     ticketDetail:Object.assign({}, this.state.ticketDetail), 
-        //     selectedServices: Object.assign([], this.state.selectedServices),
-        //     ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
-        //     ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
-        // }
-        // console.log(ticketinput)
-        // this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
-        //     console.log(resp)
-        //     if(option === 'close')
-                this.props.data.closeCreateTicket();
-        // })
+        if(this.state.selectedServices.length > 0){
+            console.log("AAAA")
+            var ticketinput = {
+                ticketDetail:Object.assign({}, this.state.ticketDetail), 
+                selectedServices: Object.assign([], this.state.selectedServices),
+                ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+                ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+            }
+            console.log(ticketinput)
+            this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+                console.log(resp)
+                if(option === 'close')
+                    this.props.data.closeCreateTicket();
+            })
+        }
     }
     
     handleCloseTips(msg, tipsInput){
@@ -564,6 +601,7 @@ export default class CreateTicketComponent extends React.Component{
                                                                             customer_detail: this.state.customer_detail,
                                                                             ticketdiscounts: this.state.ticketdiscounts,
                                                                             saveTicket: this.saveTicket,
+                                                                            saveTicketPromise: this.saveTicketPromise,
                                                                             reloadTicket: this.reloadTicket,
                                                                             price: this.state.totalValues,
                                                                             onUpdateNotes:this.onUpdateNotes,
@@ -594,6 +632,7 @@ export default class CreateTicketComponent extends React.Component{
                                 </Grid>
                                 <Grid item xs={5} style={{height:'100%', overflow:'hidden', borderLeft:'1px solid #dfdfdf'}} className='fullHeight'>
                                         <ServiceSideMenu data={{
+                                            ticketDetail: this.state.ticketDetail,
                                             selectedRow:this.state.selectedRow,
                                             selectedServices: this.state.selectedServices, 
                                             selectedMenu: this.state.selectedMenu,
@@ -608,7 +647,8 @@ export default class CreateTicketComponent extends React.Component{
                                             onUpdateRequestNotes: this.onUpdateRequestNotes,
                                             selectDiscount: this.selectDiscount,
                                             selectTax: this.selectTax,
-                                            onSaveSplit: this.onSaveSplit
+                                            onSaveSplit: this.onSaveSplit,
+                                            afterCompleteTransfer: this.afterCompleteTransfer
 
                                         }} />
                                 </Grid>

@@ -1,13 +1,13 @@
 import React from 'react';   
-import {Grid,  Typography, Button,Box,   InputAdornment, TextareaAutosize } from '@material-ui/core/'; 
-import TextField from '@mui/material/TextField';  
+import {Grid,  Typography, Button,Box, FormControl,  InputAdornment, TextareaAutosize } from '@material-ui/core/'; 
+import {TextField, Select, MenuItem} from '@mui/material'; 
 import CreditCard from '@mui/icons-material/CreditCard';
 import Currency from '@mui/icons-material/LocalAtm'; 
-
+import HTTPManager from '../../../../../utils/httpRequestManager';
 import './tab.css'; 
 
 export default class TicketFullPayment extends React.Component  { 
-
+    httpManager = new HTTPManager()
     constructor(props){
         super(props);
         this.state={
@@ -20,7 +20,8 @@ export default class TicketFullPayment extends React.Component  {
             selectedAmount:0,
             CashCustomPopup: false,
             cashCustomAmount: 0,
-            alertToast: false
+            alertToast: false,
+            cardtype : ''
         }
         this.handlechangeDesc = this.handlechangeDesc.bind(this)
         this.cashPayment = this.cashPayment.bind(this);
@@ -53,11 +54,47 @@ export default class TicketFullPayment extends React.Component  {
                             onChange={this.handlechangeDesc} 
                         />
                 </Grid>
+                <Grid item xs={12} style={{display:'flex',margin :10}}>
+                <FormControl fullWidth> 
+                        <Select
+                            label="Card Type"
+                            id="Card Type"
+                            value={this.state.cardtype}
+                            variant="standard"
+                            placeholder="Select Card Type"
+                            name="cardtype" 
+                            inputProps={{ 'aria-label': 'Without label' }}
+                            onChange={(e)=>{ 
+                                this.setState({cardtype:e.target.value}, function(){ 
+                                    
+                                });
+                            }}
+                        >
+                            <MenuItem value={0}>Select Card Type</MenuItem> 
+                            <MenuItem value={'VISA'}>VISA</MenuItem> 
+                            <MenuItem value={'VISA Master'}>VISA Master</MenuItem>
+                            <MenuItem value={'American Express'}>American Express</MenuItem> 
+                        
+                        </Select>
+                    </FormControl>
+                </Grid>
                 <Grid item xs={12} style={{display:'flex',marginTop:10}}>
                     <Grid item xs={4}></Grid>
                     <Grid item xs={4} style={{display: 'flex', justifyContent:'center', alignItems:'center'}}> 
                         <Button style={{marginRight: 10}} onClick={()=>{
-                            this.paymentController.savePayment(this.props.data.topayamount, this.props.data.ticketDetail, 'card', this.state.card_type, this.state.description).then(r=>{
+                            var input = {
+                                amountpaying: this.props.data.topayamount,
+                                ticketDetail: this.props.data.ticketDetail,
+                                paymode: 'card',
+                                cardtype: this.state.cardtype,
+                                creditordebit: this.state.card_type,
+                                description: this.state.description,
+                                customerPaid:'',
+                                returnedamt:'',
+                                ticketpayment: this.state.topayamount,
+                                paymentnotes: this.state.description
+                            }
+                            this.httpManager.postRequest('merchant/payment/savePayment', {data: input}).then(res=>{
                                 this.setState({notesPopup: false}, ()=>{
                                     this.props.data.completePayment();
                                 })

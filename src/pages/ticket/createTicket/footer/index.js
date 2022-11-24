@@ -5,7 +5,7 @@ import TicketTipsModal from './TicketTips';
 import PaymentModal from './TicketPayment';
 import NotesModal from './notes';
 // import CombineTicket from './combineticket';
-
+import Loader from '../../../../components/Loader';
 import AlertModal from '../../../../components/Dialog'; 
 import TicketDiscount from './TicketDiscount'; 
 
@@ -13,6 +13,7 @@ export default class TicketFooterComponent extends React.Component{
     constructor(props){
         super(props);  
         this.state = {
+            isLoading: false,
             voidalertOpen: false,
             addTips_popup: false,
             addNotes_popup : false,
@@ -101,28 +102,16 @@ export default class TicketFooterComponent extends React.Component{
     }
 
     handleTicketPayment(){ 
-        this.props.data.setLoader(true);
-        var detail = Object.assign({}, this.props.data.ticketDetail);
-           detail["ticketref_id"] = detail.sync_id;
-           var input = {
-               ticketDetail: Object.assign({}, this.props.data.ticketDetail), 
-               selectedTech: this.props.data.selectedTech,
-               customer_detail: this.props.data.customer_detail,
-               price: this.props.data.price,
-               selectedServices : this.props.data.selectedServices, 
-               ticketDiscount: this.props.data.price.ticketDiscount,
-               ticketref_id: detail["ticketref_id"]
-           } 
-        //    this.ticketServiceController.saveTicket(input).then(r=>{  
-        //         this.ticketServiceController.saveTicketServices(input).then(r=>{ 
-                    this.setState({openPayment:true,ticketDetail:detail})
-        //             this.props.data.setLoader(false);
-        //         })
-        //    }) 
+        if(this.props.data.selectedServices.length > 0){
+            this.setState({isLoading:true})
+            this.props.data.saveTicketPromise().then(r=>{
+                this.setState({openPayment: true})
+            })
+        }
     }
 
 
-    handleClosePayment(msg){
+    handleClosePayment(msg=''){ 
         if(msg !== ''){
             this.props.data.closeTicket();
         }
@@ -155,6 +144,7 @@ export default class TicketFooterComponent extends React.Component{
         }} />
         return <> 
             <div style={{ marginLeft: 0, height:'100%'}}>
+                {this.state.isLoading && <Loader />}
                 {!this.props.data.isTicketEdit && <div style={{height:'100%'}}>
                     <Grid item xs={12} style={{display:'flex',height:'100%'}}>
                         <Grid item xs={5} className="footerbtn">
@@ -264,10 +254,9 @@ export default class TicketFooterComponent extends React.Component{
             }
 
  
-            {/* {this.state.openPayment && <PaymentModal  
-                handleClosePayment={(msg)=>this.handleClosePayment(msg)} ticketDetail={this.props.data.ticketDetail}>
-                    
-            </PaymentModal>} */}
+            {this.state.openPayment && <PaymentModal  
+                handleClosePayment={(msg)=>this.handleClosePayment(msg)} price={this.props.data.price} ticketDetail={this.props.data.ticketDetail}> 
+            </PaymentModal>}
  
             {this.state.addNotes_popup &&
                 <NotesModal handleCloseAddNotes={()=>this.handleCloseAddNotes()} notes={this.props.data.ticketDetail.ticketNotes} handlechangeNotes={(e)=>this.handlechangeNotes(e)} saveNotes={()=>this.saveNotes()}/>

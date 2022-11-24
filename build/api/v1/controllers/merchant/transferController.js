@@ -26,9 +26,9 @@ module.exports = class TicketController extends baseController{
                 },
                 
                 {
-                    path:this.path+"/transferServce",
+                    path:this.path+"/transferService",
                     type:"post",
-                    method: "transferServceToExist",
+                    method: "transferServiceToExist",
                     authorization:'authorizationAuth'
                 },
             ] 
@@ -80,7 +80,8 @@ module.exports = class TicketController extends baseController{
         })
     }
 
-    createTicketForTransfer= async(req, res, next, ticketcode)=>{
+    createTicketForTransfer= async(req, res, next, ticketcode)=>{ 
+        try{
         var input = {
             ticketCode: ticketcode,
             isDraft: 0, 
@@ -96,19 +97,21 @@ module.exports = class TicketController extends baseController{
             ticketDiscountApplied:0,
             tipsAmount: req.input.service.totalTips,
             serviceAmount: req.input.service.subTotal,
-            ticketTotalAmount:req.input.ticketDetail.ticketTotalamount
-        }
-
-        this.create('tickets', input).then(ticket=>{
-            // console.log(ticket)
+            ticketTotalAmount:req.input.service.subTotal+ req.input.service.totalTax -  req.input.service.totalDiscount + req.input.service.totalTips
+        } 
+        this.create('tickets', input).then(ticket=>{ 
             this.transferService(ticket.dataValues, req, res, next);
             // this.sendResponse({data: ticket.dataValues}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
         })
+    }
+    catch(e){
+        console.log(e)
+    }
     }   
 
-    transferServceToExist= async(req, res, next)=>{
+    transferServiceToExist= async(req, res, next)=>{
         var input = { 
             tipsAmount: Number(req.input.ticketDetail.tipsAmount)+Number(req.input.service.totalTips),
             serviceAmount: Number(req.input.ticketDetail.serviceAmount) + Number(req.input.service.subTotal),
@@ -118,7 +121,7 @@ module.exports = class TicketController extends baseController{
 
         this.update('tickets', input, {where:{ticketId:req.input.ticketDetail.ticketId}}).then(ticket=>{
             // console.log(ticket)
-            this.transferService(ticket.dataValues, req, res, next);
+            this.transferService(req.input.ticketDetail, req, res, next);
             // this.sendResponse({data: ticket.dataValues}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
@@ -126,7 +129,7 @@ module.exports = class TicketController extends baseController{
     }
 
     transferService = async(newTicket, req, res, next)=>{
-
+        try{
         var service = req.input.service
         if(service.ticketServiceId !== undefined){
             var input = {
@@ -134,18 +137,22 @@ module.exports = class TicketController extends baseController{
                 ticketId: newTicket.ticketId
             }
             this.update('ticketservices', input, {where:{ticketServiceId: service.ticketServiceId} }).then(R=>{
-                this.sendResponse({message:"Service transferred successfully."})
+                this.sendResponse({message:"Service transferred successfully."}, res, 200)
             })
         }
-        else{ 
-            this.saveTicketServices(req, res, next);  
+        else{  
+            this.saveTicketServices(newTicket, req, res, next);  
         } 
-
     }
-saveTicketServices = async(req, res, next, idx=0)=>{ 
-        var service = req.input.service[idx];
+    catch(e){
+        console.log(e)
+    }
+    }
+saveTicketServices = async(newTicket, req, res, next, idx=0)=>{ 
+    try{
+        var service = req.input.service;
         var serviceinput = {
-            "ticketId" : req.input.ticketDetail.ticketId,
+            "ticketId" : newTicket.ticketId,
             "serviceId"	: service.serviceDetail.mProductId,
             "serviceTechnicianId" : service.technician.mEmployeeId,
             "serviceQty": service.qty,
@@ -213,7 +220,11 @@ saveTicketServices = async(req, res, next, idx=0)=>{
                     this.saveTicketServiceTax(req,res,next,ticketServiceId,idx,0)
                 } 
             })
-        } 
+        }  
+    }
+        catch(e){
+            console.log(e)
+        }
 }
 
 saveTicketServiceTax= async (req,res,next,ticketServiceId,idx,tid)=>{
@@ -296,6 +307,7 @@ saveTicketServiceDiscount= async (req,res,next,ticketServiceId,idx,tid)=>{
 }
 
 saveTicketServiceCommission = async (req,res,next,idx)=>{
+    try{
     var service = req.input.service;
     var servicecommission_input={
         technicianId: service.technician.mEmployeeId,
@@ -307,8 +319,11 @@ saveTicketServiceCommission = async (req,res,next,idx)=>{
         checkPercentage: service.technician.mCheckPercentage,
     }
     this.create('ticketcommission', servicecommission_input).then(r=>{
-        this.saveTicketServices(req, res, next, idx+1); 
+        this.sendResponse({message:"Service transferred successfully."}, res, 200)
     })
+}catch(e){
+    console.log(e)
+}
 }
 
 }
