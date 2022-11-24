@@ -12,6 +12,8 @@ import DiscountsListComponent from './discounts';
 import { TaxListComponent } from './taxes';
 import SplitService from '../splitService';
 import DialogComponent from '../../../../components/Dialog';
+import VariablePrice from './PriceVariable';
+import TransferService from './TransferService';
 
 const getIcon = (name) => <Iconify style={{color:'#d0d0d0', marginLeft:'5px'}} icon={name} width={22} height={22} />;
 export default class ServiceSideMenu extends  React.Component{
@@ -34,9 +36,26 @@ export default class ServiceSideMenu extends  React.Component{
             ],
             search: '',
             categories:[],
-            services:[]
+            services:[],
+            variablepopup: false,
+            variableservice:{}
         }
         this.onChangeTechnician = this.onChangeTechnician.bind(this)
+        this.closePopup = this.closePopup.bind(this)
+        this.afterSubmitVariablePrice = this.afterSubmitVariablePrice.bind(this)
+        this.onSelectTicket= this.onSelectTicket.bind(this)
+        this.transferToNewTicket = this.transferToNewTicket.bind(this)
+    }
+
+    afterSubmitVariablePrice(price){
+        var service = Object.assign({}, this.state.variableservice)
+        service.mProductPrice = price;
+        this.props.data.onSelectService(service)
+        this.setState({variablepopup:false, variableservice:{}})
+    }
+
+    closePopup(){
+        this.setState({variablepopup:false, variableservice:{}})
     }
 
     static getDerivedStateFromProps(nextProps, prevState) { 
@@ -67,6 +86,17 @@ export default class ServiceSideMenu extends  React.Component{
     }
 
 
+    onSelectTicket(ticket){
+        console.log("TICKET TRANSFER")
+        console.log(ticket)
+    }
+
+    transferToNewTicket(){
+        console.log("TRASFER TO NEW TICKET CALLED")
+        this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+            console.log(res)
+        })
+    }
 
     getProductsByCategory(catid){
         this.httpManager.postRequest('merchant/product/getbyCategory',{categoryId: catid}).then(res=>{
@@ -133,9 +163,11 @@ export default class ServiceSideMenu extends  React.Component{
                     {this.state.selectedRow === -1 &&
                         <Grid container style={{flexWrap:'wrap'}}>
                             {this.state.services.length > 0 && this.state.services.map(service=>{ 
-                                return <Grid item xs={4} className='servicebox' onClick={()=>{
-                                    if(service.mProductType === 'Variable'){
-
+                                return <Grid item xs={4} className='servicebox' onClick={()=>{ 
+                                    if(service.mProductPriceType === 'Variable'){
+                                        this.setState({variableservice: service},()=>{
+                                            this.setState({variablepopup: true})
+                                        })
                                     }
                                     else{
                                         this.props.data.onSelectService(service);
@@ -188,6 +220,12 @@ export default class ServiceSideMenu extends  React.Component{
                     }
                 </Grid>
             </Grid>
+            {this.props.data.selectedMenu===2 && <div>SELCETED TRNASFTER</div>} 
+            {this.state.variablepopup && <VariablePrice data={{
+                afterSubmitVariablePrice : this.afterSubmitVariablePrice,
+                closePopup: this.closePopup,
+                service:this.state.variableservice 
+            }} />}
             <Dialog
                                 open={this.props.data.selectedMenu===5}
                                 onClose={()=>{
@@ -257,6 +295,20 @@ export default class ServiceSideMenu extends  React.Component{
                                 onSaveSplit:this.props.data.onSaveSplit
                               }}/>
                         </DialogComponent>  
+
+
+                        <DialogComponent open={this.props.data.selectedMenu===2} onClose={()=>{
+                                this.props.data.onSelectSideMenu(1)
+                            }} actions={<></>}>
+                               <TransferService data={
+                                 {
+                                    onSelectTicket: this.onSelectTicket,
+                                    transferToNewTicket: this.transferToNewTicket
+                                }
+                               } />
+                        </DialogComponent> 
+                        
+                       
 
         </Grid>
     }
