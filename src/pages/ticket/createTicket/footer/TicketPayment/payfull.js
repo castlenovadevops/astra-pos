@@ -1,6 +1,6 @@
 import React from 'react';   
-import {Grid,  Typography, Button,Box, FormControl,  InputAdornment, TextareaAutosize } from '@material-ui/core/'; 
-import {TextField, Select, MenuItem} from '@mui/material'; 
+import {Grid,  Typography, Button,Box, FormControl,  InputAdornment, TextareaAutosize, Dialog, DialogTitle } from '@material-ui/core/'; 
+import {TextField, Select, MenuItem, DialogContent} from '@mui/material'; 
 import CreditCard from '@mui/icons-material/CreditCard';
 import Currency from '@mui/icons-material/LocalAtm'; 
 import HTTPManager from '../../../../../utils/httpRequestManager';
@@ -37,10 +37,19 @@ export default class TicketFullPayment extends React.Component  {
     }
 
     renderNotes(){
-        return  <div className="modalbox">
-            <div className='modal_backdrop'>
-            </div>
-            <div className='modal_container' style={{height:'400px', width:'600px'}}> 
+        return <Dialog
+    style={{zIndex:'99999'}}
+    className="lgwidth"
+    open={true}
+    onClose={()=>{
+        this.setState({notesPopup: false})
+    }}
+    aria-labelledby="alert-dialog-title"
+    aria-describedby="alert-dialog-description"
+>
+    <DialogTitle id="alert-dialog-title">
+        </DialogTitle>
+        <DialogContent>
                 {/* <ModalTitleBar onClose={()=> this.setState({notesPopup: false}) } title="Notes"/>   */}
                 <Grid item xs={12} style={{display:'flex',margin :10}}>
                         <TextareaAutosize 
@@ -103,8 +112,8 @@ export default class TicketFullPayment extends React.Component  {
                     </Grid>
                     <Grid item xs={4}></Grid>
                 </Grid>
-            </div>
-        </div>
+                </DialogContent>
+        </Dialog>
     }
 
     selectPayment(amt){

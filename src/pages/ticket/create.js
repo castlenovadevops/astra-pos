@@ -572,7 +572,7 @@ export default class CreateTicketComponent extends React.Component{
                                     ticketDetail: this.state.ticketDetail,
                                     setTicketOwner: this.setTicketOwner,
                                     isDisabled: false,
-                                    handleCloseTicket: ()=>{
+                                    handleCloseTicket: ()=> {
                                         this.props.data.closeCreateTicket()
                                     }
                                 }}/>}
@@ -606,6 +606,9 @@ export default class CreateTicketComponent extends React.Component{
                                                                             reloadTicket: this.reloadTicket,
                                                                             price: this.state.totalValues,
                                                                             onUpdateNotes:this.onUpdateNotes,
+                                                                            closeTicket:()=>{
+                                                                                this.props.data.closeCreateTicket()
+                                                                            },
                                                                             printTicket: (option)=>{
                                                                                 this.setState({printtype:option},()=>{
                                                                                     this.printTicket();

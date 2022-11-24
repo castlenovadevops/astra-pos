@@ -70,7 +70,7 @@ module.exports = class TicketController extends baseController{
                 "serviceQty": service.qty,
                 "serviceOriginalPrice": service.originalPrice,
                 "servicePrice": service.subTotal,
-                "servicePerUnitCost": service.servicePerUnitCost,
+                "servicePerUnitCost": service.perunit_cost,
                 "serviceNotes":service.serviceNotes,
                 "splitFrom":'',
                 "transferredFrom":'',

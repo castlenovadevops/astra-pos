@@ -112,6 +112,11 @@ export default class NavigationMenu extends React.Component{
                   path: '/app/payout',
                   icon: getIcon('eva:pie-chart-2-fill'),
               }, 
+              {
+                title: 'report',
+                path: '/app/report',
+                icon: getIcon('eva:pie-chart-2-fill'),
+            }, 
               ]
               this.setState({sideMenuItems: items}); 
 

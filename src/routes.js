@@ -30,6 +30,7 @@ import CreateTicket from './pages/ticket/create';
 
 import Transactions from './pages/Transactions';
 import PayoutComponent from './pages/Payout';
+import ReportComponent from './pages/reports';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -65,7 +66,8 @@ export default function Router() {
         { path: 'employeesetting', element: <EmployeeSetting />},
         { path:'profile', element: <UserProfile/>},
         { path:'transactions', element: <Transactions/>},
-        { path:'payout', element: <PayoutComponent/>}
+        { path:'payout', element: <PayoutComponent/>},
+        { path:'report', element: <ReportComponent/>}
       ],
     }, {
       path: '/ticket/create', 

@@ -197,8 +197,8 @@ export default class Transactions extends React.Component {
                                 })
                             }}>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
-                                {Moment(t.ticketDate).format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment(t.ticketDate).format("MM/DD/YYYY")}</span>
+                                {Moment.utc(t.ticketDate).local().format("HH:mm:ss a")}<br/>
+                                <span style={{color:'#ccc'}}>{Moment.utc(t.ticketDate).local().format("MM/DD/YYYY")}</span>
                             </Grid>
                             <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
                                 {t.ticket.ticketCode}
@@ -216,8 +216,8 @@ export default class Transactions extends React.Component {
                                 <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash' : t.paymentType}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
-                                {Moment(t.createdDate).format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment(t.createdDate).format("MM/DD/YYYY")}</span>
+                                {Moment.utc(t.createdDate).local().format("HH:mm:ss a")}<br/>
+                                <span style={{color:'#ccc'}}>{Moment.utc(t.createdDate).local().format("MM/DD/YYYY")}</span>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', textTransform:'capitalize'}}> 
                                 {/* {this.getEmpName(t.technician_id)} */}
@@ -324,7 +324,7 @@ export default class Transactions extends React.Component {
                                         <Grid item xs={3} md={3}><b>Payment</b></Grid>
                                         <Grid item xs={6} md={6}> 
                                             <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                                {Moment(this.state.transactiondetail.createdDate).format("HH:mm:ss a MM/DD/YYYY")} <br/><br/>
+                                                {Moment.utc(this.state.transactiondetail.createdDate).local().format("HH:mm:ss a MM/DD/YYYY")} <br/><br/>
                                                <b>Tender:</b> {this.state.transactiondetail.payMode.toLowerCase() === 'cash' ? this.state.transactiondetail.payMode : this.state.transactiondetail.card_type}<br/>
                                                <b>Ticket Code:</b> {this.state.transactiondetail.ticket.ticketCode}<br/>
                                                <b>Employee:</b> {this.state.transactiondetail.mEmployeeFirstName+" "+this.state.transactiondetail.mEmployeeLastName}<br/><br/>

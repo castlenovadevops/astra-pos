@@ -112,6 +112,7 @@ export default class TicketFooterComponent extends React.Component{
 
 
     handleClosePayment(msg=''){ 
+        // this.props.data.closeTicket();
         if(msg !== ''){
             this.props.data.closeTicket();
         }
