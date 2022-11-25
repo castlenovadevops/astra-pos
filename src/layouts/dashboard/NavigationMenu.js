@@ -116,7 +116,12 @@ export default class NavigationMenu extends React.Component{
                 title: 'report',
                 path: '/app/report',
                 icon: getIcon('eva:pie-chart-2-fill'),
-            }, 
+            },  
+              {
+                title: 'sync',
+                path: '/syncData/progress',
+                icon: getIcon('eva:pie-chart-2-fill'),
+            },
               ]
               this.setState({sideMenuItems: items}); 
 

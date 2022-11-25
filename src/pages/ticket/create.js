@@ -64,7 +64,30 @@ export default class CreateTicketComponent extends React.Component{
         this.updateTicketDiscount = this.updateTicketDiscount.bind(this);
         this.afterCompleteTransfer = this.afterCompleteTransfer.bind(this);
         this.saveTicketPromise = this.saveTicketPromise.bind(this);
+        this.selectCustomerDetail = this.selectCustomerDetail.bind(this)
     } 
+
+    selectCustomerDetail(customer){ 
+        console.log(customer)
+        if(this.state.customer_detail === undefined || customer === undefined){
+            this.setState({customer_detail: customer})
+        }
+        else if(this.state.customer_detail.mCustomerId !== customer.mCustomerId){
+            this.setState({customer_detail: customer})
+        }
+        else{
+            this.setState({customer_detail:{}})
+        }
+    }
+
+    onSelectCustomer(customer){
+        if(this.state.customer_detail.mCustomerId === undefined || (this.state.customer_detail.mCustomerId !== customer.mCustomerId)){
+            this.setState({customer_detail: customer})
+        }
+        else{
+            this.setState({customer_detail:{}})
+        }
+    }
 
     afterCompleteTransfer(){
         var services = Object.assign([], this.state.selectedServices)
@@ -527,7 +550,12 @@ export default class CreateTicketComponent extends React.Component{
     }
 
     setTicketOwner(detail){
-        this.setState({selectedTech: detail})
+        if(this.state.selectedTech.mEmployeeId !== detail.mEmployeeId){
+            this.setState({selectedTech: detail})
+        }
+        else{
+            this.setState({selectedTech:{}})
+        }
     }
 
     componentDidMount(){
@@ -572,6 +600,7 @@ export default class CreateTicketComponent extends React.Component{
                                     ticketDetail: this.state.ticketDetail,
                                     setTicketOwner: this.setTicketOwner,
                                     isDisabled: false,
+                                    selectCustomerDetail:this.selectCustomerDetail,
                                     handleCloseTicket: ()=> {
                                         this.props.data.closeCreateTicket()
                                     }

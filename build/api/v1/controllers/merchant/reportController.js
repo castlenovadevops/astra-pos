@@ -30,30 +30,32 @@ module.exports = class reportController extends baseController{
 
 
     getReport = async (req, res)=>{ 
-        var query = `(select ticketId from tickets where strftime("%d-%m-%Y", createdDate) = strftime("%d-%m-%Y", Date.now()))`;
-        if(req.input.reportPeriod === 'monthly'){
-            query = `(select ticketId from tickets where strftime("%m-%Y", createdDate) = strftime("%m-%Y", Date.now()))`;
-        }
-        if(req.input.reportPeriod === 'yearly'){
-            query = `(select ticketId from tickets where strftime("%Y", createdDate) = strftime("%Y", Date.now()))`;
-        }
-        let ticketoptions = {
-            where:{
-                ticketId:{
-                    [Sequelize.Op.in]:Sequelize.literal(query)
-                }
-            }
-        }
-        const ticketres = await this.readAll(ticketoptions, 'tickets');
-        const ticketids = await ticketres.forEach(t=>t.ticketId)
+        // var query = `(select ticketId from tickets where strftime("%d-%m-%Y", createdDate) = strftime("%d-%m-%Y", Date.now()))`;
+        // if(req.input.reportPeriod === 'monthly'){
+        //     query = `(select ticketId from tickets where strftime("%m-%Y", createdDate) = strftime("%m-%Y", Date.now()))`;
+        // }
+        // if(req.input.reportPeriod === 'yearly'){
+        //     query = `(select ticketId from tickets where strftime("%Y", createdDate) = strftime("%Y", Date.now()))`;
+        // }
+        // let ticketoptions = {
+        //     where:{
+        //         ticketId:{
+        //             [Sequelize.Op.in]:Sequelize.literal(query)
+        //         }
+        //     }
+        // }
+        // const ticketres = await this.readAll(ticketoptions, 'tickets');
+        // const ticketids = await ticketres.forEach(t=>t.ticketId)
 
-        let ticketserviceoptions = {
-            where:{
-                ticketId:{
-                    [Sequelize.Op.in]:Sequelize.literal(query)
-                }
-            }
-        }
+        // let ticketserviceoptions = {
+        //     where:{
+        //         ticketId:{
+        //             [Sequelize.Op.in]:Sequelize.literal(query)
+        //         }
+        //     }
+        // }
+        console.log("############")
+        console.log(req.input)
 
         // const ticketserviceres = await this.readAll(ticketserviceoptions, 'ticketservices');
         // const ticketserviceids = await ticketres.forEach(t=>t.ticketServiceId);
@@ -110,7 +112,7 @@ module.exports = class reportController extends baseController{
             }
         }
 
-        if(req.input.reporttype !== 'Owner'){ 
+        if(req.input.type !== 'Owner'){ 
             options = { 
                 attributes:{
                     include:[ 

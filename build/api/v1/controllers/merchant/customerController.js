@@ -16,10 +16,36 @@ module.exports = class CustomerController extends baseController{
 
     initialize(){ 
         return new Promise((resolve) => {
+            this.routes = [
+                {
+                    path:this.path+"/getCustomer",
+                    type:"post",
+                    method: "getCustomer",
+                    authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/getActiveCustomer",
+                    type:"post",
+                    method: "getActiveCustomer",
+                    authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/save",
+                    type:"post",
+                    method: "saveCustomer",
+                    authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/updateCustomer",
+                    type:"post",
+                    method: "updateCustomer",
+                    authorization:'authorizationAuth'
+                }
+            ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
-            this.router.post(this.path+"/save", authenticate.authorizationAuth, this.saveCustomer); 
-            this.router.get(this.path+"/getCustomer", authenticate.authorizationAuth, this.getCustomer); 
-            this.router.post(this.path+"/updateCustomer", authenticate.authorizationAuth, this.updateCustomer); 
+            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.saveCustomer); 
+            // this.router.get(this.path+"/getCustomer", authenticate.authorizationAuth, this.getCustomer); 
+            // this.router.post(this.path+"/updateCustomer", authenticate.authorizationAuth, this.updateCustomer); 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     } 
@@ -46,6 +72,21 @@ module.exports = class CustomerController extends baseController{
         }
     }
 
+    getActiveCustomer = async (req,res,next)=>{ 
+        let customers = await this.readAll({order: [
+            ['createdDate','ASC']
+        ],
+        attributes:{include: [ [
+            Sequelize.col('mCustomerId'),
+            `id`
+        ], ]},
+        where:{
+            merchantId:req.deviceDetails.merchantId,
+            mCustomerStatus:1
+        }
+        }, 'mCustomers')
+        this.sendResponse({ data: customers}, res, 200);
+    }
     getCustomer = async (req,res,next)=>{ 
         let customers = await this.readAll({order: [
             ['createdDate','ASC']
@@ -66,7 +107,7 @@ module.exports = class CustomerController extends baseController{
         const user = req.userData;  
         var data = {
             mCustomerStatus: input.mCustomerStatus,
-            updatedBy: user.id,
+            updatedBy: user.mEmployeeId,
             updatedDate: this.getDate()
         }
         this.update('mCustomers', data, {where:{mCustomerId:input.id}}).then(r1=>{

@@ -39,6 +39,12 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false,
         }, 
+        servicePerUnitCost: {
+             field: 'servicePerUnitCost', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: false,
+        }, 
         servicePrice: {
              field: 'servicePrice', 
              type: DataTypes.STRING(255), 

@@ -85,7 +85,7 @@ module.exports = (sequelize) => {
         },
         mCustomerStatus: {
             field: 'mCustomerStatus', 
-            type: DataTypes.INTEGER, 
+            type: DataTypes.TEXT, 
             primaryKey: false, 
             allowNull: false,
         },

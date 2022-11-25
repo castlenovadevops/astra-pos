@@ -56,6 +56,13 @@ export default class SyncProgress extends React.Component{
                 url:  `/pos/syncData/employees`
             } ,
             {
+                name: "mCustomers",
+                tablename: 'mCustomers',
+                progressText: "Synchronizing Customers...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/getCustomers`
+            },
+            {
                 name: "mCategory",
                 tablename: 'mCategory',
                 progressText: "Synchronizing Categories...",

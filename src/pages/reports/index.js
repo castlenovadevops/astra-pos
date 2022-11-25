@@ -478,7 +478,7 @@ export default class ReportComponent extends React.Component{
                                     </DialogContentText>
                                         </DialogContent>
                                     <DialogActions style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'1rem'}}>
-                                        <Button variant="contained" onClick={()=>{this.setState({reportby:'changed'});this.getReport()}}> Get Report </Button>
+                                        <Button variant="contained" onClick={()=>{this.setState({reportby:'changed'});this.getReports()}}> Get Report </Button>
                                     </DialogActions>
                         </Dialog> 
                         </Card> 

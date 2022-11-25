@@ -164,7 +164,7 @@ export default class Customer extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.getRequest(`merchant/customers/getCustomer`).then(response=>{
+            this.httpManager.postRequest(`merchant/customers/getCustomer`,{data:"FROM CUSTOMER"}).then(response=>{
                 // console.log(response)
                 this.setState({customerlist: response.data, isLoading: false});
             })

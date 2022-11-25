@@ -4,6 +4,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import Close from '@mui/icons-material/Close';
 import DialogComponent from "../../../../components/Dialog";
 import SelectTechnician from "./selectTechnician";
+import SelectCustomer from "./selectCustomer";
+import CustomerDetailModal from "./customerDetail";
 
 export default class TicketTopBar extends React.Component{
 
@@ -16,16 +18,20 @@ export default class TicketTopBar extends React.Component{
         }
 
         this.onSelectTechnician = this.onSelectTechnician.bind(this);
-        this.handleCloseTechnician = this.handleCloseTechnician.bind(this);
-        this.onSelectTechnician = this.onSelectTechnician.bind(this);
+        this.handleCloseTechnician = this.handleCloseTechnician.bind(this); 
         this.openCustomerDetail = this.openCustomerDetail.bind(this);
         this.openselectCustomer = this.openselectCustomer.bind(this);
         this.handleCloseCustomer = this.handleCloseCustomer.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this); 
+        this.closeCustomerDetail = this.closeCustomerDetail.bind(this)
     }
 
     componentDidMount(){
 
+    }
+
+    closeCustomerDetail(){
+        this.setState({selectCustomerDetailPopup: false})
     }
 
     openTechnician(){
@@ -51,9 +57,10 @@ export default class TicketTopBar extends React.Component{
         this.setState({selectCustomerPopup : true})
     }
 
-    onSelectCustomer(obj){  
-        this.props.selectCustomerDetail(obj)
-        this.setState({selectCustomerPopup : false})
+    onSelectCustomer(obj, opt=''){   
+        this.props.data.selectCustomerDetail(obj)
+        if(opt === '')
+            this.setState({selectCustomerPopup : false})
     }
 
     
@@ -64,9 +71,9 @@ export default class TicketTopBar extends React.Component{
 
 
     render(){
-        const actionbuttons=<Button onClick={()=>{
-            // console.log("BUTTON CLICKED")
-        }}>Click</Button>
+        // const actionbuttons=<Button onClick={()=>{
+        //     // console.log("BUTTON CLICKED")
+        // }}>Click</Button>
         return  <div style={{height:'100%', width:'100%'}}>
                     <Grid className='fullHeightTicket padd20' item xs={12} spacing={2}   alignItems="baseline"> 
                         <Grid item xs={9}  style={{display:'flex'}} alignItems="center">
@@ -80,15 +87,16 @@ export default class TicketTopBar extends React.Component{
                                 </div>  
                                 <div className={this.props.data.isDisabled ? "topbtn disabled" : "topbtn" } onClick={()=>{
                                         if(!this.props.data.isDisabled) {
-                                            if(Object.keys(this.props.customer_detail).length>0) {
+                                            if(this.props.data.customer_detail === null || this.props.data.customer_detail === undefined || Object.keys(this.props.data.customer_detail).length>0) {
                                                 this.openCustomerDetail()
                                             }
                                             else {
+                                                console.log("OPEN CUSTOMER")
                                                 this.openselectCustomer()
                                             }
                                         }
                                     }}>
-                                        {Object.keys(this.props.data.customer_detail).length===0 ? "Select Customer": this.props.data.customer_detail.name}
+                                        {this.props.data.customer_detail=== undefined ||  Object.keys(this.props.data.customer_detail).length===0 ? "Select Customer": this.props.data.customer_detail.mCustomerName}
                                 </div>    
                                 <AccountCircle fontSize="large" className={this.props.isDisabled ? "accnticon disabled" : "accnticon"}  
                                 onClick={()=>{
@@ -122,24 +130,25 @@ export default class TicketTopBar extends React.Component{
                     
                     {/* Select technician popup */}
                     {this.state.selectTechnicianPopup &&  
-                        <DialogComponent open={this.state.selectTechnicianPopup} onClose={this.handleCloseTechnician} actions={actionbuttons}>
-                              <SelectTechnician afterSubmit={()=>{this.handleCloseTechnician()}} onSelectTech={this.onSelectTechnician} />
+                        <DialogComponent open={this.state.selectTechnicianPopup} onClose={this.handleCloseTechnician} >
+                              <SelectTechnician afterSubmit={()=>{this.handleCloseTechnician()}} selectedTech={this.props.selectedTech} onSelectTech={this.onSelectTechnician} />
                         </DialogComponent> 
                     }
 
 
                     {/*Select Customer Popup*/}
-                    {/* {this.state.selectCustomerPopup && 
-                        <div className="modalbox">
-                            <div className='modal_backdrop'>
-                            </div>
-                            <div className='modal_container xl_modal'> 
-                                <ModalTitleBar onClose={()=>this.handleCloseCustomer()} title="Select Customer"/>  
-                                <SelectCustomer customerDetail={this.props.customer_detail} handleCloseCustomer={()=>this.handleCloseCustomer()} onSelectCustomer={(obj)=>this.onSelectCustomer(obj)}/>
-                            </div>
-                        </div>} */}
+                    {this.state.selectCustomerPopup && 
+                     <DialogComponent open={this.state.selectCustomerPopup} onClose={this.handleCloseCustomer} >
+                              
+                                <SelectCustomer customerDetail={this.props.data.customer_detail} handleCloseCustomer={()=>this.handleCloseCustomer()} onSelectCustomer={(obj, opt)=>this.onSelectCustomer(obj, opt)}/>
+                    </DialogComponent>}
 
-
+                    {this.state.selectCustomerDetailPopup &&
+                        <DialogComponent open={this.state.selectCustomerDetailPopup} onClose={this.closeCustomerDetail} >
+                                <CustomerDetailModal open={this.state.selectCustomerDetail} onClose={()=>this.closeCustomerDetail()} 
+                        handleClosePayment={(msg)=>this.closeCustomerDetail()} customerDetail={this.props.data.customer_detail}></CustomerDetailModal>
+                        </DialogComponent> 
+                    }
 
                 </div>
     }

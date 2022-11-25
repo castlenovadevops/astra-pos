@@ -63,6 +63,7 @@ module.exports = class TicketController extends baseController{
     saveTicketServices = async(req, res, next, idx=0)=>{
         if(idx<req.input.selectedServices.length){
             var service = req.input.selectedServices[idx];
+            console.log("perunit_cost", service.perunit_cost)
             var serviceinput = {
                 "ticketId" : req.input.ticketDetail.ticketId,
                 "serviceId"	: service.serviceDetail.mProductId,
