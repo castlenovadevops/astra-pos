@@ -7,11 +7,19 @@
         "output": "out",
         "buildResources": "assets"
     }, 
+    "extraResources": [
+        "build/public",
+        {
+            "from":"./DB/",
+            "to":"DB/",
+            "filter":["**/*"]
+        }
+      ],
     "files": [
         "package.json",
         "build/**/*",
         "node_modules"
-    ],
+    ], 
     "dmg": { 
         "backgroundColor": "#ffffff",
         "icon": "icon.png",
