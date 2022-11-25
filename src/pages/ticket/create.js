@@ -64,7 +64,8 @@ export default class CreateTicketComponent extends React.Component{
         this.updateTicketDiscount = this.updateTicketDiscount.bind(this);
         this.afterCompleteTransfer = this.afterCompleteTransfer.bind(this);
         this.saveTicketPromise = this.saveTicketPromise.bind(this);
-        this.selectCustomerDetail = this.selectCustomerDetail.bind(this)
+        this.selectCustomerDetail = this.selectCustomerDetail.bind(this);
+        this.formatData = this.formatData.bind(this);
     } 
 
     selectCustomerDetail(customer){ 
@@ -298,7 +299,9 @@ export default class CreateTicketComponent extends React.Component{
     onVoidItem(){
         var services = Object.assign([], this.state.selectedServices);
         services.splice(this.state.selectedRow,1)
-        this.setState({selectedServices: services, selectedMenu: -1, selectedRow:-1})
+        this.setState({selectedServices: services, selectedMenu: -1, selectedRow:-1},()=>{
+            this.calculateAllServices(0)
+        })
     }
 
     onChangeTechnician(tech){
@@ -307,9 +310,8 @@ export default class CreateTicketComponent extends React.Component{
         var services = Object.assign([], this.state.selectedServices);
         services[this.state.selectedRow]= service;
         console.log(services)
-        this.setState({selectedServices: services},()=>{
-
-        this.calculateAllServices(0)
+        this.setState({selectedServices: services},()=>{ 
+            this.calculateAllServices(0)
         });
     }
 
@@ -418,6 +420,7 @@ export default class CreateTicketComponent extends React.Component{
             else{
                 console.log("IDX", idx)
                 var selectedservices1 = Object.assign([], this.state.selectedServices); 
+                console.log("IDX", selectedservices1)
                 selectedservices1.push(obj);
                 this.setState({selectedServices: selectedservices1}, ()=>{ 
                     this.calculateTicketTotal({
@@ -435,7 +438,7 @@ export default class CreateTicketComponent extends React.Component{
     }
 
 
-    calculateDiscountForService(obj, i=0, idx=-1){
+    calculateDiscountForService(obj, i=0, idx=-1){ 
         var ticketDetail = Object.assign({}, this.state.ticketDetail);
         if(i < obj.ticketservicediscounts.length){ 
             if(i===0){
@@ -470,6 +473,88 @@ export default class CreateTicketComponent extends React.Component{
     }
 
 
+    calculateEditTaxForService(obj,data,dataindex, i=0, idx=-1){  
+        if(i < obj.ticketservicetaxes.length){
+            if(i===0){
+                obj.totalTax = 0
+            }
+            var taxdetail = obj.ticketservicetaxes[i];
+            if(taxdetail.mTaxType === 'Percentage'){ 
+                taxdetail["mTaxAmount"] = Number((taxdetail.mTaxValue/100)*obj.subTotal).toFixed(2);
+            }
+            else{
+                taxdetail["mTaxAmount"] = Number(taxdetail.mTaxValue).toFixed(2);
+            }
+            obj.ticketservicetaxes[i] = taxdetail;
+            console.log("TAXAMOUNT::::::",taxdetail["mTaxAmount"])
+            obj.totalTax = Number(obj.totalTax)+Number(taxdetail["mTaxAmount"]);
+            this.calculateEditTaxForService(obj, data, dataindex, i+1, idx);
+
+        }
+        else{ 
+            if(idx > -1){
+                var selectedservices = Object.assign([], this.state.selectedServices); 
+                selectedservices[idx] = obj
+                this.setState({selectedServices: selectedservices}, ()=>{
+                    this.calculateAllServices(idx+1)
+                })
+            }
+            else{
+                console.log("IDX", idx)
+                var selectedservices1 = Object.assign([], this.state.selectedServices); 
+                console.log("IDX", selectedservices1)
+                selectedservices1.push(obj);
+                this.setState({selectedServices: selectedservices1}, ()=>{ 
+                    this.formatData(data, dataindex+1)
+                    this.calculateTicketTotal({
+                        retailPrice:0,
+                        servicePrice:0,
+                        ticketSubTotal:0,
+                        ticketDiscount:this.state.ticketdiscounts.length ? this.state.totalValues.ticketDiscount :  0,
+                        taxAmount:0,
+                        tipsAmount:0,
+                        grandTotal:0
+                    });
+                })
+            }
+        }
+    }
+
+
+    calculateEditDiscountForService(obj, data, dataindex, i=0, idx=-1){ 
+        var ticketDetail = Object.assign({}, this.state.ticketDetail);
+        if(i < obj.ticketservicediscounts.length){ 
+            if(i===0){
+                obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
+                obj.totalDiscount = 0
+            }
+            var discountdetail = obj.ticketservicediscounts[i]; 
+            if(discountdetail.mDiscountType === 'Percentage'){
+                discountdetail["mDiscountAmount"] = Number((discountdetail.mDiscountValue/100)*obj.subTotal).toFixed(2);
+            }
+            else{
+                discountdetail["mDiscountAmount"] = Number(discountdetail.mDiscountValue).toFixed(2);
+            }
+            obj.ticketservicediscounts[i] = discountdetail;
+            obj.totalDiscount = Number(obj.totalDiscount)+Number(discountdetail["mDiscountAmount"]);
+            obj.subTotal= Number(obj.subTotal)-Number(obj.totalDiscount)
+            ticketDetail.serviceDiscountApplied = 1
+            this.setState({ticketDetail: ticketDetail});
+            this.calculateEditDiscountForService(obj, data, dataindex, i+1, idx);
+        }
+        else if( obj.ticketservicediscounts.length === 0){
+            obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
+            ticketDetail.serviceDiscountApplied = 0
+            this.setState({ticketDetail: ticketDetail});
+            this.calculateEditTaxForService(obj, data, dataindex,0, idx);
+        }
+        else{
+            // obj.subTotal = Number(obj.qty) * Number(obj.perunit_cost)
+            this.calculateEditTaxForService(obj, data, dataindex,0, idx);
+        }
+    }
+
+
     calculateTicketTotal(price, i=0){
         if(i < this.state.selectedServices.length){
             var service =  Object.assign({}, this.state.selectedServices[i])
@@ -481,12 +566,13 @@ export default class CreateTicketComponent extends React.Component{
             }
             price.ticketSubTotal =  Number(price.ticketSubTotal)+(Number(service.subTotal))
             // price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
+            console.log(service)
+            console.log(Number(price.taxAmount),"+",Number(service.totalTax))
             price.taxAmount = Number(price.taxAmount)+Number(service.totalTax)
             price.tipsAmount = Number(price.tipsAmount)+Number(service.totalTips)
             this.calculateTicketTotal(price, i+1);
         }
-        else{
-            console.log(price.ticketSubTotal, "-",  price.ticketDiscount, "+", price.taxAmount, "+", price.tipsAmount)
+        else{ 
             
             price.grandTotal = price.ticketSubTotal -  price.ticketDiscount + price.taxAmount + price.tipsAmount
             var ticketDetail = Object.assign({}, this.state.ticketDetail)
@@ -539,7 +625,7 @@ export default class CreateTicketComponent extends React.Component{
                 if(i=== this.state.ticketdiscounts.length-1){
                     var price = Object.assign({}, this.state.totalValues);
                     price.ticketDiscount = totalDiscountAmount; 
-                    console.log( Number(price.ticketSubTotal) ,"+", Number(price.taxAmount) ,"+", Number(price.tipsAmount)  ,"-", Number(totalDiscountAmount))
+                    
                     price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
                     this.setState({totalValues: price, ticketdiscountcommissions:[]},()=>{
                         this.calculateTicketDiscountCommission()
@@ -551,7 +637,9 @@ export default class CreateTicketComponent extends React.Component{
 
     setTicketOwner(detail){
         if(this.state.selectedTech.mEmployeeId !== detail.mEmployeeId){
-            this.setState({selectedTech: detail})
+            this.setState({selectedTech: detail}, ()=>{
+                this.calculateAllServices(0)
+            })
         }
         else{
             this.setState({selectedTech:{}})
@@ -560,28 +648,67 @@ export default class CreateTicketComponent extends React.Component{
 
     componentDidMount(){
         if(this.props.data.ticketDetail.ticketId !== undefined){
-            this.setState({ticketDetail: this.props.data.ticketDetail});
+            this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
+                this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
+                    console.log(this.state.selectedTech)
+                    this.getTicketServices();
+                })
+                
+            });
         }
         else{
             this.httpManager.postRequest("merchant/ticket/getTicketcode",{data:"REQUEST TICKET CODE"}).then(res=>{
-                this.setState({ticketDetail: res.data})
-                // console.log(res.data)
+                this.setState({ticketDetail: res.data}) 
             }).catch(e=>{
                 this.setState({error: e.message}, ()=>{
                     this.setState({showError: true})
                 })
             })
-        }
 
-        if(this.props.data.ownerTechnician !== undefined){
-            this.setState({selectedTech: this.props.data.ownerTechnician, customer_detail: this.props.data.customer_detail}, ()=>{
-                
-            })
+            if(this.props.data.ownerTechnician !== undefined){
+                this.setState({selectedTech: this.props.data.ownerTechnician, customer_detail: this.props.data.customer_detail}, ()=>{
+                    
+                })
+            }
         }
 
         this.httpManager.postRequest('merchant/tax/getByType/default', {data:"TICKET"}).then(res=>{
             this.setState({defaultTaxes: res.data})
         })
+    }
+
+    getTicketServices(){
+        this.httpManager.postRequest("/merchant/ticket/getTicketServices",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
+            // this.props.data.closeCreateTicket()  
+            this.formatData(r.data, 0)
+        })
+    }
+
+    formatData(data, i=0){  
+        if(i< data.length){
+            var ticketservice = data[i]; 
+            var service = ticketservice.mProduct
+            var obj = {
+                serviceDetail: service,
+                qty: ticketservice.serviceQty,
+                perunit_cost: Number(ticketservice.servicePerUnitCost),
+                originalPrice:  Number(ticketservice.serviceOriginalPrice),
+                subTotal: Number(ticketservice.servicePrice),
+                ticketservicetaxes:ticketservice.ticketservicetaxes,
+                ticketservicediscounts:ticketservice.ticketservicediscounts,
+                totalTax:0,
+                totalDiscount:0,
+                totalTips:ticketservice.ticketTips.length > 0 ? ticketservice.ticketTips[0].tipsAmount : 0,
+                isSpecialRequest: ticketservice.isSpecialRequest,
+                serviceNotes:'',
+                technician: ticketservice.merchantEmployee
+            } 
+            this.calculateEditDiscountForService(obj, data, i); 
+        }
+        else{
+
+            this.calculateAllServices(0);
+        }
     }
 
     voidTicket(){

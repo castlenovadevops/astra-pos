@@ -30,7 +30,7 @@ module.exports = class TicketController extends baseController{
     saveTicket = async(req, res, next)=>{
         var input = req.input;
         var ticketDetail = input.ticketDetail;
-
+        console.log("OWNER TECH::: ", ticketDetail.ownerTechnician);
         var ticketinput = {  
             "ownerTechnician" : ticketDetail.ownerTechnician,
             "customerId" : ticketDetail.customerId,
@@ -50,7 +50,7 @@ module.exports = class TicketController extends baseController{
 
 
         this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
-            this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+            this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{  
                 this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
                     this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
                         this.saveTicketServices(req, res, next); 
@@ -80,6 +80,7 @@ module.exports = class TicketController extends baseController{
                 "createdDate": this.getDate(),
                 "isSpecialRequest" : service.isSpecialRequest
             }
+            console.log("SERVICE INPUT::::::",service, serviceinput)
             if(service.ticketServiceId !== undefined){
                 this.update('ticketservices', serviceinput, {where:{ticketServiceId: service.ticketServiceId}} ,true).then(r=>{
                     this.update('ticketservicetax',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{

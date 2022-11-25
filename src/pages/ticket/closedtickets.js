@@ -33,7 +33,7 @@ export default class ClosedTicketsComponent extends React.Component{
                     editable: false,
                     renderCell: (params) => (
                         <Typography variant="subtitle2" style={{marginLeft:10,MozUserSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none', userSelect: 'none'}} align="center">
-                        {params.row.mCustomer !== null && params.row.mCustomerName !== '' ? params.row.mCustomerName : 'NA'}
+                        {params.row.mCustomer !== null && params.row.mCustomer.mCustomerName !== '' ? params.row.mCustomer.mCustomerName : 'NA'}
                         </Typography>
                     )
                 },

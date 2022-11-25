@@ -46,7 +46,13 @@ export default class ReportComponent extends React.Component{
          this.submiteReport = this.submiteReport.bind(this)
          this.handleChangeCode = this.handleChangeCode.bind(this); 
          this.getEmpDetail = this.getEmpDetail.bind(this);
+
+         this.handleType = this.handleType.bind(this)
     } 
+
+    handleType(e){
+        this.setState({reportPeriod:e.target.value});
+    }
 
     handleChangeCode(passcode){
 
@@ -105,10 +111,18 @@ export default class ReportComponent extends React.Component{
     }
 
     getReports(){
-        this.httpManager.postRequest('merchant/report/getReport', {type:this.state.reportType, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
-            console.log(res.data)
-            this.setState({employee_reportlist: res.data})
-        })
+        if(this.state.tabName === 'Owner'){
+            this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
+                console.log(res)
+                // this.setState({employee_reportlist: res.data})
+            })
+        }
+        else{
+            this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
+                console.log(res)
+                // this.setState({employee_reportlist: res.data})
+            })
+        }
     }   
 
     renderOwnerReport(){ 
@@ -507,19 +521,19 @@ export default class ReportComponent extends React.Component{
                                                 </Grid>
                                                 <Grid item xs={4} style={{padding:'20px'}}> 
                                                     <Stack direction={{ xs: 'column', sm: 'column' }} spacing={2}>
-                                                        {/* <FormControl component="fieldset">
+                                                        <FormControl component="fieldset">
                                                             <FormLabel component="legend">Report Type</FormLabel>
                                                             <RadioGroup  column aria-label="tax" name="row-radio-buttons-group">
-                                                                <FormControlLabel   style={{margin:'10px 0'}} value={this.state.reporttype} control={<Radio checked={this.state.reporttype === 'daily'} value="daily" onChange={(e)=>{ 
+                                                                <FormControlLabel   style={{margin:'10px 0'}} value={this.state.reportPeriod} control={<Radio checked={this.state.reportPeriod === 'daily'} value="daily" onChange={(e)=>{ 
                                                                     this.handleType(e)
                                                                 }}/>} label="Daily" />
-                                                                <FormControlLabel   style={{margin:'10px 0'}} value={this.state.reporttype} control={<Radio checked={this.state.reporttype === 'monthly'} value="monthly" onChange={(e)=>{ 
+                                                                <FormControlLabel   style={{margin:'10px 0'}} value={this.state.reportPeriod} control={<Radio checked={this.state.reportPeriod === 'monthly'} value="monthly" onChange={(e)=>{ 
                                                                 this.handleType(e) }}/>} label="Monthly" />
-                                                                <FormControlLabel   style={{margin:'10px 0'}} value={this.state.reporttype} control={<Radio checked={this.state.reporttype === 'annually'} value="annually" onChange={(e)=>{ 
+                                                                <FormControlLabel   style={{margin:'10px 0'}} value={this.state.reportPeriod} control={<Radio checked={this.state.reportPeriod === 'annually'} value="annually" onChange={(e)=>{ 
                                                                 this.handleType(e) }}/>} label="Annually" />
                                                                     
                                                             </RadioGroup>
-                                                        </FormControl> */}
+                                                        </FormControl>
                                                     </Stack>
                                                 </Grid> 
                                             </Grid>
@@ -534,6 +548,7 @@ export default class ReportComponent extends React.Component{
                 }
 
                 {!this.state.isAuthenticated && <Card style={{  position:'absolute',top:100,background:'transparent', left:0, right:0, bottom:0, zIndex:'999'}}>
+                    <h3 style={{textAlign:'center'}}>Enter the passcode to access the reports</h3>
                     <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={this.handleChangeCode} onSubmit={this.getEmpDetail}  clearPasscode={clearPasscode => { this.clearPasscode = clearPasscode;
                     }}/>
                     <Dialog

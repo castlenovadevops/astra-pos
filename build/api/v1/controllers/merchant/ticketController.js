@@ -149,65 +149,16 @@ module.exports = class TicketController extends baseController{
                     required: false
                 },
                 {
-                    model: this.models.ticketservices,
+                    model: this.models.merchantEmployees,
+                    required: false
+                }, 
+                {
+                    model: this.models.ticketdiscount,
                     required: false,
                     where:{
                         status:1
                     }
-                },
-                // {
-                //     model: this.models.ticketservicetax,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
-                // {
-                //     model: this.models.ticketservicediscount,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
-                // {
-                //     model: this.models.ticketdiscount,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
-                // {
-                //     model: this.models.ticketservicediscountcommission,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
-                // {
-                //     model: this.models.ticketdiscountcommission,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
-                // {
-                //     model: this.models.ticketcommission,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
-                // {
-                //     model: this.models.ticketpayment,
-                //     required: false, 
-                // },
-                // {
-                //     model: this.models.ticketTips,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // }
+                }, 
             ],
             where:{
                 ticketStatus:'Active',
@@ -218,7 +169,7 @@ module.exports = class TicketController extends baseController{
             attributes:{
                 include:[
                     [
-                        Sequelize.col('ticketId'),
+                        Sequelize.col('`tickets`.`ticketId`'),
                         'id'
                     ]
                 ]

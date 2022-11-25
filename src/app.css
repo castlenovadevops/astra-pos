@@ -350,6 +350,14 @@
 }
 
 
+.splitpopup .MuiDialog-paper{
+    width:80%;
+    height:70%;
+    max-height: 70%;
+    min-width: 80%;
+    max-width: 80%;
+}
+
 .sideMenu{
     display:flex;
     flex-direction: column;
@@ -476,3 +484,18 @@ overflow-x: hidden !important;
         flex-direction: column;
     }
 }
+
+
+/* .splitpopup .MuiBox-root{
+    background-color: #134163; 
+} */
+
+
+.splitpopup .MuiBox-root{ 
+
+}
+
+
+/* .MuiButton-contained:not(:disabled){
+    background-color: #134163 !important;
+} */

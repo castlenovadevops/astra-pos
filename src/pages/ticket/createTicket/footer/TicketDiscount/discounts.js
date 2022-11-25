@@ -71,9 +71,9 @@ class Discounts extends React.Component {
                     <Grid item xs={12}>
                         <div style={{height:'100%', width:'100%', display:'flex', flexWrap:'wrap'}}>
                         {this.state.discount_list.map((dis, index) => (
-                            <Grid item xs={3} style={{height:'100px', paddingRight: 2,paddingLeft: 2, paddingTop:2,paddingBottom:2
+                            <Grid item xs={3} style={{height:'100px',paddingRight: 2,paddingLeft: 2, paddingTop:2,paddingBottom:2
                             }} >
-                                <div style={{'background':(this.checkDiscount(dis)  ? '#bee1f7':'#F2F2F2'), textTransform:'capitalize',
+                                <div style={{'background':(this.checkDiscount(dis)  ? '#bee1f7':'#F2F2F2'),  border:(this.checkDiscount(dis)  ? '2px solid #bee1f7' :'2px solid #F2F2F2'), textTransform:'capitalize',
                             borderRadius: 10,'color':(this.checkDiscount(dis) ? '#000':'#000'), display:'flex', alignItems:'center', justifyContent:'center',
                             marginLeft:(index>0)?10:0, cursor: 'pointer', height:70 }} onClick={() => {
                                 this.addOrRemoveDiscount(dis)

@@ -287,19 +287,46 @@ export default class ServiceSideMenu extends  React.Component{
                             </Dialog>
 
                                     
+                            <Dialog
+                                style={{zIndex:'99999'}}
+                                className="splitpopup"
+                                open={this.props.data.selectedMenu===6}
+                                onClose={()=>{
+                                    this.props.data.onSelectSideMenu(1)
+                                }}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DialogTitle id="alert-dialog-title">
+                                    Split Service
+                                </DialogTitle>
+                                <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                        <SplitService  data={{
+                                            selectedRow: this.props.data.selectedRow,
+                                            selectedServices: this.props.data.selectedServices ,
+                                            closeSplit:()=>{
+                                                this.props.data.onSelectSideMenu(1)
+                                            },
+                                            onSaveSplit:this.props.data.onSaveSplit
+                                        }}/>
+                                </DialogContentText> 
+                                </DialogContent> 
+                            </Dialog>
+
                         
-                            <DialogComponent open={this.props.data.selectedMenu===6} onClose={()=>{
+                            {/* <DialogComponent open={this.props.data.selectedMenu===6} onClose={()=>{
                                 this.props.data.onSelectSideMenu(1)
                             }} actions={<></>}>
-                              <SplitService  data={{
-                                selectedRow: this.props.data.selectedRow,
-                                selectedServices: this.props.data.selectedServices ,
-                                closeSplit:()=>{
-                                    this.props.data.onSelectSideMenu(1)
-                                },
-                                onSaveSplit:this.props.data.onSaveSplit
-                              }}/>
-                        </DialogComponent>  
+                                <SplitService  data={{
+                                            selectedRow: this.props.data.selectedRow,
+                                            selectedServices: this.props.data.selectedServices ,
+                                            closeSplit:()=>{
+                                                this.props.data.onSelectSideMenu(1)
+                                            },
+                                            onSaveSplit:this.props.data.onSaveSplit
+                                        }}/>
+                        </DialogComponent>   */}
 
 
                         <DialogComponent open={this.props.data.selectedMenu===2} onClose={()=>{

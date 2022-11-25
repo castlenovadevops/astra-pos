@@ -43,9 +43,11 @@ export default class TicketTopBar extends React.Component{
         this.setState({selectTechnicianPopup : false})
     }
 
-    onSelectTechnician(obj){ 
+    onSelectTechnician(obj, opt=''){ 
         // console.log("TOPBAR CALL")
         this.props.data.setTicketOwner(obj); 
+
+        if(opt === '')
         this.setState({selectTechnicianPopup : false})
     }
 
@@ -130,15 +132,15 @@ export default class TicketTopBar extends React.Component{
                     
                     {/* Select technician popup */}
                     {this.state.selectTechnicianPopup &&  
-                        <DialogComponent open={this.state.selectTechnicianPopup} onClose={this.handleCloseTechnician} >
-                              <SelectTechnician afterSubmit={()=>{this.handleCloseTechnician()}} selectedTech={this.props.selectedTech} onSelectTech={this.onSelectTechnician} />
+                        <DialogComponent open={this.state.selectTechnicianPopup} title={'Select Technician'}  onClose={this.handleCloseTechnician} >
+                              <SelectTechnician afterSubmit={()=>{this.handleCloseTechnician()}} selectedTech={this.props.data.selectedTech} onSelectTech={this.onSelectTechnician} />
                         </DialogComponent> 
                     }
 
 
                     {/*Select Customer Popup*/}
                     {this.state.selectCustomerPopup && 
-                     <DialogComponent open={this.state.selectCustomerPopup} onClose={this.handleCloseCustomer} >
+                     <DialogComponent open={this.state.selectCustomerPopup} title={'Select Customer'}  onClose={this.handleCloseCustomer} >
                               
                                 <SelectCustomer customerDetail={this.props.data.customer_detail} handleCloseCustomer={()=>this.handleCloseCustomer()} onSelectCustomer={(obj, opt)=>this.onSelectCustomer(obj, opt)}/>
                     </DialogComponent>}

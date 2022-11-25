@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid,Typography, TextField} from '@material-ui/core/';    
+import _ from 'lodash';
 export default class PriceComponent extends React.Component{
 
     constructor(props){
@@ -26,12 +27,12 @@ export default class PriceComponent extends React.Component{
      }
 
      handlekeypress(e){
-        if(e.key === 'e'  || e.key === "+" || e.key === "-" || !RegExp("[0-9]+([.][0-9]+)?").test(e.target.value)){
-            e.preventDefault();
-        }
-        if(e.key === "."  && (e.target.value==="" || e.target.value.length===0) ) {
-            e.preventDefault(); 
-        }
+        // if(e.key === 'e'  || e.key === "+" || e.key === "-" || !RegExp("[0-9]+([.][0-9]+)?").test(e.target.value)){
+        //     e.preventDefault();
+        // }
+        // if(e.key === "."  && (e.target.value==="" || e.target.value.length===0) ) {
+        //     e.preventDefault(); 
+        // }
     }
     render(){
        return  <Grid item xs={12} style={{ flexWrap:'wrap',padding: 20}}>
@@ -44,7 +45,7 @@ export default class PriceComponent extends React.Component{
                     <Grid item xs={12} >
                         <TextField id="service_price" 
                         required 
-                        type="number"
+                        type="text"
                         name="service_price"  
                         label="Service Price" 
                         value={this.state.perunit_cost} 
@@ -52,6 +53,12 @@ export default class PriceComponent extends React.Component{
                             this.props.data.onUpdatePrice(e.target.value);
                         }}
                         onKeyDown={(e)=>{
+                            console.log(e.keyCode)
+                            const pattern = /^[0-9]$/;  
+                            console.log(pattern.test(e.key))
+                            if(!pattern.test(e.key)&& e.keyCode !== 8 && e.keyCode !== 9 && e.keyCode !== 37 && e.keyCode !== 39){ 
+                                e.preventDefault();
+                            }
                             this.handlekeypress(e)
                         }}
                         fullWidth 

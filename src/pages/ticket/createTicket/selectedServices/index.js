@@ -99,7 +99,7 @@ export default class SelectedServicesComponent extends  React.Component{
                                                 </Typography>   
                                                 {row.ticketservicediscounts.map((discount)=>
                                                     <Grid item xs={12} style={{ padding:'5px 0'}}>
-                                                            <Typography id="modal-modal-title" variant="subtitle2" align="left" >{discount.mDiscountName} ({discount.mDiscountType === 'Percentage'? Number(discount.mDiscountValue).toFixed(2)+'%' : '$'+Number(discount.mDiscountValue).toFixed(2) }) </Typography>
+                                                            <Typography id="modal-modal-title" variant="subtitle2" align="left" >{discount.mDiscountName ? discount.mDiscountName : discount.mDiscount.mDiscountName} ({discount.mDiscountType === 'Percentage'? Number(discount.mDiscountValue).toFixed(2)+'%' : '$'+Number(discount.mDiscountValue).toFixed(2) }) </Typography>
                                                     </Grid>
                                                 )}
                                                 {row.ticketservicetaxes.map( (tax) => 

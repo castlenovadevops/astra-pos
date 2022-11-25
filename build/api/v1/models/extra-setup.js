@@ -21,6 +21,9 @@ function applyExtraSetup(sequelize) {
     models.tickets.hasMany(models.ticketservices, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
     models.ticketservices.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
 
+    models.merchantEmployees.hasMany(models.tickets, {foreignKey: 'ownerTechnician',sourceKey: 'mEmployeeId'});
+    models.tickets.belongsTo(models.merchantEmployees, {foreignKey: 'ownerTechnician',targetKey: 'mEmployeeId'});
+
     models.tickets.hasMany(models.ticketdiscountcommission, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
     models.ticketdiscountcommission.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
 
@@ -30,11 +33,22 @@ function applyExtraSetup(sequelize) {
     models.tickets.hasMany(models.ticketdiscount, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
     models.ticketdiscount.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
 
+    models.mProducts.hasMany(models.ticketservices, {foreignKey: 'serviceId',sourceKey: 'mProductId'});
+    models.ticketservices.belongsTo(models.mProducts, {foreignKey: 'serviceId',targetKey: 'mProductId'});
+
+    models.merchantEmployees.hasMany(models.ticketservices, {foreignKey: 'serviceTechnicianId',sourceKey: 'mEmployeeId'});
+    models.ticketservices.belongsTo(models.merchantEmployees, {foreignKey: 'serviceTechnicianId',targetKey: 'mEmployeeId'});
+
     models.ticketservices.hasMany(models.ticketservicetax, {foreignKey: 'ticketServiceId',sourceKey: 'ticketServiceId'});
     models.ticketservicetax.belongsTo(models.ticketservices, {foreignKey: 'ticketServiceId',targetKey: 'ticketServiceId'});
+    
 
     models.ticketservices.hasMany(models.ticketservicediscount, {foreignKey: 'ticketServiceId',sourceKey: 'ticketServiceId'});
     models.ticketservicediscount.belongsTo(models.ticketservices, {foreignKey: 'ticketServiceId',targetKey: 'ticketServiceId'});
+
+    models.mDiscounts.hasMany(models.ticketservicediscount, {foreignKey: 'mDiscountId',sourceKey: 'mDiscountId'});
+    models.ticketservicediscount.belongsTo(models.mDiscounts, {foreignKey: 'mDiscountId',targetKey: 'mDiscountId'});
+
 
     models.ticketservices.hasMany(models.ticketcommission, {foreignKey: 'ticketServiceId',sourceKey: 'ticketServiceId'});
     models.ticketcommission.belongsTo(models.ticketservices, {foreignKey: 'ticketServiceId',targetKey: 'ticketServiceId'});

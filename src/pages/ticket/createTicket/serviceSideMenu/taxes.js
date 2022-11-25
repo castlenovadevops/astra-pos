@@ -31,7 +31,7 @@ export class TaxListComponent extends React.Component{
             {this.state.taxlist.map ((tax,index)=>(
                 <Grid item xs={6}   alignItems='center'
                 justify="center" justifyContent="center" onClick={(e) => this.props.data.selectTax(tax)}  
-                style={{border:'2px solid #f0f0f0',display:'flex',maxHeight:'70px', padding: '10px',margin: '10px',maxWidth: '40%',height: '70px', background: this.isTaxCheck(tax.mTaxId) ? '#bee1f7':'transparent',
+                style={{border:'2px solid #e0e0e0',display:'flex',maxHeight:'70px', padding: '10px',margin: '10px',maxWidth: '40%',height: '70px', background: this.isTaxCheck(tax.mTaxId) ? '#bee1f7':'transparent',
                 alignItems:'center', justifyContent:'center',cursor:'pointer'}}>
                 
                 <Grid item  style={{background: 'transparent'}}>
