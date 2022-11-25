@@ -73,7 +73,7 @@ export default class TicketListComponent extends React.Component{
     };
 
     render(){
-        return <Box>
+        return <Box style={{height:'100%'}}>
         <Tabs
         value={this.state.value}
         onChange={this.handleChange}

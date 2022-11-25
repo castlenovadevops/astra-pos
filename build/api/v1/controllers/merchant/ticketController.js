@@ -148,13 +148,13 @@ module.exports = class TicketController extends baseController{
                     model: this.models.mCustomers,
                     required: false
                 },
-                // {
-                //     model: this.models.ticketservices,
-                //     required: false,
-                //     where:{
-                //         status:1
-                //     }
-                // },
+                {
+                    model: this.models.ticketservices,
+                    required: false,
+                    where:{
+                        status:1
+                    }
+                },
                 // {
                 //     model: this.models.ticketservicetax,
                 //     required: false,

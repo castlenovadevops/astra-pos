@@ -153,23 +153,6 @@
     .download{
         flex-direction: row;
     }
-    @media screen and (max-width: 700px) {
-        .mobileminauto{
-            min-height:auto;
-            padding-bottom: 0;
-        }
-        .mobileminautoform{
-            min-height:auto;
-            padding-top: 0;
-        }
-        .logoimg{
-            padding:2rem;
-        }
-        .download{
-            flex-direction: column;
-        }
-    }
-    
     .MuiGrid-root{
         width:100% !important;
     } 
@@ -463,4 +446,33 @@
 .bgbtn{
     background-color: #134163 !important;
     color:#fff !important;
+}
+
+
+@media screen and (max-width: 1024px) {
+    .react-swipeable-view-container{
+        height:560px;
+    }
+
+    
+.MuiDataGrid-virtualScroller{
+height: 310px !important;
+overflow-y: auto !important;
+overflow-x: hidden !important;
+}
+
+    .mobileminauto{
+        min-height:auto;
+        padding-bottom: 0;
+    }
+    .mobileminautoform{
+        min-height:auto;
+        padding-top: 0;
+    }
+    .logoimg{
+        padding:2rem;
+    }
+    .download{
+        flex-direction: column;
+    }
 }

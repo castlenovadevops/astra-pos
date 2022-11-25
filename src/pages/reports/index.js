@@ -10,7 +10,7 @@ import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
 import { Button,Grid,IconButton,Chip, Select, FormControl,InputLabel, Input, MenuItem,Checkbox, DialogContentText,RadioGroup, FormLabel,FormControlLabel,Radio, DialogActions, Card, Stack, Container,TextField, Typography,Dialog,DialogTitle,DialogContent } from '@mui/material';  
 import LoaderContent from '../../components/Loader';
  import HTTPManager from '../../utils/httpRequestManager';
-
+ import NumberPad from '../../components/numberpad';
  import './tabs.css';
 
  const ITEM_HEIGHT = 48;
@@ -34,13 +34,61 @@ export default class ReportComponent extends React.Component{
             reportType:'Owner',
             reportPeriod:'Daily',
             tabName:'Owner',
-            empReport:[]
+            empReport:[],
+            isAuthenticated : false,
+            userDetail:{},
+            showFormError: false,
+            formError:''
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
          this.handlechangeToDate = this.handlechangeToDate.bind(this);
-         this.submiteReport = this.submiteReport.bind(this) 
+         this.submiteReport = this.submiteReport.bind(this)
+         this.handleChangeCode = this.handleChangeCode.bind(this); 
+         this.getEmpDetail = this.getEmpDetail.bind(this);
     } 
+
+    handleChangeCode(passcode){
+
+        if(passcode === "remove") {
+          this.setState({passcode: passcode});
+        }
+        else if(passcode.length === 4) {
+            const stringData = passcode.reduce((result, item) => {
+                return `${result}${item}`
+            }, "")
+  
+            this.setState({passcode: stringData});
+        }
+    }
+    getEmpDetail(passcode){
+        const stringData = passcode.reduce((result, item) => {
+            return `${result}${item}`
+        }, "")
+  
+        this.httpManager.postRequest(`/merchant/employee/getByPasscode`, {passCode: stringData}).then(res=>{
+            if(res.data.mEmployeeId !== undefined){
+                if(res.data.mEmployeeRoleName === 'Admin' || res.data.mEmployeeRoleName === 'Owner'){
+                    this.setState({isAuthenticated: true, userDetail: res.data});
+
+                    this.getReports()
+            }
+                else{
+                    this.setState({showFormError:true, formError:"You are not authorized to view the report."})
+                }
+
+            }
+            else{
+                this.setState({showFormError:true, formError:res.message})
+                this.clearPasscode()
+            }
+        }).catch(e=>{
+          // console.log(e)
+                this.setState({showFormError:true, formError:e.message})
+                this.clearPasscode()
+          
+        })
+    }
 
     handlechangeFromDate(e){
         this.setState({from_date: e});
@@ -54,7 +102,6 @@ export default class ReportComponent extends React.Component{
 
 
     componentDidMount(){
-        this.getReports()
     }
 
     getReports(){
@@ -64,19 +111,21 @@ export default class ReportComponent extends React.Component{
         })
     }   
 
-    renderOwnerReport(){
-        console.log(this.state.empReport);
+    renderOwnerReport(){ 
         var reportdetail = [];
+        var mstr = window.localStorage.getItem('merchantdetail');
+        var merchantdetail = mstr !== undefined && mstr !== '' ? JSON.parse(mstr) : {}
+
         reportdetail.push(<div style={{display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
-                <Typography variant="h4">{this.state.businessdetail.name}</Typography>
-                <Typography variant="h5" style={{textTransform:'capitalize'}}>Owner {this.state.reporttype} Report</Typography>
+                <Typography variant="h4">{merchantdetail.merchantName}</Typography>
+                <Typography variant="h5" style={{textTransform:'capitalize'}}>Owner Report</Typography>
                 <Typography variant="subtitle2" style={{textTransform:'capitalize', fontWeight:'400'}}>{Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")}</Typography>
             </div>);
 
         reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
-                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Owner : <b>{this.state.employee_details.firstName+" "+this.state.employee_details.lastName}</b></Typography>
+                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Owner : <b>{this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}</b></Typography>
         </div>) 
-        if(this.state.empReport[0].tickets.length > 0){
+        if(Number(this.state.employee_reportlist[0].ServiceAmount) > 0){
         // if(this.state.empReport.length > 0){
             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000'}}> 
                 <Grid container>
@@ -182,12 +231,12 @@ export default class ReportComponent extends React.Component{
         }
         else{ 
             reportdetail.push(<div style={{display:'flex',marginTop:'1rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
-                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {this.state.employee_details.firstName+" "+this.state.employee_details.lastName}</Typography>
+                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}</Typography>
             </div>) 
         }
 
         reportdetail.push(<div style={{display:'flex',marginTop:'1.5rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
-            <Typography variant="body" style={{ paddingBottom:'1rem',fontWeight:'400'}}>{this.state.businessdetail.name} - Reported: {Moment().format("MM/DD/YYYY hh:mm a")}</Typography>
+            <Typography variant="body" style={{ paddingBottom:'1rem',fontWeight:'400'}}>{merchantdetail.merchantName} - Reported: {Moment().format("MM/DD/YYYY hh:mm a")}</Typography>
         </div>) 
 
         return  <div style={{borderBottom:'1px dotted #000', paddingBottom:'1rem', width:'100%'}}>
@@ -307,7 +356,7 @@ export default class ReportComponent extends React.Component{
         return(
             <Page title="Report | Astro POS">
                  {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}  
-                        <Card style={{  position:'absolute',top:64, left:0, right:0, bottom:0, zIndex:'999'}}>
+                {this.state.isAuthenticated &&  <Card style={{  position:'absolute',top:64, left:0, right:0, bottom:0, zIndex:'999'}}>
                             <div className="tab">
                                 {/* {this.state.restrictionmode === 'Owner' &&  */}
                                 
@@ -343,8 +392,8 @@ export default class ReportComponent extends React.Component{
                                     <Grid container  style={{marginTop:'1rem'}}>
                                             <Grid item xs={12} md={12}>
                                                 <div style={{display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', padding:'2rem 5rem'}}>  
-                                                 {this.state.empReport.length > 0 && this.renderOwnerReport()} 
-                                                {this.state.empReport.length === 0 && !this.state.isLoading  && <div><Typography variant="subtitle2">No records found.</Typography></div>} 
+                                                 {this.state.employee_reportlist.length > 0 && this.renderOwnerReport()} 
+                                                {this.state.employee_reportlist.length === 0 && !this.state.isLoading  && <div><Typography variant="subtitle2">No records found.</Typography></div>} 
                                                 </div>
                                             </Grid>
                                     </Grid>
@@ -482,6 +531,35 @@ export default class ReportComponent extends React.Component{
                                     </DialogActions>
                         </Dialog> 
                         </Card> 
+                }
+
+                {!this.state.isAuthenticated && <Card style={{  position:'absolute',top:100,background:'transparent', left:0, right:0, bottom:0, zIndex:'999'}}>
+                    <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={this.handleChangeCode} onSubmit={this.getEmpDetail}  clearPasscode={clearPasscode => { this.clearPasscode = clearPasscode;
+                    }}/>
+                    <Dialog
+                    open={this.state.showFormError}
+                    onClose={()=>{
+                        this.setState({showFormError:false, formError: ''})
+                    }}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        Error
+                    </DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {this.state.formError}
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="contained" onClick={()=>{
+                             this.setState({showFormError:false, formError: ''})
+                        }}>OK </Button> 
+                    </DialogActions>
+                </Dialog>
+
+                </Card> }
             </Page>
         )
     }

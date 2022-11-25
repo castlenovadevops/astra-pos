@@ -52,6 +52,11 @@ module.exports = class EmployeeController extends baseController{
                     type:"post",
                     method: "updateEmployee",
                     authorization:'authorizationAuth'
+                },{
+                    path:this.path+"/getByPasscode",
+                    type:"post",
+                    method: "getByPasscode",
+                    authorization:'authorizationAuth'
                 }
             ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
@@ -408,6 +413,60 @@ module.exports = class EmployeeController extends baseController{
                     // console.log(payload)
                     let token = jwt.sign(payload, jwtOptions.secretOrKey); 
                     return this.sendResponse({  token:token, data: userData}, res, 200);
+                }
+                else{
+                    this.sendResponse({message:"Invalid passcode. Please try again later."}, res, 400)
+                }
+            })
+        }
+        else{
+            this.sendResponse({message:"Please enter the passcode."}, res, 400)
+        }
+    }
+
+    getByPasscode = async(req, res)=>{
+        if(req.input.passCode !== ''){
+            let options={
+                where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1},
+                attributes:{
+                    include:[
+
+                        [
+                            Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mCommissionId"
+                        ], 
+                        [
+                            Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mOwnerPercentage"
+                        ], 
+                        [
+                            Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mEmployeePercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mCashPercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mCheckPercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mTipsCashPercentage"
+                        ],
+                        [
+                            Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            "mTipsCheckPercentage"
+                        ]
+                    ]
+                }
+            }
+            this.readOne( options, 'merchantEmployees').then(results=>{
+                console.log(results);
+                if(results !== null){
+                    var userData = Object.assign({}, results.dataValues||results);  
+                    return this.sendResponse({ data: userData}, res, 200);
                 }
                 else{
                     this.sendResponse({message:"Invalid passcode. Please try again later."}, res, 400)

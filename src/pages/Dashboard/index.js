@@ -15,6 +15,6 @@ export default class Dashboard extends React.Component{
         }
     }
     render(){
-        return  <MerchantDashboard /> 
+        return  <MerchantDashboard style={{height:'100%'}}/> 
     }
 }

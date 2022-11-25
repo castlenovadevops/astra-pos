@@ -129,7 +129,10 @@ export default class TableView extends React.Component {
   }
 
   render() {
-
+    var pagesize = 10;
+    if(window.innerWidth <= 1024){
+      pagesize=7
+    } 
     return (
       // style={{ height: 600, width: '100%', overflow: 'scroll' }}
       <div> 
@@ -138,7 +141,7 @@ export default class TableView extends React.Component {
           rowHeight={this.props.name === 'region' ? rowHeight : rowHeightD }
           rows={this.state.rows}
           columns={this.state.columns}
-          pageSize={7}
+          pageSize={pagesize}
           rowsPerPageOptions={[5]}
           disableMultipleSelection={true}
           disableSelectionOnClick
