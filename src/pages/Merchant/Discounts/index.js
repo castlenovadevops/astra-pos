@@ -57,15 +57,15 @@ export default class Discount extends React.Component{
                         </div>
                     )
                 },
-                {
-                    field: 'Action',
-                    headerName:'Actions',
-                    flex:1,
-                    minWidth:100,
-                    renderCell: (params) => (
-                        this.getActions(params)                    
-                    ),
-                }
+                // {
+                //     field: 'Action',
+                //     headerName:'Actions',
+                //     flex:1,
+                //     minWidth:100,
+                //     renderCell: (params) => (
+                //         this.getActions(params)                    
+                //     ),
+                // }
 
             ]
         }
@@ -331,7 +331,7 @@ export default class Discount extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Discount
                     </Typography>
@@ -342,7 +342,7 @@ export default class Discount extends React.Component{
                     label="Add Discount"
                     startIcon={getIcon('mdi:plus')}
                     />
-                </Stack>
+                </Stack> */}
 
                 <Card>
                     <TableView

@@ -60,15 +60,15 @@ export default class Tax extends React.Component{
                         </div>
                     )
                 },
-                {
-                    field: 'Action',
-                    headerName:'Actions',
-                    flex:1,
-                    minWidth:100,
-                    renderCell: (params) => (
-                        this.getActions(params)                    
-                    ),
-                }
+                // {
+                //     field: 'Action',
+                //     headerName:'Actions',
+                //     flex:1,
+                //     minWidth:100,
+                //     renderCell: (params) => (
+                //         this.getActions(params)                    
+                //     ),
+                // }
                 
             ],
             showForm: false
@@ -388,7 +388,7 @@ export default class Tax extends React.Component{
                 />  
             {!this.state.addForm &&
                  <Box sx={{ width: '100%' }}> 
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Tax Management
                     </Typography>
@@ -399,7 +399,7 @@ export default class Tax extends React.Component{
                     label="Add Tax"
                     startIcon={getIcon('mdi:plus')}
                     />
-                </Stack>
+                </Stack> */}
 
                 <Card>
                     <TableView

@@ -75,7 +75,13 @@
         }
     ],
     "required": ["mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
-    "buttons":[ 
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
     ],
     "onSubmit":{  
         "action":"API",

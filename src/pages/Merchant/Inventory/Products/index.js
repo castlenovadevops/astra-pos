@@ -57,15 +57,15 @@ export default class ProductService extends React.Component{
                         </div>
                     )
                 },
-                {
-                    field: 'Action',
-                    headerName:'Actions',
-                    flex:1,
-                    minWidth:100,
-                    renderCell: (params) => (
-                        this.getActions(params)                    
-                    ),
-                }
+                // {
+                //     field: 'Action',
+                //     headerName:'Actions',
+                //     flex:1,
+                //     minWidth:100,
+                //     renderCell: (params) => (
+                //         this.getActions(params)                    
+                //     ),
+                // }
 
             ],
             defaultTaxes:[]
@@ -363,7 +363,7 @@ export default class ProductService extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Product & Service
                     </Typography>
@@ -374,7 +374,7 @@ export default class ProductService extends React.Component{
                     label="Add Product & Service"
                     startIcon={getIcon('mdi:plus')}
                     />
-                </Stack>
+                </Stack> */}
 
                 <Card>
                     <TableView

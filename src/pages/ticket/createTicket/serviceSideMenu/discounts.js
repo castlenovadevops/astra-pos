@@ -38,7 +38,7 @@ export default class DiscountsListComponent extends React.Component{
                         textOverflow:'ellipsis', MozUserSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none', userSelect: 'none'}}
                         align="center"> 
                             {dis.mDiscountName}<br/>
-                            {dis.mDiscountType === 'percentage' ? dis.mDiscountValue+"%" : "$"+dis.mDiscountValue}
+                            {dis.mDiscountType === 'Percentage' ? dis.mDiscountValue+"%" : "$"+dis.mDiscountValue}
                         </Typography>
                  </Grid>  
                  

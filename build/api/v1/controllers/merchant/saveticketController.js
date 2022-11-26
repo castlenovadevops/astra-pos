@@ -81,38 +81,38 @@ module.exports = class TicketController extends baseController{
                 "isSpecialRequest" : service.isSpecialRequest
             }
             console.log("SERVICE INPUT::::::",service, serviceinput)
-            if(service.ticketServiceId !== undefined){
-                this.update('ticketservices', serviceinput, {where:{ticketServiceId: service.ticketServiceId}} ,true).then(r=>{
-                    this.update('ticketservicetax',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
-                        this.update('ticketservicediscount',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
-                            this.update('ticketservicediscountcommission',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
-                                this.update('ticketTips',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
-                                    // this.saveTicketServices(req, res, next, idx+1);
-                                    if(Number(service.totalTips) > 0){
-                                        var tipinput = {
-                                            tipsCashPercentage: service.technician.mTipsCashPercentage,
-                                            tipsCheckPercentage: service.technician.mTipsCheckPercentage,
-                                            technicianId:service.technician.mEmployeeId,
-                                            tipsAmount: service.totalTips,
-                                            ticketServiceId: service.ticketServiceId,
-                                            createdBy: req.userData.mEmployeeId,
-                                            createdDate: this.getDate(),
-                                            status:1
-                                        }
-                                        this.create('ticketTips', tipinput).then(rr=>{
-                                            this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
-                                        })
-                                    }
-                                    else{
-                                        this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
-                                    }
-                                })
-                            })
-                        });
-                    })
-                })
-            }
-            else{
+            // if(service.ticketServiceId !== undefined){
+            //     this.update('ticketservices', serviceinput, {where:{ticketServiceId: service.ticketServiceId}} ,true).then(r=>{
+            //         this.update('ticketservicetax',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+            //             this.update('ticketservicediscount',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+            //                 this.update('ticketservicediscountcommission',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+            //                     this.update('ticketTips',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+            //                         // this.saveTicketServices(req, res, next, idx+1);
+            //                         if(Number(service.totalTips) > 0){
+            //                             var tipinput = {
+            //                                 tipsCashPercentage: service.technician.mTipsCashPercentage,
+            //                                 tipsCheckPercentage: service.technician.mTipsCheckPercentage,
+            //                                 technicianId:service.technician.mEmployeeId,
+            //                                 tipsAmount: service.totalTips,
+            //                                 ticketServiceId: service.ticketServiceId,
+            //                                 createdBy: req.userData.mEmployeeId,
+            //                                 createdDate: this.getDate(),
+            //                                 status:1
+            //                             }
+            //                             this.create('ticketTips', tipinput).then(rr=>{
+            //                                 this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
+            //                             })
+            //                         }
+            //                         else{
+            //                             this.saveTicketServiceTax(req,res,next,service.ticketServiceId,idx,0)
+            //                         }
+            //                     })
+            //                 })
+            //             });
+            //         })
+            //     })
+            // }
+            // else{
                 this.create('ticketservices', serviceinput, true).then(r=>{ 
                     console.log(r)
                     var ticketServiceId = r.dataValues.ticketServiceId || r.ticketServiceId
@@ -136,7 +136,7 @@ module.exports = class TicketController extends baseController{
                         this.saveTicketServiceTax(req,res,next,ticketServiceId,idx,0)
                     } 
                 })
-            }
+            // }
         }
         else{
             this.saveTicketDiscount(req, res, next)

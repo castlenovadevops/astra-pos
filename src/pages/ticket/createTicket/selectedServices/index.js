@@ -60,7 +60,7 @@ export default class SelectedServicesComponent extends  React.Component{
                 </Grid>
 
             </Grid>
-            <Grid container style={{height:'calc(100% - 45px)',flexDirection:'column', overflow:'auto' }}>
+            <Grid container style={{height:'calc(100% - 45px)', display:'block',flexDirection:'column', overflow:'auto' }}>
                 {this.state.selectedServices.map((row, index)=>{
                     return  <Grid item sx={12} className="selectedServicesContainer">
                             <Grid container xs={12} justify="flex-start" style={{borderBottom:'2px solid #f0f0f0',position:'relative', cursor: 'pointer',

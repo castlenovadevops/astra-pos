@@ -27,7 +27,13 @@
         }
     ],
     "required": ["mOwnerDivision", "mEmployeeDivision"],
-    "buttons":[ 
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
     ],
     "onSubmit":{  
         "action":"API",

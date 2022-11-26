@@ -1,5 +1,5 @@
 {
-    "formName":"login",
+    "formName":"syncCode",
     "formClass":"loginContainer",
     "properties": [
       {

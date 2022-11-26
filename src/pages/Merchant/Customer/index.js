@@ -60,15 +60,15 @@ export default class Customer extends React.Component{
                         </div>
                     )
                 }, 
-                {
-                    field: 'Action',
-                    headerName:'Actions',
-                    flex:1,
-                    minWidth:100,
-                    renderCell: (params) => (
-                        this.getActions(params)                    
-                    ),
-                }  
+                // {
+                //     field: 'Action',
+                //     headerName:'Actions',
+                //     flex:1,
+                //     minWidth:100,
+                //     renderCell: (params) => (
+                //         this.getActions(params)                    
+                //     ),
+                // }  
             ],
         }
         this.handleCloseform = this.handleCloseform.bind(this); 
@@ -221,7 +221,7 @@ export default class Customer extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Customer Management
                     </Typography>
@@ -232,7 +232,7 @@ export default class Customer extends React.Component{
                     label="Add Customer"
                     startIcon={getIcon('mdi:plus')}
                     />
-                </Stack>
+                </Stack> */}
 
                 <Card>
                     <TableView
