@@ -123,7 +123,7 @@
             "name":"mEmployeeRole",
             "label":"Role",
             "placeholder":"Role",
-            "data":"merchant/getRoles",
+            "data":"https://api.ci.dev.castlenova.net/api/v1/merchant/getRoles",
             "dataformat":{
                 "label" : "roleName",
                 "value": "roleId"
@@ -162,7 +162,7 @@
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"merchant/employee/save",
+        "url":"https://api.ci.dev.castlenova.net/api/v1/merchant/employee/save",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

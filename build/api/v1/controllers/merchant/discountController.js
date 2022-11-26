@@ -60,7 +60,7 @@ module.exports = class DiscountController extends baseController{
 
         input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate(); 
-        if(input.id != undefined){
+        if(input.id !== undefined){
             // console.log(input)
             this.updateWithNew('mDiscounts', input, {where:{id:input.id}}, 'mDiscountStatus', 'id').then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
@@ -112,7 +112,8 @@ module.exports = class DiscountController extends baseController{
     }
 
     updateDiscount = async(req, res,next)=>{ 
-        const input = req.input; 
+        try{
+                    const input = req.input; 
         const user = req.userData;  
         var data = {
             mDiscountStatus: input.mDiscountStatus,
@@ -121,7 +122,13 @@ module.exports = class DiscountController extends baseController{
         }
         this.update('mDiscounts', data, {where:{id:input.id}}).then(r1=>{
             this.sendResponse({message:"Discount details updated successfully."}, res, 200);
+        }).catch(e=>{
+            console.log(e)
         })
+    }
+    catch(e){
+        console.log(e)
+    }
     }
 
 }

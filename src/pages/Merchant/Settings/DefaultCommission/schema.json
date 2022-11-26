@@ -85,7 +85,7 @@
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"merchant/defaultcommission/save",
+        "url":"https://api.ci.dev.castlenova.net/api/v1/merchant/defaultcommission/save",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

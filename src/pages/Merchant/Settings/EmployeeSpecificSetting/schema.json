@@ -108,7 +108,7 @@
     ],
     "onSubmit":{   
         "action":"API",
-        "url":"merchant/employeecommission/saveCommission",
+        "url":"https://api.ci.dev.castlenova.net/api/v1/merchant/employeecommission/saveCommission",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

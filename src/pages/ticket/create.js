@@ -108,7 +108,8 @@ export default class CreateTicketComponent extends React.Component{
         console.log( Number(price.ticketSubTotal) ,"+", Number(price.taxAmount) ,"+", Number(price.tipsAmount)  ,"-", Number(totalDiscountAmount))
         price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
         this.setState({totalValues: price,ticketdiscounts: discounts, ticketdiscountcommissions:[]}, ()=>{
-            this.calculateTicketDiscountCommission();
+            this.calculateAllServices();
+            // this.calculateTicketDiscountCommission();
         })
     }
 

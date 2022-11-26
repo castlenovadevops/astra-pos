@@ -106,6 +106,9 @@ export default class TicketPayment extends React.Component  {
     getTicketPayments(){
         this.httpManager.postRequest(`merchant/payment/getpayments`, {data: this.props.ticketDetail}).then(res=>{
             this.setState({ticketpayments: res.data, topayamount: res.remainAmount, remainAmount: res.remainAmount, isLoading:false});
+            if(res.remainAmount <= 0){
+                window.location.href="/"
+            }
         })
         // this.paymentController.getTicketPayments(this.state.ticketDetail.sync_id).then(res=>{ 
         //     console.log("ASdasdasdasds")
@@ -133,6 +136,7 @@ export default class TicketPayment extends React.Component  {
                         topayamount: this.state.topayamount,
                         completePayment:()=>{
                             this.props.afterSubmit();
+                            this.getTicketPayments();
                         }
                     }} />}
 

@@ -125,7 +125,8 @@ export default class OpenTicketsComponent extends React.Component{
     loadData(){
         this.setState({isLoading: true})
         this.httpManager.postRequest('merchant/ticket/getOpenTickets',{data:"FORM DASHBOARD"}).then(res=>{ 
-            this.setState({isLoading: false, ticketslist: res.data})
+            var data = res.data.filter(item=>item.ticketId !== this.props.data.ticketDetail.ticketId)
+            this.setState({isLoading: false, ticketslist: data})
             console.log(res.data)
         })
     }

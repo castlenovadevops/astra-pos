@@ -95,7 +95,7 @@
             "maxLength": 50,
             "grid":4,
             "name":"mCustomerState",
-            "data":"/lookup/getStates",
+            "data":"https://api.ci.dev.castlenova.net/api/v1/lookup/getStates",
             "dataformat":{
                 "label":"stateName",
                 "value":"id"

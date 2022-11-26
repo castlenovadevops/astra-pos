@@ -69,7 +69,7 @@ module.exports = class baseController extends MsgController{
                     tableRowId: results[pkfield],
                     merchantId: data["merchantId"] || ''
                 }
-                await this.models["toBeSynced"].create(input);
+                // await this.models["toBeSynced"].create(input);
                 resolve(results)
             }
             else{
@@ -97,7 +97,7 @@ module.exports = class baseController extends MsgController{
                     tableRowId: data[pkfield],
                     merchantId: data["merchantId"] || ''
                 }
-                await this.models["toBeSynced"].create(input);
+                // await this.models["toBeSynced"].create(input);
                 resolve(results)
             }
             else{
@@ -120,7 +120,7 @@ module.exports = class baseController extends MsgController{
                         tableRowId: data[pkfield],
                         merchantId: data["merchantId"] || ''
                     }
-                    await this.models["toBeSynced"].create(input);
+                    // await this.models["toBeSynced"].create(input);
                     resolve(results)
                 }
                 else{

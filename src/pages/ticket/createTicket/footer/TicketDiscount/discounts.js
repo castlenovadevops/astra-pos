@@ -69,7 +69,7 @@ class Discounts extends React.Component {
         return (
                 <Grid item xs={12} style={{display:'flex', flexWrap:'wrap',height:'450px', overflow:'auto', padding: '0 20px'}}> 
                     <Grid item xs={12}>
-                        <div style={{height:'100%', width:'100%', display:'flex', flexWrap:'wrap'}}>
+                        <div style={{height:'100%', width:'100%', display:'flex', flexWrap:'wrap', alignContent:'baseline'}}>
                         {this.state.discount_list.map((dis, index) => (
                             <Grid item xs={3} style={{height:'100px',paddingRight: 2,paddingLeft: 2, paddingTop:2,paddingBottom:2
                             }} >

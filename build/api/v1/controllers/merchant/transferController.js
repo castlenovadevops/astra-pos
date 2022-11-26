@@ -85,6 +85,7 @@ module.exports = class TicketController extends baseController{
         var input = {
             ticketCode: ticketcode,
             isDraft: 0, 
+            "ownerTechnician" : req.input.ticketDetail.ownerTechnician,
             merchantId: req.deviceDetails.merchantId,
             POSId: req.deviceDetails.device.POSId,
             createdBy: req.userData.mEmployeeId,
@@ -115,7 +116,7 @@ module.exports = class TicketController extends baseController{
         var input = { 
             tipsAmount: Number(req.input.ticketDetail.tipsAmount)+Number(req.input.service.totalTips),
             serviceAmount: Number(req.input.ticketDetail.serviceAmount) + Number(req.input.service.subTotal),
-            ticketTotalAmount: Number(req.input.ticketDetail.ticketTotalAmount) + Number(req.input.service.subTotal) + Number(req.input.service.totalTax + + Number(req.input.service.totalTips)), 
+            ticketTotalAmount: Number(req.input.ticketDetail.ticketTotalAmount) + Number(req.input.service.subTotal) + Number(req.input.service.totalTax + Number(req.input.service.totalTips)), 
         }
 
 
@@ -152,21 +153,37 @@ saveTicketServices = async(newTicket, req, res, next, idx=0)=>{
     try{
         var service = req.input.service;
         var serviceinput = {
-            "ticketId" : newTicket.ticketId,
-            "serviceId"	: service.serviceDetail.mProductId,
-            "serviceTechnicianId" : service.technician.mEmployeeId,
-            "serviceQty": service.qty,
-            "serviceOriginalPrice": service.originalPrice,
-            "servicePrice": service.subTotal,
-            "servicePerUnitCost": service.servicePerUnitCost,
-            "serviceNotes":service.serviceNotes,
-            "splitFrom":'',
-            "transferredFrom":'',
-            "combinedFrom":'',
-            "createdBy": req.userData.mEmployeeId,
-            "createdDate": this.getDate(),
-            "isSpecialRequest" : service.isSpecialRequest
+                "ticketId" : newTicket.ticketId,
+                "serviceId"	: service.serviceDetail.mProductId,
+                "serviceTechnicianId" : service.technician.mEmployeeId,
+                "serviceQty": service.qty,
+                "serviceOriginalPrice": service.originalPrice,
+                "servicePrice": service.subTotal,
+                "servicePerUnitCost": service.perunit_cost,
+                "serviceNotes":service.serviceNotes,
+                "splitFrom":'',
+                "transferredFrom":'',
+                "combinedFrom":'',
+                "createdBy": req.userData.mEmployeeId,
+                "createdDate": this.getDate(),
+                "isSpecialRequest" : service.isSpecialRequest
         }
+        // {
+        //     "ticketId" : newTicket.ticketId,
+        //     "serviceId"	: service.serviceDetail.mProductId,
+        //     "serviceTechnicianId" : service.technician.mEmployeeId,
+        //     "serviceQty": service.qty,
+        //     "serviceOriginalPrice": service.originalPrice,
+        //     "servicePrice": service.subTotal,
+        //     "servicePerUnitCost": service.servicePerUnitCost,
+        //     "serviceNotes":service.serviceNotes,
+        //     "splitFrom":'',
+        //     "transferredFrom":'',
+        //     "combinedFrom":'',
+        //     "createdBy": req.userData.mEmployeeId,
+        //     "createdDate": this.getDate(),
+        //     "isSpecialRequest" : service.isSpecialRequest
+        // }
         if(service.ticketServiceId !== undefined){
             this.update('ticketservices', serviceinput, {where:{ticketServiceId: service.ticketServiceId}} ,true).then(r=>{
                 this.update('ticketservicetax',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{

@@ -76,7 +76,7 @@
         "maxLength": 50,
         "grid":6,
         "name":"merchantState", 
-        "data":"lookup/getStates",
+        "data":"https://api.ci.dev.castlenova.net/api/v1/lookup/getStates",
         "dataformat":{
             "label":"stateName",
             "value":"id"

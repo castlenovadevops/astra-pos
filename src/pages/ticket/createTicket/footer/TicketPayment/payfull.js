@@ -138,7 +138,8 @@ export default class TicketFullPayment extends React.Component  {
                 }
                 this.httpManager.postRequest('merchant/payment/savePayment', input).then(res=>{
                     this.setState({notesPopup: false}, ()=>{
-                        this.props.data.completePayment();
+                        // this.props.data.completePayment();
+                        this.setState({completionPopup: true})
                     })
                 })
                 // this.paymentController.savePayment(this.props.data.topayamount, this.props.data.ticketDetail, 'cash', '', '').then(r=>{
@@ -154,12 +155,8 @@ export default class TicketFullPayment extends React.Component  {
         return  <div className="modalbox">
             <div className='modal_backdrop'>
             </div>
-            <div className='modal_container' style={{height:'400px', width:'600px'}}> 
-                {/* <ModalTitleBar onClose={()=>  {
-                    this.setState({completionPopup: false});
-                     this.props.data.completePayment();
-                }} title="Payment Completion"/>   */}
-                <Grid item xs={12} style={{display:'flex',margin :10}}>  
+            <div className='modal_container' style={{height:'400px', width:'600px'}}>  
+                <Grid item xs={12} style={{display:'flex',margin :10,padding:'20px'}}>  
                     <Grid item xs={2}></Grid>
                     <Grid item xs={8} style={{display: 'flex',flexDirection:'column', justifyContent:'center', alignItems:'center'}}> 
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'700',marginBottom:'1rem', fontSize:'20px'}} align="left">Cash Tendered: ${Number(this.state.tenderedamt).toFixed(2)}</Typography>

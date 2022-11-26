@@ -125,7 +125,7 @@ export default class EmployeeSetting extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/defaultcommission/get`, {data:"DEFAULT COMMISSION"}).then(response=>{ 
+            this.httpManager.postRequest(`https://api.ci.dev.castlenova.net/api/v1/merchant/defaultcommission/get`, {data:"DEFAULT COMMISSION"}).then(response=>{ 
                 // this.openEdit(response.data); 
                 if(response.data.length > 0){
                     this.setState({defaultCommission: response.data[0] }, ()=>{ 
@@ -141,7 +141,7 @@ export default class EmployeeSetting extends React.Component{
 
     getEmpslist(){
 
-        this.httpManager.postRequest(`merchant/employee/getAll`,{data:"GET ALL EMP"}).then(response=>{
+        this.httpManager.postRequest(`https://api.ci.dev.castlenova.net/api/v1/merchant/employee/getAll`,{data:"GET ALL EMP"}).then(response=>{
             var data = [];
             if(response.data.length > 0){
                 response.data.forEach((elmt, i)=>{ 
