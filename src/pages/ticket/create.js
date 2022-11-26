@@ -200,7 +200,7 @@ export default class CreateTicketComponent extends React.Component{
             }
             console.log(ticketinput)
             this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
-                console.log(resp)
+                console.log(ticketinput)
                 if(option === 'close')
                     this.props.data.closeCreateTicket();
             })
@@ -565,9 +565,9 @@ export default class CreateTicketComponent extends React.Component{
                 price.servicePrice = Number(price.servicePrice)+(Number(service.qty)* Number(service.perunit_cost))
             }
             price.ticketSubTotal =  Number(price.ticketSubTotal)+(Number(service.subTotal))
-            // price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
-            console.log(service)
-            console.log(Number(price.taxAmount),"+",Number(service.totalTax))
+            price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
+            // console.log(service)
+            // console.log(Number(price.taxAmount),"+",Number(service.totalTax))
             price.taxAmount = Number(price.taxAmount)+Number(service.totalTax)
             price.tipsAmount = Number(price.tipsAmount)+Number(service.totalTips)
             this.calculateTicketTotal(price, i+1);
@@ -627,11 +627,58 @@ export default class CreateTicketComponent extends React.Component{
                     price.ticketDiscount = totalDiscountAmount; 
                     
                     price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
-                    this.setState({totalValues: price, ticketdiscountcommissions:[]},()=>{
+                   
+                    var ticketDetail = Object.assign({}, this.state.ticketDetail) 
+                    var ticketinput = {  
+                        "ticketCode":this.state.ticketDetail.ticketCode,
+                        "ticketId": this.state.ticketDetail.ticketId,
+                        "ownerTechnician" : this.state.selectedTech.mEmployeeId,
+                        "technician" : this.state.selectedTech,
+                        "customerId" : this.state.customer_detail.mCustomerId,
+                        "taxApplied": Number(price.taxAmount) > 0 ? 1 : 0, 
+                        "ticketDiscountApplied"	: Number(price.ticketDiscount) > 0 ? 1 : 0,
+                        "serviceDiscountApplied": this.state.ticketDetail.serviceDiscountApplied, 
+                        "tipsAmount":  price.tipsAmount,
+                        "taxAmount"	: price.taxAmount,
+                        "serviceAmount"	: price.ticketSubTotal,
+                        "ticketTotalAmount"	: price.grandTotal,
+                        "ticketNotes": ticketDetail.ticketNotes, 
+                        "paymentStatus":"Pending",
+                        "isDraft":0, 
+                    } 
+                        this.setState({totalValues: price,ticketDetail: ticketinput, ticketdiscountcommissions:[]},()=>{
                         this.calculateTicketDiscountCommission()
                     })
                 }
             })
+            if(this.state.ticketdiscounts.length === 0){
+                var price = Object.assign({}, this.state.totalValues);
+                price.ticketDiscount = totalDiscountAmount; 
+                
+                price.grandTotal = Number(price.ticketSubTotal) + Number(price.taxAmount) + Number(price.tipsAmount) - Number(totalDiscountAmount)
+               
+                var ticketDetail = Object.assign({}, this.state.ticketDetail) 
+                var ticketinput = {  
+                    "ticketCode":this.state.ticketDetail.ticketCode,
+                    "ticketId": this.state.ticketDetail.ticketId,
+                    "ownerTechnician" : this.state.selectedTech.mEmployeeId,
+                    "technician" : this.state.selectedTech,
+                    "customerId" : this.state.customer_detail.mCustomerId,
+                    "taxApplied": Number(price.taxAmount) > 0 ? 1 : 0, 
+                    "ticketDiscountApplied"	: Number(price.ticketDiscount) > 0 ? 1 : 0,
+                    "serviceDiscountApplied": this.state.ticketDetail.serviceDiscountApplied, 
+                    "tipsAmount":  price.tipsAmount,
+                    "taxAmount"	: price.taxAmount,
+                    "serviceAmount"	: price.ticketSubTotal,
+                    "ticketTotalAmount"	: price.grandTotal,
+                    "ticketNotes": ticketDetail.ticketNotes, 
+                    "paymentStatus":"Pending",
+                    "isDraft":0, 
+                } 
+                    this.setState({totalValues: price,ticketDetail: ticketinput, ticketdiscountcommissions:[]},()=>{
+                    this.calculateTicketDiscountCommission()
+                })
+            }
         }
     }
 
@@ -646,7 +693,7 @@ export default class CreateTicketComponent extends React.Component{
         }
     }
 
-    componentDidMount(){
+    componentDidMount(){ 
         if(this.props.data.ticketDetail.ticketId !== undefined){
             this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
                 this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
@@ -660,6 +707,7 @@ export default class CreateTicketComponent extends React.Component{
             this.httpManager.postRequest("merchant/ticket/getTicketcode",{data:"REQUEST TICKET CODE"}).then(res=>{
                 this.setState({ticketDetail: res.data}) 
             }).catch(e=>{
+                console.log(e)
                 this.setState({error: e.message}, ()=>{
                     this.setState({showError: true})
                 })

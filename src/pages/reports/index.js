@@ -37,8 +37,11 @@ export default class ReportComponent extends React.Component{
             empReport:[],
             isAuthenticated : false,
             userDetail:{},
+            discounts:[],
             showFormError: false,
-            formError:''
+            formError:'',
+            owner:{},
+            payments:[]
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
@@ -46,7 +49,7 @@ export default class ReportComponent extends React.Component{
          this.submiteReport = this.submiteReport.bind(this)
          this.handleChangeCode = this.handleChangeCode.bind(this); 
          this.getEmpDetail = this.getEmpDetail.bind(this);
-
+         this.formatOwnerReport = this.formatOwnerReport.bind(this)
          this.handleType = this.handleType.bind(this)
     } 
 
@@ -110,20 +113,83 @@ export default class ReportComponent extends React.Component{
     componentDidMount(){
     }
 
+    getTotalDiscounts(data){
+
+        var total = 0
+        data.forEach(e=>{
+            total = Number(total)+Number(e.discountAmount)
+        })
+
+        return total.toFixed(2)
+    }
+    getTotalAmountcollected(){
+        var total = 0
+        this.state.payments.forEach(e=>{
+            total = Number(total)+Number(e.paymentAmount)
+        })
+
+        return total.toFixed(2)
+    }
     getReports(){
         if(this.state.tabName === 'Owner'){
             this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
                 console.log(res)
-                // this.setState({employee_reportlist: res.data})
+                this.setState({payments: res.payments, owner: res.owner,discounts: res.discounts})
+                this.formatOwnerReport(res.data,{
+                    addedDates:[],
+                    data:[]
+                })
             })
         }
         else{
             this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
-                console.log(res)
+                // console.log(res)
+                this.formatOwnerReport(res.data,{
+                    addedDates:[],
+                    data:[]
+                })
                 // this.setState({employee_reportlist: res.data})
             })
         }
     }   
+
+    formatOwnerReport(data,response, i=0){ 
+        if(i< data.length){
+            var rec = data[i]
+            if(response.addedDates.indexOf(rec.created) === -1){ 
+                var obj = {
+                    ticketCount:1,
+                    servicesCount: rec.ServiceCount,
+                    serviceTotal: rec.TotalServiceAmount,
+                    tips: rec.Tips,
+                    discount: rec.Discount,
+                    date: rec.created
+                }
+                response.data.push(obj);
+                response.addedDates.push(obj.date);
+                this.formatOwnerReport(data, response, i+1)
+            }
+            else{
+                var idx = response.addedDates.indexOf(rec.created)
+                var obj  = Object.assign({}, response.data[idx]);
+                obj = {
+                    ticketCount:obj.ticketCount+1,
+                    servicesCount: Number(obj.servicesCount)+Number(rec.ServiceCount),
+                    serviceTotal: Number(obj.serviceTotal)+Number(rec.TotalServiceAmount),
+                    tips: Number(obj.tips)+Number(rec.Tips),
+                    discount: Number(obj.discount)+Number(rec.Discount),
+                    date: obj.date
+                }
+                response.data[idx] = obj;
+                this.formatOwnerReport(data, response, i+1)
+            }
+        }   
+        else{
+            this.setState({employee_reportlist: response.data}, ()=>{
+                // console.log("EMP REPOTR", this.state.employee_reportlist)
+            })
+        }
+    }
 
     renderOwnerReport(){ 
         var reportdetail = [];
@@ -139,52 +205,53 @@ export default class ReportComponent extends React.Component{
         reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
                 <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Owner : <b>{this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}</b></Typography>
         </div>) 
-        if(Number(this.state.employee_reportlist[0].ServiceAmount) > 0){
+        if(this.state.employee_reportlist.length > 0){
         // if(this.state.empReport.length > 0){
             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000'}}> 
                 <Grid container>
-                    <Grid item xs={3}><b>{this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date'}</b></Grid>
+                    <Grid item xs={2}><b>{this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date'}</b></Grid>
                     <Grid item xs={2}><b>Tickets</b></Grid>
+                    <Grid item xs={2}><b>Service</b></Grid>
                     <Grid item xs={2}><b>Amount</b></Grid>
-                    <Grid item xs={2}><b>Tip</b></Grid>
-                    <Grid item xs={2}><b>Discount</b></Grid>
+                    <Grid item xs={1}><b>Tip</b></Grid>
+                    <Grid item xs={1}><b>Discount</b></Grid>
                     <Grid item xs={2}><b>Total</b></Grid>
                 </Grid>
             </div>)
+            var totalServicePrice = 0
+            var totalTips = 0
             var discounttotal = 0
             var totalAmount = 0
-            var totalTips = 0
-            this.state.empReport[0].tickets.forEach(t=>{
-                discounttotal = discounttotal+ Number(t.Discount);
-                totalAmount = totalAmount+ Number(t.Amount);
-                totalTips = totalTips+ Number(t.Tips);
+
+            this.state.employee_reportlist.forEach(t=>{ 
+                totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
+                totalTips =Number(totalTips)+Number(t.tips);
+                console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
+                discounttotal =Number(discounttotal)+Number(t.discount);
                 reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000', padding:'2px 0'}}> 
                     <Grid container>
-                        <Grid item xs={3}>{t.ticket_date}</Grid>
-                        <Grid item xs={2} style={{alignItems:'center', display:'flex',flexDirection:'column', justifyContent:'center', textDecoration:'underline', cursor:'pointer'}} onClick={()=>{
-                            this.showDetails(t)
-                        }}>{t.ticketcount} </Grid>
-                        <Grid item xs={2}>{Number(t.Amount) > 0 ? "$"+Number(t.Amount).toFixed(2) : '-' }</Grid>
-                        <Grid item xs={2}>{Number(t.Tips) > 0 ? "$"+Number(t.Tips).toFixed(2) : '-' }</Grid>
-                        <Grid item xs={2}>{Number(t.Discount) > 0 ? "$"+Number(t.Discount).toFixed(2) : '-' }</Grid>
-                        <Grid item xs={2}>{(Number(t.Amount)+Number(t.Tips)-Number(t.Discount)) > 0 ? "$"+(Number(t.Amount)+Number(t.Tips)-Number(t.Discount)).toFixed(2) : '-' }</Grid>
+                        <Grid item xs={2}>{t.date}</Grid>
+                        <Grid item xs={2} >{t.ticketCount} </Grid>
+                        <Grid item xs={2} >{t.servicesCount} </Grid>
+                        <Grid item xs={2}>{Number(t.serviceTotal) > 0 ? "$"+Number(t.serviceTotal).toFixed(2) : '-' }</Grid>
+                        <Grid item xs={1}>{Number(t.tips) > 0 ? "$"+Number(t.tips).toFixed(2) : '-' }</Grid>
+                        <Grid item xs={1}>{Number(t.discount) > 0 ? "$"+Number(t.discount).toFixed(2) : '-' }</Grid>
+                        <Grid item xs={2}>{(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : '-' }</Grid>
                     </Grid>
                 </div>)
-            }) 
-            var discountdata= this.state.discountdata[0]; 
+            })  
 
-            var tdiscounttotal = discountdata.OwnerDiscount+discountdata.EmpDiscount+discountdata.OwnerEmpDiscount;
-
-            
+            console.log("TOTAL discounttotal", discounttotal)
 
             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
                 <Grid container>
                     <Grid item xs={2}></Grid>
-                    <Grid item xs={2}><b>Total</b></Grid>
+                    <Grid item xs={4}><b>Total</b></Grid>
+                    <Grid item xs={2}><b>{"$"+Number(totalServicePrice).toFixed(2)}</b></Grid>
+                    <Grid item xs={1}><b>{"$"+Number(totalTips).toFixed(2)}</b></Grid>
+                    <Grid item xs={1}><b>{"$"+Number(discounttotal).toFixed(2)}</b></Grid>
                     <Grid item xs={2}><b>{"$"+Number(totalAmount).toFixed(2)}</b></Grid>
-                    <Grid item xs={2}><b>{"$"+Number(totalTips).toFixed(2)}</b></Grid>
-                    <Grid item xs={2}><b>{"$"+Number(discounttotal).toFixed(2)}</b></Grid>
-                    <Grid item xs={2}><b>{"$"+(Number(totalAmount) + Number(totalTips) - Number(discounttotal)).toFixed(2)}</b></Grid>
                 </Grid>
             </div>)
 
@@ -192,17 +259,17 @@ export default class ReportComponent extends React.Component{
 
                     <Typography variant="h6" style={{textTransform:'capitalize', fontWeight:'700'}}>Discounts</Typography>
 
-                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                    {/* <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                         <Grid item xs={8}>#</Grid>
                         <Grid item xs={4}>{Number(discounttotal).toFixed(2)}</Grid>
-                    </Grid>
+                    </Grid> */}
 
-                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                        <Grid item xs={8}>Owner</Grid>
-                        <Grid item xs={4}>{Number(this.state.empReport[0].discountdata.OwnerDiscount).toFixed(2)}</Grid>
-                    </Grid>
+                    {this.state.discounts.map(d=>( <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>{d.mDiscountDivisionType}</Grid>
+                        <Grid item xs={4}>{Number(d.discountAmount).toFixed(2)}</Grid>
+                    </Grid>))}
 
-                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                    {/* <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                         <Grid item xs={8}>Employee</Grid>
                         <Grid item xs={4}>{Number(this.state.empReport[0].discountdata.EmpDiscount).toFixed(2)}</Grid>
                     </Grid>
@@ -210,36 +277,36 @@ export default class ReportComponent extends React.Component{
                     <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                         <Grid item xs={8}>Owner & Employee</Grid>
                         <Grid item xs={4}>{Number(this.state.empReport[0].discountdata.OwnerEmpDiscount).toFixed(2)}</Grid>
-                    </Grid>
+                    </Grid> */}
                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%',}}>
                         <Grid item xs={8}>Total</Grid>
-                        <Grid item xs={4}>${Number(tdiscounttotal).toFixed(2)}</Grid>
+                        <Grid item xs={4}>${this.getTotalDiscounts(this.state.discounts)}</Grid>
                     </Grid>
 
                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
                         <Grid item xs={8}>Tax Amount</Grid>
-                        <Grid item xs={4}>${Number(this.state.tax_Amount).toFixed(2)}</Grid>
+                        <Grid item xs={4}>${this.state.owner.TotalTax!== null ? Number(this.state.owner.TotalTax).toFixed(2) : "0.00"}</Grid>
                     </Grid>
 
                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
                         <Grid item xs={8}>Supplies</Grid>
-                        <Grid item xs={4}>$0.00</Grid>
+                        <Grid item xs={4}>${this.state.owner.Supplies!== null ? Number(this.state.owner.Supplies).toFixed(2) : "0.00"}</Grid>
                     </Grid>
 
                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
                         <Grid item xs={8}>Payment Methods</Grid>
                         <Grid item xs={4}></Grid>
                     </Grid>
-
-                    {this.state.cashdata.map(csh=>{
+                    
+                    {this.state.payments.map(csh=>{
                     return <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',}}>
-                        <Grid item xs={8}>{csh.pay_mode}</Grid>
-                        <Grid item xs={4}>${Number(csh.PaidAmount).toFixed(2)}</Grid>
+                        <Grid item xs={8}>{csh.paymentType !== '' ? csh.paymentType : 'Cash'}</Grid>
+                        <Grid item xs={4}>${Number(csh.paymentAmount).toFixed(2)}</Grid>
                     </Grid> })}
 
-                    <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',}}>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
                         <Grid item xs={8}>Amount Collected</Grid>
-                        <Grid item xs={4}>${Number(this.state.ownertotal).toFixed(2)}</Grid>
+                        <Grid item xs={4}>${this.getTotalAmountcollected()}</Grid>
                     </Grid> 
                 </div>)
         }
