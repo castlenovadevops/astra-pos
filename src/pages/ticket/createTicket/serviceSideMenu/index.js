@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid,TextField, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import { Grid,TextField,Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 import HTTPManager from '../../../../utils/httpRequestManager';
 
 import Iconify from '../../../../components/Iconify';
@@ -38,13 +38,17 @@ export default class ServiceSideMenu extends  React.Component{
             categories:[],
             services:[],
             variablepopup: false,
-            variableservice:{}
+            variableservice:{},
+            transferto:{},
+            confirmtransfer: false,
+            transferAlert: false
         }
         this.onChangeTechnician = this.onChangeTechnician.bind(this)
         this.closePopup = this.closePopup.bind(this)
         this.afterSubmitVariablePrice = this.afterSubmitVariablePrice.bind(this)
         this.onSelectTicket= this.onSelectTicket.bind(this)
         this.transferToNewTicket = this.transferToNewTicket.bind(this)
+        this.transferTicket = this.transferTicket.bind(this)
     }
 
     afterSubmitVariablePrice(price){
@@ -55,7 +59,10 @@ export default class ServiceSideMenu extends  React.Component{
     }
 
     closePopup(){
-        this.setState({variablepopup:false, variableservice:{}})
+        this.setState({variablepopup:false, variableservice:{}  })
+        if(this.props.data.selectedMenu === 2){
+            this.props.data.onSelectSideMenu(1)
+        }
     }
 
     static getDerivedStateFromProps(nextProps, prevState) { 
@@ -87,20 +94,59 @@ export default class ServiceSideMenu extends  React.Component{
 
 
     onSelectTicket(ticket){
-        console.log("TICKET TRANSFER")
-        console.log(ticket) 
-        this.httpManager.postRequest(`merchant/transfer/transferService`, {ticketDetail: ticket, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
-            this.props.data.afterCompleteTransfer()
-           this.props.data.onSelectSideMenu(-1);
-        })
+        // this.httpManager.postRequest(`merchant/transfer/transferService`, {ticketDetail: ticket, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+        //     this.props.data.afterCompleteTransfer()
+        //     this.props.data.onSelectSideMenu(-1);
+        //     if(this.props.data.selectedServices.length === 0){
+        //         // window.location.href="/";
+        //     this.props.data.voidTicket()
+        //     }
+        // })
+        // this.props.data.onSelectSideMenu(1)
+        if(this.props.data.selectedServices.length > 1){
+            this.setState({transferto: ticket, confirmtransfer: true}) 
+        }
+        else{
+            this.setState({transferAlert: true,transferto: ticket})
+        }
     }
 
+    transferTicket(){
+        console.log("TRANSFERRING TICKET")
+        if(this.state.transferto.ticket !== undefined){
+            console.log("TICKET TRANSFER") 
+            this.httpManager.postRequest(`merchant/transfer/transferService`, {ticketDetail: this.state.transferto, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+                this.props.data.afterCompleteTransfer()
+                this.props.data.onSelectSideMenu(-1);
+                if(this.props.data.selectedServices.length === 0){
+                    // window.location.href="/";
+                this.props.data.voidTicket()
+                }
+            })
+        }
+        else{
+            console.log("ELSE TRANSFERRING TICKET")
+            this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+                this.props.data.afterCompleteTransfer()
+               this.props.data.onSelectSideMenu(-1);
+               if(this.props.data.selectedServices.length === 0){
+                //    window.location.href="/";
+                this.props.data.voidTicket()
+               }
+            })
+        }
+    }
     transferToNewTicket(){
-        console.log("TRASFER TO NEW TICKET CALLED")
-        this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
-            this.props.data.afterCompleteTransfer()
-           this.props.data.onSelectSideMenu(-1);
-        })
+        if(this.props.data.selectedServices.length > 1){console.log("TRASFER TO NEW TICKET CALLED")
+            this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+                this.props.data.afterCompleteTransfer()
+                this.props.data.onSelectSideMenu(-1);
+            })
+        }
+        else{
+            this.setState({transferAlert: true,transferto: {}})
+        }
+        
     }
 
     getProductsByCategory(catid){
@@ -300,8 +346,7 @@ export default class ServiceSideMenu extends  React.Component{
                                 <DialogTitle id="alert-dialog-title">
                                     Split Service
                                 </DialogTitle>
-                                <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
+                                <DialogContent> 
                                         <SplitService  data={{
                                             selectedRow: this.props.data.selectedRow,
                                             selectedServices: this.props.data.selectedServices ,
@@ -309,8 +354,7 @@ export default class ServiceSideMenu extends  React.Component{
                                                 this.props.data.onSelectSideMenu(1)
                                             },
                                             onSaveSplit:this.props.data.onSaveSplit
-                                        }}/>
-                                </DialogContentText> 
+                                        }}/> 
                                 </DialogContent> 
                             </Dialog>
 
@@ -341,6 +385,61 @@ export default class ServiceSideMenu extends  React.Component{
                                } />
                         </DialogComponent> 
                         
+             <Dialog
+    style={{zIndex:'99999'}}
+    className="lgwidth"
+    open={this.state.transferAlert}
+    onClose={()=>{this.props.data.onSelectSideMenu(1)}} 
+>
+    <DialogTitle >
+        Confirmation
+    </DialogTitle>
+    <DialogContent> 
+    <Typography id="modal-modal-title" variant="subtitle2" component="h2" align="left" style={{marginLeft:20}}>
+                                 Transfering this service will void the existing ticket (TID - # {this.props.data.ticketDetail.ticketCode}) ?</Typography> 
+    <DialogActions>
+    <Button style={{marginRight: 10}} onClick={()=>this.transferTicket()} color="secondary" variant="contained">Yes</Button>
+    <Button onClick={()=>{this.setState({transferAlert:false});this.props.data.onSelectSideMenu(1)}} color="secondary" variant="outlined">No</Button>
+    </DialogActions>
+    </DialogContent> 
+</Dialog>
+             
+
+            {this.state.confirmtransfer && <div className="modalbox">
+                <div className='modal_backdrop'>
+                </div>
+                <div className='modal_container ' style={{height:'180px', width:'500px'}}>  
+                <Grid item xs={12} style={{display:'flex',marginTop:10}}>
+                            <Typography id="modal-modal-title" variant="subtitle2" component="h2" align="left" style={{marginLeft:20}}>Are you sure to transfer this service to this ticket (TID - # {this.state.transferto.ticketCode}) ? </Typography>
+                        </Grid>
+                        <Grid item xs={12} style={{display:'flex',marginTop:10}}>
+                            <Grid item xs={8}></Grid>
+                            <Grid item xs={4} style={{display: 'flex'}}> 
+                                <Button style={{marginRight: 10}} onClick={()=>this.transferTicket()} color="secondary" variant="contained">Yes</Button>
+                                <Button onClick={()=>{this.setState({transferAlert:false});this.props.data.onSelectSideMenu(1)}} color="secondary" variant="outlined">No</Button>
+                            </Grid> 
+                        </Grid>
+                </div>
+            </div>   }
+            
+
+           {/* {this.state.confirmtransfer && <div className="modalbox">
+                <div className='modal_backdrop'>
+                </div>
+                <div className='modal_container ' style={{height:'180px', width:'500px'}}> 
+                    <ModalTitleBar onClose={()=>{this.props.data.closeTransfer()}} title={this.props.data.selectedRowService.servicedetail.name}/>  
+                        <Grid item xs={12} style={{display:'flex',marginTop:10}}>
+                            <Typography id="modal-modal-title" variant="subtitle2" component="h2" align="left" style={{marginLeft:20}}>Are you sure to transfer this service to this ticket (TID - # {this.state.tickettoTransfer.ticket_code}) ? </Typography>
+                        </Grid>
+                        <Grid item xs={12} style={{display:'flex',marginTop:10}}>
+                            <Grid item xs={8}></Grid>
+                            <Grid item xs={4} style={{display: 'flex'}}> 
+                                <Button style={{marginRight: 10}} onClick={()=>this.handleTransferAlert()} color="secondary" variant="contained">Yes</Button>
+                                <Button onClick={()=>this.handleCloseTransferAlert()} color="secondary" variant="outlined">No</Button>
+                            </Grid> 
+                        </Grid>
+                </div>
+            </div> } */}
                        
 
         </Grid>

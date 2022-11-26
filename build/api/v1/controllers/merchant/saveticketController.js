@@ -88,7 +88,7 @@ module.exports = class TicketController extends baseController{
                             this.update('ticketservicediscountcommission',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
                                 this.update('ticketTips',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
                                     // this.saveTicketServices(req, res, next, idx+1);
-                                    if(service.totalTips > 0){
+                                    if(Number(service.totalTips) > 0){
                                         var tipinput = {
                                             tipsCashPercentage: service.technician.mTipsCashPercentage,
                                             tipsCheckPercentage: service.technician.mTipsCheckPercentage,

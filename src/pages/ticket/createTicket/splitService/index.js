@@ -187,12 +187,13 @@ class SplitService extends React.Component  {
                     </Typography>
                     </Grid>
                     <Grid item xs={6} alignItems='flex-end' justify='flex-end' style={{padding:'10px', display:'flex'}}>
+                    <Button variant="contained" style={{height:'100%', maxHeight:'50px', background: this.state.canaddSplit ? '#009E60' : '#ccc !important'  }} disabled={!this.state.canaddSplit}  onClick={()=>{this.addNewSplit();}}>Split</Button>
                     </Grid>
                 </Grid> 
 
 
                 <div style={{ width: '100%', height: '50%',overflow: 'hidden',background: '',}}>
-                <div style={{width: '100%',  height: "calc(100% - 160px)",overflowY:'auto' ,background: '',paddingLeft: 0,paddingTop: 10,paddingBottom: 10 }}>
+                <div style={{width: '100%',  height: "100%",overflowY:'auto' ,background: '',paddingLeft: 0,paddingTop: 10,paddingBottom: 10 }}>
                 {this.state.splittedservice.map((v,index)=>{
                     return (
                         <Grid container xs={12} > 

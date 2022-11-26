@@ -90,7 +90,7 @@ export default class ClosedTicketsComponent extends React.Component{
                             Pay
                         </Button>} */}
                         {(params.row.paymentStatus === 'paid') && <b style={{textTransform:'capitalize'}}>{params.row.pay_mode}</b>}
-                        <Print style={{marginLeft:'1rem'}} onClick={()=>this.handleTicketPrint(params.row)}/>
+                        {/* <Print style={{marginLeft:'1rem'}} onClick={()=>this.handleTicketPrint(params.row)}/> */}
                     </div>
                     )
                 },

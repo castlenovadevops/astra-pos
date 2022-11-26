@@ -49,7 +49,7 @@ class Tips extends React.Component {
             tips_percent: 0,
             total_tips: 0,
             isDisable: false,
-            showError:true
+            showError:true,
         }
         this.handlechangeTips_amt = this.handlechangeTips_amt.bind(this) 
         this.handlechangeTips_individual_amt = this.handlechangeTips_individual_amt.bind(this)

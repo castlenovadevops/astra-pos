@@ -187,7 +187,22 @@ module.exports = class TicketController extends baseController{
                 {
                     model: this.models.mCustomers,
                     required: false
-                }
+                },
+                {
+                    model: this.models.merchantEmployees,
+                    required: false
+                }, 
+                {
+                    model: this.models.ticketdiscount,
+                    required: false,
+                    where:{
+                        status:1
+                    }
+                }, 
+                {
+                    model: this.models.ticketpayment,
+                    required: false, 
+                }, 
             ],
             where:{
                 ticketStatus:'Active',
@@ -196,7 +211,7 @@ module.exports = class TicketController extends baseController{
             attributes:{
                 include:[
                     [
-                        Sequelize.col('ticketId'),
+                        Sequelize.col('`tickets`.`ticketId`'),
                         'id'
                     ]
                 ]

@@ -3,8 +3,7 @@
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
-const { Sequelize } = require('sequelize');
-const { service } = require('restler');
+const { Sequelize } = require('sequelize'); 
 
 module.exports = class TicketController extends baseController{
     path = "/merchant/payment";
@@ -31,6 +30,12 @@ module.exports = class TicketController extends baseController{
                     method: "savePayment",
                     authorization:'authorizationAuth'
                 },  
+                {
+                    path:this.path+"/updateTips",
+                    type:"post",
+                    method: "updateTips",
+                    authorization:'authorizationAuth'
+                },  
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
@@ -40,6 +45,7 @@ module.exports = class TicketController extends baseController{
     getPayments = async(req,res)=>{
         try{
             var ticket = req.input.data
+            console.log(ticket)
             let options = {
                 where:{
                     ticketId: ticket.ticketId
@@ -115,5 +121,55 @@ module.exports = class TicketController extends baseController{
     catch(e){
         console.log(e)
     }
+    }
+
+    updateTips = async(req, res, next)=>{
+        var input = req.input;
+        var ticketDetail = input.ticketDetail; 
+        var ticketinput = {   
+            "tipsAmount": ticketDetail.tipsAmount, 
+            "ticketTotalAmount"	: ticketDetail.ticketTotalAmount, 
+            "tipsType": ticketDetail.tipsType, 
+        }
+        this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{ 
+            this.saveTicketServices(req, res, next); 
+        });
+
+    }
+
+    saveTicketServices = async(req, res, next, idx=0)=>{
+        console.log(req.input.selectedServices.length)
+        if(idx<req.input.selectedServices.length){
+            var service = req.input.selectedServices[idx];  
+            console.log(service.ticketServiceId, service)
+            this.update('ticketTips',{status:0},{where:{ticketServiceId: service.ticketServiceId}}, true).then(r=>{
+                // this.saveTicketServices(req, res, next, idx+1);
+                if(Number(service.totalTips) > 0){
+                    console.log(service.totalTips)
+                    var tipinput = {
+                        tipsCashPercentage: service.technician.mTipsCashPercentage,
+                        tipsCheckPercentage: service.technician.mTipsCheckPercentage,
+                        technicianId:service.technician.mEmployeeId,
+                        tipsAmount: service.totalTips,
+                        ticketServiceId: service.ticketServiceId,
+                        createdBy: req.userData.mEmployeeId,
+                        createdDate: this.getDate(),
+                        status:1
+                    }
+                    console.log("TIPS INPUT::::::",tipinput)
+                    this.create('ticketTips', tipinput).then(rr=>{ 
+                        this.saveTicketServices(req, res, next, idx+1); 
+                    })
+                }
+                else{ 
+                    console.log("TIP INPUT::::::")
+                    this.saveTicketServices(req, res, next, idx+1); 
+                }
+            })
+
+        }
+        else{
+            this.sendResponse({message: "Ticket tips saved successfully."}, res, 200);
+        }
     }
 }

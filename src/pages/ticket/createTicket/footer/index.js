@@ -94,6 +94,23 @@ export default class TicketFooterComponent extends React.Component{
     updateVoidTicket(){ 
         this.props.data.voidTicket(); 
     }
+    isCardPaid(){ 
+        if(this.props.data.ticketDetail.paymentStatus==='Paid'){  
+            var isdisable = true;
+            this.props.data.ticketDetail.ticketpayments.forEach(elmt=>{
+                if(elmt.payMode.trim().toLowerCase() === 'card'){ 
+                    isdisable = false
+                }
+            })
+            return isdisable;
+        }
+        else{
+        //     console.log("ELSE")
+            return this.props.data.isDisabled || this.props.data.selectedServices.length === 0
+        }
+
+        // return false;
+    }
 
     handleCloseTips(msg, tipsInput){ 
         this.props.data.handleCloseTips(msg, tipsInput)
@@ -161,7 +178,7 @@ export default class TicketFooterComponent extends React.Component{
                                     </Button> 
                                 </Grid>
                                 <Grid xs={4}>
-                                    <Button style={{borderRadius: 0}} onClick={()=>this.addTips()} fullWidth variant="outlined" disabled={this.props.data.isDisabled || this.props.data.selectedServices.length === 0}>
+                                    <Button style={{borderRadius: 0}} onClick={()=>this.addTips()} fullWidth variant="outlined" disabled={this.isCardPaid()}>
                                         Tips
                                     </Button> 
                                 </Grid>
@@ -251,7 +268,7 @@ export default class TicketFooterComponent extends React.Component{
             
              {/* Tips popup */}
             {this.state.addTips_popup &&
-                <TicketTipsModal handleCloseAddTips={()=>this.handleCloseAddTips()}  afterSubmitTips={(msg,tipsInput)=>{this.handleCloseTips(msg,tipsInput); }}  selectedServices={this.props.data.selectedServices} total_tips={this.props.data.price.tipsAmount || 0}  tips_type={this.props.data.price.tips_type || 'equal'}/>
+                <TicketTipsModal handleCloseAddTips={()=>this.handleCloseAddTips()} ticketpayments={this.props.data.ticketpayments}  afterSubmitTips={(msg,tipsInput)=>{this.handleCloseTips(msg,tipsInput); }}  selectedServices={this.props.data.selectedServices} total_tips={this.props.data.price.tipsAmount || 0}  tips_type={this.props.data.price.tips_type || 'equal'}/>
             }
 
  

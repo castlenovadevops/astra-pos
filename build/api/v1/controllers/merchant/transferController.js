@@ -96,7 +96,7 @@ module.exports = class TicketController extends baseController{
             taxApplied: req.input.ticketDetail.taxApplied,
             serviceDiscountApplied: req.input.ticketDetail.serviceDiscountApplied,
             ticketDiscountApplied:0,
-            tipsAmount: req.input.service.totalTips,
+            tipsAmount: req.input.service.totalTips || '',
             serviceAmount: req.input.service.subTotal,
             ticketTotalAmount:req.input.service.subTotal+ req.input.service.totalTax -  req.input.service.totalDiscount + req.input.service.totalTips
         } 

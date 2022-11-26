@@ -82,7 +82,8 @@ export default class MerchantDashboard extends React.Component{
     }
 
     closeCreateTicket(){ 
-            this.socket.emit("refreshTickets", {data:"success"}) 
+            // this.socket.emit("refreshTickets", {data:"success"}) 
+            window.location.href="/"
         this.setState({showCreateTicket: false, ticketDetail:{}})
     }
 

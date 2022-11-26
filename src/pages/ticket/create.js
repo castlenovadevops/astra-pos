@@ -18,9 +18,11 @@ export default class CreateTicketComponent extends React.Component{
             userdetail:{}, 
             isLoading: false, 
             ticketDetail:{},
+            isPaidOnOpen: false,
             showError: false,
             error: false,
             selectedTech: {},
+            ticketpayments:[],
             customer_detail:{},
             selectedServices:[],
             selectedRow:-1,
@@ -38,7 +40,8 @@ export default class CreateTicketComponent extends React.Component{
             },
             tips_input:{},
             ticketdiscounts:[],
-            ticketdiscountcommissions:[]
+            ticketdiscountcommissions:[],
+            updateTips: false
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
         this.onSelectService  = this.onSelectService.bind(this);
@@ -66,6 +69,7 @@ export default class CreateTicketComponent extends React.Component{
         this.saveTicketPromise = this.saveTicketPromise.bind(this);
         this.selectCustomerDetail = this.selectCustomerDetail.bind(this);
         this.formatData = this.formatData.bind(this);
+        // this.getTicketPayments = this.getTicketPayments.bind(this);
     } 
 
     selectCustomerDetail(customer){ 
@@ -99,6 +103,9 @@ export default class CreateTicketComponent extends React.Component{
         this.setState({selectedServices: services},()=>{
             this.calculateAllServices(0);
             this.saveTicket()
+            if(this.state.selectedServices.length === 0){
+                this.voidTicket();
+            }
         })
     }
 
@@ -214,7 +221,7 @@ export default class CreateTicketComponent extends React.Component{
             this.setState({selectedServices: tipsInput.selectedServices}, ()=>{
                 var tipinputobj = Object.assign(tipsInput);
                 delete tipinputobj.selectedServices
-                this.setState({ tips_input: tipinputobj})
+                this.setState({ tips_input: tipinputobj, updateTips: true})
                 this.calculateAllServices(0);
             })
         }
@@ -368,28 +375,30 @@ export default class CreateTicketComponent extends React.Component{
     }
 
     onSelectService(service){
-        var obj = {
-            serviceDetail: service,
-            qty: 1,
-            perunit_cost: Number(service.mProductPrice),
-            originalPrice:  Number(service.mProductPrice),
-            subTotal: Number(service.mProductPrice),
-            ticketservicetaxes:[],
-            ticketservicediscounts:[],
-            totalTax:0,
-            totalDiscount:0,
-            totalTips:0,
-            isSpecialRequest: 0,
-            serviceNotes:'',
-            technician: this.state.selectedTech
+        if(!this.state.isPaidOnOpen){
+            var obj = {
+                serviceDetail: service,
+                qty: 1,
+                perunit_cost: Number(service.mProductPrice),
+                originalPrice:  Number(service.mProductPrice),
+                subTotal: Number(service.mProductPrice),
+                ticketservicetaxes:[],
+                ticketservicediscounts:[],
+                totalTax:0,
+                totalDiscount:0,
+                totalTips:0,
+                isSpecialRequest: 0,
+                serviceNotes:'',
+                technician: this.state.selectedTech,
+            }
+            if(service.mProductTaxType === "Default"){
+                obj.ticketservicetaxes = Object.assign([], this.state.defaultTaxes)
+            }
+            else{
+                obj.ticketservicetaxes = Object.assign([], service.mProductTaxes)
+            }
+            this.calculateDiscountForService(obj)
         }
-        if(service.mProductTaxType === "Default"){
-            obj.ticketservicetaxes = Object.assign([], this.state.defaultTaxes)
-        }
-        else{
-            obj.ticketservicetaxes = Object.assign([], service.mProductTaxes)
-        }
-        this.calculateDiscountForService(obj)
     }
 
     calculateTaxForService(obj, i=0, idx=-1){
@@ -591,14 +600,33 @@ export default class CreateTicketComponent extends React.Component{
                 "serviceAmount"	: price.ticketSubTotal,
                 "ticketTotalAmount"	: price.grandTotal,
                 "ticketNotes": ticketDetail.ticketNotes, 
-                "paymentStatus":"Pending",
+                "paymentStatus":ticketDetail.paymentStatus || "Pending",
+                "ticketpayments": ticketDetail.ticketpayments || [],
                 "isDraft":0, 
             }
 
             this.setState({totalValues: price, ticketDetail: ticketinput},()=>{
+                if(this.state.updateTips)
+                    this.updateTipValues();
                 if(this.state.ticketdiscounts.length > 0){
                     this.updateTicketDiscountAmount();
                 }
+            })
+        }
+    }
+
+    updateTipValues(){
+        if(this.state.selectedServices.length > 0){
+            console.log("AAAA")
+            var ticketinput = {
+                ticketDetail:Object.assign({}, this.state.ticketDetail), 
+                selectedServices: Object.assign([], this.state.selectedServices),
+                ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+                ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+            }
+            console.log(ticketinput)
+            this.httpManager.postRequest('merchant/payment/updateTips',ticketinput).then(resp=>{
+                this.setState({updateTips: false})
             })
         }
     }
@@ -644,7 +672,8 @@ export default class CreateTicketComponent extends React.Component{
                         "serviceAmount"	: price.ticketSubTotal,
                         "ticketTotalAmount"	: price.grandTotal,
                         "ticketNotes": ticketDetail.ticketNotes, 
-                        "paymentStatus":"Pending",
+                        "paymentStatus":ticketDetail.paymentStatus || "Pending",
+                        "ticketpayments": ticketDetail.ticketpayments || [],
                         "isDraft":0, 
                     } 
                         this.setState({totalValues: price,ticketDetail: ticketinput, ticketdiscountcommissions:[]},()=>{
@@ -673,7 +702,8 @@ export default class CreateTicketComponent extends React.Component{
                     "serviceAmount"	: price.ticketSubTotal,
                     "ticketTotalAmount"	: price.grandTotal,
                     "ticketNotes": ticketDetail.ticketNotes, 
-                    "paymentStatus":"Pending",
+                    "paymentStatus":ticketDetail.paymentStatus || "Pending",
+                    "ticketpayments": ticketDetail.ticketpayments || [],
                     "isDraft":0, 
                 } 
                     this.setState({totalValues: price,ticketDetail: ticketinput, ticketdiscountcommissions:[]},()=>{
@@ -694,8 +724,18 @@ export default class CreateTicketComponent extends React.Component{
         }
     }
 
+    // getTicketPayments(){
+    //     this.httpManager.postRequest(`merchant/payment/getpayments`, {data: this.props.data.ticketDetail}).then(res=>{
+    //         this.setState({ticketpayments: res.data }); 
+    //     })
+    // }
+
     componentDidMount(){ 
         if(this.props.data.ticketDetail.ticketId !== undefined){
+            if(this.props.data.ticketDetail.paymentStatus === 'Paid'){
+                // this.getTicketPayments()
+                this.setState({isPaidOnOpen: true, isDisabled: true})
+            }
             this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
                 this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
                     console.log(this.state.selectedTech)
@@ -740,6 +780,7 @@ export default class CreateTicketComponent extends React.Component{
             var obj = {
                 serviceDetail: service,
                 qty: ticketservice.serviceQty,
+                ticketServiceId: ticketservice.ticketServiceId,
                 perunit_cost: Number(ticketservice.servicePerUnitCost),
                 originalPrice:  Number(ticketservice.serviceOriginalPrice),
                 subTotal: Number(ticketservice.servicePrice),
@@ -761,6 +802,7 @@ export default class CreateTicketComponent extends React.Component{
     }
 
     voidTicket(){
+        console.log("VOID TICKLET")
         this.httpManager.postRequest("merchant/ticket/void",{data: this.state.ticketDetail.ticketId}).then(r=>{
             this.props.data.closeCreateTicket()
         })
@@ -806,6 +848,7 @@ export default class CreateTicketComponent extends React.Component{
                                                                             ticketDetail: this.state.ticketDetail, 
                                                                             customer_detail: this.state.customer_detail,
                                                                             ticketdiscounts: this.state.ticketdiscounts,
+                                                                            ticketpayments: this.state.ticketpayments,
                                                                             saveTicket: this.saveTicket,
                                                                             saveTicketPromise: this.saveTicketPromise,
                                                                             reloadTicket: this.reloadTicket,
@@ -857,8 +900,8 @@ export default class CreateTicketComponent extends React.Component{
                                             selectDiscount: this.selectDiscount,
                                             selectTax: this.selectTax,
                                             onSaveSplit: this.onSaveSplit,
-                                            afterCompleteTransfer: this.afterCompleteTransfer
-
+                                            afterCompleteTransfer: this.afterCompleteTransfer,
+                                            voidTicket: this.voidTicket
                                         }} />
                                 </Grid>
                             </Grid>

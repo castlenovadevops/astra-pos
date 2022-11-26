@@ -8,7 +8,7 @@ export default function TicketTipsModal({
     selectedServices,
     total_tips,
     tips_percent,
-    tips_type
+    tips_type,
 }) 
 {
 return (
