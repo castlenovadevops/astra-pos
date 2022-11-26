@@ -344,7 +344,7 @@ module.exports = class reportController extends baseController{
     }
 
     getEmpReport = async(req, res)=>{
-        const emps = await this.readOne({ 
+        const emps = await this.readAll({ 
             attributes:{
                 include:[
                     [
@@ -376,55 +376,64 @@ module.exports = class reportController extends baseController{
                         "mTipsCheckPercentage"
                     ],
                     [
-                        Sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1 and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
+                        Sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1  and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
                         "TotalTax"
                     ],
                     [
-                        Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
+                        Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
                         "Supplies"
-                    ]
-            ]}}, 'merchantEmployees');
-            this.getEmpTickets(req, res, emps, 0, [])
+                    ], 
+            ]}}, 'merchantEmployees'); 
+            var empslist = emps;
+            this.getEmpTickets(req, res, empslist, 0, [])
     }
 
-    getEmpTickets = async(req,res, emps, i, response)=>{
+    getEmpTickets = async(req,res, emps, i, response)=>{ 
         if(i < emps.length){
-            var empid= emps[0].mEmployeeId;
+            const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')";
+            
+            var empid= emps[i].dataValues.mEmployeeId || emps[i].mEmployeeId;
+            console.log("$$$$$", emps[i])
             const reportoptions = { 
                 group: [
                     [Sequelize.literal(' `created`'), 'ASC']
                 ],
                 where:{
                     ticketId:{
-                        [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
+                        [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid' and ticketId in (select ticketId from ticketservices where serviceTechnicianId='"+empid+"' and status=1))")
                     }
                 }, 
                 attributes:[
                     [Sequelize.col('paymentStatus'), 'paymentStatus'],
                     [Sequelize.fn('strftime','%m-%Y', Sequelize.col('`tickets`.`createdDate`')), 'created'],
                     [
-                        Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId="+empid+"  and status=1)"),
+                        Sequelize.literal("(select count(ticketServiceId) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
+                        'ServiceCount'
+                    ],
+                    [
+                        Sequelize.literal("(select serviceTechnicianId from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
+                        'serviceTechnicianId'
+                    ],
+                    [
+                        Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
                         'TotalServiceAmount'
                     ],
                     [
-                        Sequelize.literal("(select sum(employeePercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId="+empid+"  and status=1)"),
+                        Sequelize.literal("(select sum(employeePercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId='"+empid+"'  and status=1)"),
                         'ServiceAmount'
                     ],
                     [
-                        Sequelize.literal("(select sum(tipsAmount) from ticketTips where   status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId="+empid+"  and status=1)"),
+                        Sequelize.literal("(select sum(tipsAmount) from ticketTips where   status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId='"+empid+"'  and status=1)"),
                         'Tips'
                     ],
                     [
-                        Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and technicianId="+empid+"  and status=1)"),
+                        Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and technicianId='"+empid+"'  and status=1)"),
                         'Discount'
                     ]
                 ] 
             }
 
-            const reports = await this.readAll(reportoptions, 'tickets')
-
-            const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"'  and  Date('"+req.input.to_date.substr(0,10)+"')";
-            
+            const reports = await this.readAll(reportoptions, 'tickets') 
             const discountoptions = {
                 group:[
                     `mDiscountDivisionType`
@@ -432,7 +441,7 @@ module.exports = class reportController extends baseController{
                 where:{
                     status:1,
                     ticketServiceId:{
-                        [Sequelize.Op.in]: Sequelize.literal("(select ticketServiceId from ticketservices where status=1 and serviceTechnicianId="+empid+" and  ticketId in (select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid'))")
+                        [Sequelize.Op.in]: Sequelize.literal("(select ticketServiceId from ticketservices where status=1 and serviceTechnicianId='"+empid+"' and  ticketId in (select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid'))")
                     }
                 },
                 attributes:[
@@ -441,13 +450,13 @@ module.exports = class reportController extends baseController{
                     
                 ]
             }
-            const discounts=await this.readAll(discountoptions, 'ticketdiscount')
+            const discounts=await this.readAll(discountoptions, 'ticketservicediscount')
             var obj ={
                 report: reports,
                 discounts: discounts,
                 emp:emps[i]
             }
-            response.push(obj);
+            response.push(obj); 
             this.getEmpTickets(req, res,emps, i+1, response)
         }
         else{

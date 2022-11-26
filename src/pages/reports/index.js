@@ -41,7 +41,8 @@ export default class ReportComponent extends React.Component{
             showFormError: false,
             formError:'',
             owner:{},
-            payments:[]
+            payments:[],
+            employees:[]
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
@@ -122,6 +123,18 @@ export default class ReportComponent extends React.Component{
 
         return total.toFixed(2)
     }
+
+
+    getEmpTotalDiscounts(data){
+        console.log(data)
+        var total = 0
+        data.forEach(e=>{
+            total = Number(total)+Number(e.discountAmount)
+        })
+
+        return total.toFixed(2)
+    }
+
     getTotalAmountcollected(){
         var total = 0
         this.state.payments.forEach(e=>{
@@ -144,16 +157,32 @@ export default class ReportComponent extends React.Component{
         else{
             this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
                 // console.log(res)
-                this.formatOwnerReport(res.data,{
-                    addedDates:[],
-                    data:[]
-                })
-                // this.setState({employee_reportlist: res.data})
+                this.formatEmployeeData(res.data, []) 
             })
         }
     }   
 
+    formatEmployeeData(data,response, i=0){
+        console.log("DATA CALLLING")
+        if(i < data.length){
+            var obj = {
+                addedDates:[],
+                data:[],
+                discounts:data[i].discounts,
+                empdetail: data[i].emp
+            } 
+            this.formatEmployeeReport(data, data[i].report, response, obj,i,  0)
+        }
+        else{
+            this.setState({employees: response}, ()=>{
+                console.log(this.state.employees)
+            })
+        }
+
+    }
+
     formatOwnerReport(data,response, i=0){ 
+        console.log(data.length)
         if(i< data.length){
             var rec = data[i]
             if(response.addedDates.indexOf(rec.created) === -1){ 
@@ -189,6 +218,55 @@ export default class ReportComponent extends React.Component{
                 // console.log("EMP REPOTR", this.state.employee_reportlist)
             })
         }
+    }
+
+
+
+    formatEmployeeReport(emps,data,response, empobj, ei ,i=0){ 
+        if(i< data.length){
+            var rec = data[i]
+            if(empobj.addedDates.indexOf(rec.created) === -1){ 
+                var obj = {
+                    ticketCount:1,
+                    servicesCount: rec.ServiceCount,
+                    serviceTotal: rec.TotalServiceAmount,
+                    tips: rec.Tips,
+                    discount: rec.Discount,
+                    date: rec.created
+                }
+                empobj.data.push(obj);
+                empobj.addedDates.push(obj.date);
+                this.formatEmployeeReport(emps, data, response, empobj,ei, i+1)
+            }
+            else{
+                var idx = empobj.addedDates.indexOf(rec.created)
+                var obj  = Object.assign({}, empobj.data[idx]);
+                obj = {
+                    ticketCount:obj.ticketCount+1,
+                    servicesCount: Number(obj.servicesCount)+Number(rec.ServiceCount),
+                    serviceTotal: Number(obj.serviceTotal)+Number(rec.TotalServiceAmount),
+                    tips: Number(obj.tips)+Number(rec.Tips),
+                    discount: Number(obj.discount)+Number(rec.Discount),
+                    date: obj.date
+                }
+                response.data[idx] = obj;
+                this.formatEmployeeReport(emps, data, response, empobj, ei, i+1)
+            }
+        }   
+        else{ 
+            response.push(empobj)
+            this.formatEmployeeData(emps,  response, ei+1);
+        }
+    }
+
+    getDiscountAmount(option){
+        var disamt = '0.00';
+        this.state.discounts.map((d, i)=>{
+            if(d.mDiscountDivisionType === option && d.discountAmount){ 
+                disamt = d.discountAmount ? Number(d.discountAmount).toFixed(2)  : '0.00'
+            }  
+        })
+        return disamt; 
     }
 
     renderOwnerReport(){ 
@@ -240,10 +318,7 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={2}>{(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : '-' }</Grid>
                     </Grid>
                 </div>)
-            })  
-
-            console.log("TOTAL discounttotal", discounttotal)
-
+            })   
             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
                 <Grid container>
                     <Grid item xs={2}></Grid>
@@ -264,10 +339,22 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={4}>{Number(discounttotal).toFixed(2)}</Grid>
                     </Grid> */}
 
-                    {this.state.discounts.map(d=>( <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                        <Grid item xs={8}>{d.mDiscountDivisionType}</Grid>
-                        <Grid item xs={4}>{Number(d.discountAmount).toFixed(2)}</Grid>
-                    </Grid>))}
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>Owner</Grid>
+                        <Grid item xs={4}>{this.getDiscountAmount('Owner')}
+                        </Grid>
+                    </Grid>
+
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>Employee</Grid>
+                        <Grid item xs={4}>{this.getDiscountAmount('Employee')}
+                        </Grid>
+                    </Grid>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>Owner & Employee</Grid>
+                        <Grid item xs={4}>{this.getDiscountAmount('Both')}
+                        </Grid>
+                    </Grid>
 
                     {/* <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                         <Grid item xs={8}>Employee</Grid>
@@ -324,113 +411,251 @@ export default class ReportComponent extends React.Component{
             {reportdetail}
             </div>;
     }
-    renderEmployeeReport(){
+    getEmpDiscountAmount(emp,option){
+        var disamt = '0.00';
+        emp.discounts.map((d, i)=>{
+            if(d.mDiscountDivisionType === option && d.discountAmount){ 
+                disamt = d.discountAmount ? Number(d.discountAmount).toFixed(2)  : '0.00'
+            }  
+        })
+        return disamt; 
+    }
+
+
+    renderEmployeeReport(){ 
         var reportdetail = [];
-        this.state.empReport.forEach(emp=>{ 
-            reportdetail.push(<div style={{display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
-                <Typography variant="h4">{this.state.businessdetail.name}</Typography>
-                <Typography variant="h5" style={{textTransform:'capitalize'}}>Employee {this.state.reporttype} Report</Typography>
+        var mstr = window.localStorage.getItem('merchantdetail');
+        var merchantdetail = mstr !== undefined && mstr !== '' ? JSON.parse(mstr) : {}
+    this.state.employees.forEach(emp=>{
+        reportdetail.push(<div style={{ display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
+                <Typography variant="h4">{merchantdetail.merchantName}</Typography>
+                <Typography variant="h5" style={{textTransform:'capitalize'}}>Employee Report</Typography>
                 <Typography variant="subtitle2" style={{textTransform:'capitalize', fontWeight:'400'}}>{Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")}</Typography>
             </div>);
 
-            reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
-                    <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Employee : <b>{emp.firstName+" "+emp.lastName}</b></Typography>
-            </div>) 
-            if(emp.tickets.length > 0){
-                reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000'}}> 
+        reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
+                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Employee : <b>{emp.empdetail.mEmployeeFirstName+" "+emp.empdetail.mEmployeeLastName}</b></Typography>
+        </div>) 
+        if(emp.data.length > 0){
+        // if(this.state.empReport.length > 0){
+            reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000'}}> 
+                <Grid container>
+                    <Grid item xs={2}><b>{this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date'}</b></Grid>
+                    <Grid item xs={2}><b>Tickets</b></Grid>
+                    <Grid item xs={2}><b>Service</b></Grid>
+                    <Grid item xs={2}><b>Amount</b></Grid>
+                    <Grid item xs={2}><b>Tip</b></Grid> 
+                    <Grid item xs={2}><b>Total</b></Grid>
+                </Grid>
+            </div>)
+            var totalServicePrice = 0
+            var totalTips = 0
+            var discounttotal = 0
+            var totalAmount = 0
+
+             emp.data.forEach(t=>{ 
+                totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
+                totalTips =Number(totalTips)+Number(t.tips);
+                console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
+                discounttotal =Number(discounttotal)+Number(t.discount);
+                reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000', padding:'2px 0'}}> 
                     <Grid container>
-                        <Grid item xs={3}><b>{this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date'}</b></Grid>
-                        <Grid item xs={3}><b>Tickets</b></Grid>
-                        <Grid item xs={2}><b>Amount</b></Grid>
-                        <Grid item xs={2}><b>Tip</b></Grid>
-                        <Grid item xs={2}><b>Total</b></Grid>
+                        <Grid item xs={2}>{t.date}</Grid>
+                        <Grid item xs={2} >{t.ticketCount} </Grid>
+                        <Grid item xs={2} >{t.servicesCount} </Grid>
+                        <Grid item xs={2}>{Number(t.serviceTotal) > 0 ? "$"+Number(t.serviceTotal).toFixed(2) : '-' }</Grid>
+                        <Grid item xs={2}>{Number(t.tips) > 0 ? "$"+Number(t.tips).toFixed(2) : '-' }</Grid> 
+                        <Grid item xs={2}>{(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : '-' }</Grid>
                     </Grid>
                 </div>)
-                var discounttotal = 0
-                var totalAmount = 0;
-                var totalTips = 0;
-                emp.tickets.map(t=>{
-                    return  reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000', padding:'2px 0'}}> 
-                        <Grid container>
-                            <Grid item xs={3}>{t.ticket_date}</Grid>
-                            
-                            <Grid item xs={3} style={{alignItems:'center', display:'flex', textDecoration:'underline', cursor:'pointer'}} onClick={()=>{
-                                this.showDetails(t)
-                            }}>{t.ticketcount}</Grid>
-                            <Grid item xs={2}>{Number(t.Amount) > 0 ? "$"+Number(t.Amount).toFixed(2) : '-' }</Grid>
-                            <Grid item xs={2}>{Number(t.Tips) > 0 ? "$"+Number(t.Tips).toFixed(2) : '-' }</Grid>
-                            <Grid item xs={2}>{Number(t.Amount)+Number(t.Tips) > 0 ? "$"+(Number(t.Tips)+Number(t.Amount)).toFixed(2) : '-' }</Grid>
+            })   
+            reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
+                <Grid container>
+                    <Grid item xs={2}></Grid>
+                    <Grid item xs={4}><b>Total</b></Grid>
+                    <Grid item xs={2}><b>{"$"+Number(totalServicePrice).toFixed(2)}</b></Grid>
+                    <Grid item xs={1}><b>{"$"+Number(totalTips).toFixed(2)}</b></Grid>
+                    <Grid item xs={1}><b>{"$"+Number(discounttotal).toFixed(2)}</b></Grid>
+                    <Grid item xs={2}><b>{"$"+Number(totalAmount).toFixed(2)}</b></Grid>
+                </Grid>
+            </div>)
+
+            reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'column', marginTop:'2rem'}}>
+
+                    <Typography variant="h6" style={{textTransform:'capitalize', fontWeight:'700'}}>Discounts</Typography> 
+
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>Owner</Grid>
+                        <Grid item xs={4}>{this.getEmpDiscountAmount(emp,'Owner')}
                         </Grid>
-                    </div>)
-                })
+                    </Grid>
 
-                emp.tickets.forEach(t=>{
-                    discounttotal = discounttotal+ Number(t.Discount);
-                    totalAmount = totalAmount+ Number(t.Amount);
-                    totalTips = totalTips+ Number(t.Tips);
-                    discounttotal = discounttotal+ Number(t.Discount);
-                })
-
-                discounttotal = emp.discountdata.OwnerDiscount+emp.discountdata.EmpDiscount+emp.discountdata.OwnerEmpDiscount;
-                console.log(discounttotal);
-
-                reportdetail.push(
-                    <div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000',fontWeight:'700', padding:'2px 0'}}> 
-                        <Grid container><Grid item xs={3}></Grid>
-                            <Grid item xs={3}>Total</Grid>
-                            <Grid item xs={2}>{Number(totalAmount) > 0 ? "$"+Number(totalAmount).toFixed(2) : '-' }</Grid>
-                            <Grid item xs={2}>{Number(totalTips) > 0 ? "$"+Number(totalTips).toFixed(2) : '-' }</Grid>
-                            <Grid item xs={2}>{Number(totalTips)+Number(totalAmount) > 0 ? "$"+(Number(totalTips)+Number(totalAmount)).toFixed(2) : '-' }</Grid>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>Employee</Grid>
+                        <Grid item xs={4}>{this.getEmpDiscountAmount(emp,'Employee')}
                         </Grid>
-                    </div>)
-                reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'column', marginTop:'2rem'}}>
-
-                        <Typography variant="h6" style={{textTransform:'capitalize', fontWeight:'700'}}>Discounts</Typography>
-
-                        <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                            <Grid item xs={8}>#</Grid>
-                            <Grid item xs={4}>{Number(discounttotal).toFixed(2)}</Grid>
+                    </Grid>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                        <Grid item xs={8}>Owner & Employee</Grid>
+                        <Grid item xs={4}>{this.getEmpDiscountAmount(emp,'Both')}
                         </Grid>
-                        <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                            <Grid item xs={8}>Owner</Grid>
-                            <Grid item xs={4}>{Number(emp.discountdata.OwnerDiscount).toFixed(2)}</Grid>
-                        </Grid>
+                    </Grid> 
 
-                        <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                            <Grid item xs={8}>Employee</Grid>
-                            <Grid item xs={4}>{Number(emp.discountdata.EmpDiscount).toFixed(2)}</Grid>
-                        </Grid>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%',}}>
+                        <Grid item xs={8}>Total</Grid>
+                        <Grid item xs={4}>${this.getEmpTotalDiscounts(emp.discounts)}</Grid>
+                    </Grid>
 
-                        <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                            <Grid item xs={8}>Owner & Employee</Grid>
-                            <Grid item xs={4}>{Number(emp.discountdata.OwnerEmpDiscount).toFixed(2)}</Grid>
-                        </Grid>
-                        <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%',}}>
-                            <Grid item xs={8}>Total</Grid>
-                            <Grid item xs={4}>${Number(discounttotal).toFixed(2)}</Grid>
-                        </Grid>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
+                        <Grid item xs={8}>Tax Amount</Grid>
+                        <Grid item xs={4}>${emp.empdetail.TotalTax!== null ? Number(emp.empdetail.TotalTax).toFixed(2) : "0.00"}</Grid>
+                    </Grid>
 
-                        <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
-                            <Grid item xs={8}>Supplies</Grid>
-                            <Grid item xs={4}>$0.00</Grid>
-                        </Grid> 
-                    </div>)
-            }
-            else{ 
-                reportdetail.push(<div style={{display:'flex',marginTop:'1rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
-                    <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {emp.firstName+" "+emp.lastName}</Typography>
-                </div>) 
-            }
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
+                        <Grid item xs={8}>Supplies</Grid>
+                        <Grid item xs={4}>${emp.empdetail.Supplies!== null ? Number(emp.empdetail.Supplies).toFixed(2) : "0.00"}</Grid>
+                    </Grid>
 
-            reportdetail.push(<div style={{display:'flex',marginTop:'1.5rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row',borderBottom:'1px dotted #000', marginBottom:'1rem'}}> 
-                <Typography variant="body" style={{ paddingBottom:'1rem',fontWeight:'400'}}>{this.state.businessdetail.name} - Reported: {Moment().format("MM/DD/YYYY hh:mm a")}</Typography>
+                    {/* <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
+                        <Grid item xs={8}>Payment Methods</Grid>
+                        <Grid item xs={4}></Grid>
+                    </Grid> */}
+                    
+                    {/* {this.state.payments.map(csh=>{
+                    return <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',}}>
+                        <Grid item xs={8}>{csh.paymentType !== '' ? csh.paymentType : 'Cash'}</Grid>
+                        <Grid item xs={4}>${Number(csh.paymentAmount).toFixed(2)}</Grid>
+                    </Grid> })} */}
+
+                    {/* <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
+                        <Grid item xs={8}>Amount Collected</Grid>
+                        <Grid item xs={4}>${this.getTotalAmountcollected()}</Grid>
+                    </Grid>  */}
+                </div>)
+        }
+        else{ 
+            reportdetail.push(<div style={{display:'flex',marginTop:'1rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
+                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}</Typography>
             </div>) 
-        })
-        return  <div style={{ width:'100%'}}>
+        }
+
+        reportdetail.push(<div style={{borderBottom:'1px dotted #000',display:'flex',marginTop:'1.5rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
+            <Typography variant="body" style={{ paddingBottom:'1rem',fontWeight:'400'}}>{merchantdetail.merchantName} - Reported: {Moment().format("MM/DD/YYYY hh:mm a")}</Typography>
+        </div>) 
+    });
+
+        return  <div style={{ paddingBottom:'1rem', width:'100%'}}>
             {reportdetail}
             </div>;
-
     }
+    // renderEmployeeReport(){
+    //     var reportdetail = [];
+    //     this.state.empReport.forEach(emp=>{ 
+    //         reportdetail.push(<div style={{display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
+    //             <Typography variant="h4">{this.state.businessdetail.name}</Typography>
+    //             <Typography variant="h5" style={{textTransform:'capitalize'}}>Employee {this.state.reporttype} Report</Typography>
+    //             <Typography variant="subtitle2" style={{textTransform:'capitalize', fontWeight:'400'}}>{Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")}</Typography>
+    //         </div>);
+
+    //         reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
+    //                 <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Employee : <b>{emp.firstName+" "+emp.lastName}</b></Typography>
+    //         </div>) 
+    //         if(emp.tickets.length > 0){
+    //             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000'}}> 
+    //                 <Grid container>
+    //                     <Grid item xs={3}><b>{this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date'}</b></Grid>
+    //                     <Grid item xs={3}><b>Tickets</b></Grid>
+    //                     <Grid item xs={2}><b>Amount</b></Grid>
+    //                     <Grid item xs={2}><b>Tip</b></Grid>
+    //                     <Grid item xs={2}><b>Total</b></Grid>
+    //                 </Grid>
+    //             </div>)
+    //             var discounttotal = 0
+    //             var totalAmount = 0;
+    //             var totalTips = 0;
+    //             emp.tickets.map(t=>{
+    //                 return  reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000', padding:'2px 0'}}> 
+    //                     <Grid container>
+    //                         <Grid item xs={3}>{t.ticket_date}</Grid>
+                            
+    //                         <Grid item xs={3} style={{alignItems:'center', display:'flex', textDecoration:'underline', cursor:'pointer'}} onClick={()=>{
+    //                             this.showDetails(t)
+    //                         }}>{t.ticketcount}</Grid>
+    //                         <Grid item xs={2}>{Number(t.Amount) > 0 ? "$"+Number(t.Amount).toFixed(2) : '-' }</Grid>
+    //                         <Grid item xs={2}>{Number(t.Tips) > 0 ? "$"+Number(t.Tips).toFixed(2) : '-' }</Grid>
+    //                         <Grid item xs={2}>{Number(t.Amount)+Number(t.Tips) > 0 ? "$"+(Number(t.Tips)+Number(t.Amount)).toFixed(2) : '-' }</Grid>
+    //                     </Grid>
+    //                 </div>)
+    //             })
+
+    //             emp.tickets.forEach(t=>{
+    //                 discounttotal = discounttotal+ Number(t.Discount);
+    //                 totalAmount = totalAmount+ Number(t.Amount);
+    //                 totalTips = totalTips+ Number(t.Tips);
+    //                 discounttotal = discounttotal+ Number(t.Discount);
+    //             })
+
+    //             discounttotal = emp.discountdata.OwnerDiscount+emp.discountdata.EmpDiscount+emp.discountdata.OwnerEmpDiscount;
+    //             console.log(discounttotal);
+
+    //             reportdetail.push(
+    //                 <div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000',fontWeight:'700', padding:'2px 0'}}> 
+    //                     <Grid container><Grid item xs={3}></Grid>
+    //                         <Grid item xs={3}>Total</Grid>
+    //                         <Grid item xs={2}>{Number(totalAmount) > 0 ? "$"+Number(totalAmount).toFixed(2) : '-' }</Grid>
+    //                         <Grid item xs={2}>{Number(totalTips) > 0 ? "$"+Number(totalTips).toFixed(2) : '-' }</Grid>
+    //                         <Grid item xs={2}>{Number(totalTips)+Number(totalAmount) > 0 ? "$"+(Number(totalTips)+Number(totalAmount)).toFixed(2) : '-' }</Grid>
+    //                     </Grid>
+    //                 </div>)
+    //             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'column', marginTop:'2rem'}}>
+
+    //                     <Typography variant="h6" style={{textTransform:'capitalize', fontWeight:'700'}}>Discounts</Typography>
+
+    //                     <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+    //                         <Grid item xs={8}>#</Grid>
+    //                         <Grid item xs={4}>{Number(discounttotal).toFixed(2)}</Grid>
+    //                     </Grid>
+    //                     <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+    //                         <Grid item xs={8}>Owner</Grid>
+    //                         <Grid item xs={4}>{Number(emp.discountdata.OwnerDiscount).toFixed(2)}</Grid>
+    //                     </Grid>
+
+    //                     <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+    //                         <Grid item xs={8}>Employee</Grid>
+    //                         <Grid item xs={4}>{Number(emp.discountdata.EmpDiscount).toFixed(2)}</Grid>
+    //                     </Grid>
+
+    //                     <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+    //                         <Grid item xs={8}>Owner & Employee</Grid>
+    //                         <Grid item xs={4}>{Number(emp.discountdata.OwnerEmpDiscount).toFixed(2)}</Grid>
+    //                     </Grid>
+    //                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%',}}>
+    //                         <Grid item xs={8}>Total</Grid>
+    //                         <Grid item xs={4}>${Number(discounttotal).toFixed(2)}</Grid>
+    //                     </Grid>
+
+    //                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
+    //                         <Grid item xs={8}>Supplies</Grid>
+    //                         <Grid item xs={4}>$0.00</Grid>
+    //                     </Grid> 
+    //                 </div>)
+    //         }
+    //         else{ 
+    //             reportdetail.push(<div style={{display:'flex',marginTop:'1rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
+    //                 <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {emp.firstName+" "+emp.lastName}</Typography>
+    //             </div>) 
+    //         }
+
+    //         reportdetail.push(<div style={{display:'flex',marginTop:'1.5rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row',borderBottom:'1px dotted #000', marginBottom:'1rem'}}> 
+    //             <Typography variant="body" style={{ paddingBottom:'1rem',fontWeight:'400'}}>{this.state.businessdetail.name} - Reported: {Moment().format("MM/DD/YYYY hh:mm a")}</Typography>
+    //         </div>) 
+    //     })
+    //     return  <div style={{ width:'100%'}}>
+    //         {reportdetail}
+    //         </div>;
+
+    // }
 
 
     render(){
@@ -525,8 +750,8 @@ export default class ReportComponent extends React.Component{
                                     <Grid container  style={{marginTop:'1rem'}}>
                                             <Grid item xs={12} md={12}>
                                                 <div style={{display:'flex', alignItems:'center', justifyContent:'center', padding:'2rem 5rem'}}> 
-                                                    {this.state.empReport.length > 0 && this.renderEmployeeReport()}
-                                                    {this.state.empReport.length === 0 && !this.state.isLoading && <div><Typography variant="subtitle2">No records found.</Typography></div>}
+                                                    {this.state.employees.length > 0 && this.renderEmployeeReport()}
+                                                    {this.state.employees.length === 0 && !this.state.isLoading && <div><Typography variant="subtitle2">No records found.</Typography></div>}
                                                 </div>
                                             </Grid>
                                     </Grid>
