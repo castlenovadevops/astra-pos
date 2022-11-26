@@ -22,6 +22,11 @@ module.exports = class DefaultDiscountController extends baseController{
                     type:"post",
                     method: "get",
                     authorization:'authorizationAuth'
+                }, {
+                    path:this.path+"/save",
+                    type:"post",
+                    method: "save",
+                    authorization:'authorizationAuth'
                 }, 
             ]
             // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.save); 

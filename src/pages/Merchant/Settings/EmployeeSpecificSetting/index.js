@@ -125,7 +125,7 @@ export default class EmployeeSetting extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`https://api.ci.dev.castlenova.net/api/v1/merchant/defaultcommission/get`, {data:"DEFAULT COMMISSION"}).then(response=>{ 
+            this.httpManager.postRequest(`merchant/defaultcommission/get`, {data:"DEFAULT COMMISSION"}).then(response=>{ 
                 // this.openEdit(response.data); 
                 if(response.data.length > 0){
                     this.setState({defaultCommission: response.data[0] }, ()=>{ 
@@ -141,7 +141,7 @@ export default class EmployeeSetting extends React.Component{
 
     getEmpslist(){
 
-        this.httpManager.postRequest(`https://api.ci.dev.castlenova.net/api/v1/merchant/employee/getAll`,{data:"GET ALL EMP"}).then(response=>{
+        this.httpManager.postRequest(`merchant/employee/getAll`,{data:"GET ALL EMP"}).then(response=>{
             var data = [];
             if(response.data.length > 0){
                 response.data.forEach((elmt, i)=>{ 
@@ -212,11 +212,11 @@ export default class EmployeeSetting extends React.Component{
                         { this.state.employeelist.length ===0 && <Typography variant="subtitle1" align="center" style={{cursor:'pointer', marginTop: 20}} >No Records Found!</Typography> }
                      </Grid>
                      <Grid item xs={8} style={{borderLeft:'1px solid #f0f0f0'}}> 
-                        <Stack spacing={3}> 
-                            <FormManager formProps={this.state.schema} formFunctions={{
+                        <Stack spacing={3}>  
+                           {this.state.schema.onSubmit && <FormManager formProps={this.state.schema} formFunctions={{
                                 changePercentage:this.changePercentage
                             }} reloadData={()=>{
-                                this.reloadData() }}/>
+                                this.reloadData() }}/> }
                         </Stack>
                     </Grid>
                 </Grid>

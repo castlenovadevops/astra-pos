@@ -438,7 +438,7 @@ export default class FormManager extends React.Component{
                 this.setState({properties: props});
             }
         })
-        //console.log(this.state.onSubmit)
+        console.log(this.state.onSubmit)
         this.successCallback(this.state.onSubmit);
     }
 
@@ -475,59 +475,61 @@ export default class FormManager extends React.Component{
     }
 
     successCallback(obj, response={}){
-        this.setState({showFormError: false, formError: '', isLoading: true})
         const {action, method, url, onSuccess} = Object.assign({}, obj);  
         console.log(obj)
-        switch(action.toLowerCase()){
-            case 'api': 
-                if(method.toLowerCase() === 'post'){  
-                    this.httpManager.postRequest(url, this.getFormFields()).then(response=>{
-                        if(onSuccess !== undefined && onSuccess instanceof Object){
-                            this.successCallback(onSuccess, response);
-                        }
-                        this.setState({isLoading: false})
-                    }).catch(e=>{
-                        ////console.log(e)
-                        this.setState({isLoading: false})
-                        this.setFormErrorBlocks(e, obj)
-                    })
-                } 
-                else if(method.toLowerCase() === 'get'){
-                    this.httpManager.getRequest(url).then(response=>{
-                        console.log(response.data)
-                    })
-                }
-                break;
-            case 'savelocalstorage':
-                var options = obj.options;
-                options.forEach(opt=>{
-                    if(response[opt.key] !== undefined){
-                        if(response[opt.key] instanceof Object || response[opt.key] instanceof Array){
-                            window.localStorage.setItem(opt.key, JSON.stringify(response[opt.key]));
-                        }
-                        else{
-                            window.localStorage.setItem(opt.key, response[opt.key]);
-                        }
+        if(action !== undefined){
+            this.setState({showFormError: false, formError: '', isLoading: true})
+            switch(action.toLowerCase()){
+                case 'api': 
+                    if(method.toLowerCase() === 'post'){  
+                        this.httpManager.postRequest(url, this.getFormFields()).then(response=>{
+                            if(onSuccess !== undefined && onSuccess instanceof Object){
+                                this.successCallback(onSuccess, response);
+                            }
+                            this.setState({isLoading: false})
+                        }).catch(e=>{
+                            ////console.log(e)
+                            this.setState({isLoading: false})
+                            this.setFormErrorBlocks(e, obj)
+                        })
+                    } 
+                    else if(method.toLowerCase() === 'get'){
+                        this.httpManager.getRequest(url).then(response=>{
+                            console.log(response.data)
+                        })
                     }
-                })
-                this.setState({isLoading: false})
-                this.successCallback(onSuccess)
-                break;
-            case 'showpopup': 
-                this.setState({isLoading: false})
-                this.setState({ redirectURL: url,showTitle: response.title, showMsg: response.message, openDialog: true })
-                break;
-            case 'redirect':
-                this.setState({isLoading: false})
-                this.setState({redirect: true, redirectURL: url})
-                break;
-            case 'reloaddata':
-                this.setState({isLoading: false})
-                this.props.reloadData(response.message);
-                break;
-            default:
-                ////console.log(response);
-                break;
+                    break;
+                case 'savelocalstorage':
+                    var options = obj.options;
+                    options.forEach(opt=>{
+                        if(response[opt.key] !== undefined){
+                            if(response[opt.key] instanceof Object || response[opt.key] instanceof Array){
+                                window.localStorage.setItem(opt.key, JSON.stringify(response[opt.key]));
+                            }
+                            else{
+                                window.localStorage.setItem(opt.key, response[opt.key]);
+                            }
+                        }
+                    })
+                    this.setState({isLoading: false})
+                    this.successCallback(onSuccess)
+                    break;
+                case 'showpopup': 
+                    this.setState({isLoading: false})
+                    this.setState({ redirectURL: url,showTitle: response.title, showMsg: response.message, openDialog: true })
+                    break;
+                case 'redirect':
+                    this.setState({isLoading: false})
+                    this.setState({redirect: true, redirectURL: url})
+                    break;
+                case 'reloaddata':
+                    this.setState({isLoading: false})
+                    this.props.reloadData(response.message);
+                    break;
+                default:
+                    ////console.log(response);
+                    break;
+            }
         }
     }
 

@@ -313,34 +313,34 @@ module.exports = class EmployeeController extends baseController{
         let customers = await this.readAll({order: [
             ['createdDate','ASC']
         ],
-        attributes:{include: [ 
-            [
-                Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
-                `id`
-            ],
-            [
-                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
-                `mEmployeeRoleName`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeRole`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeStatus`
-            ],
-            [
-                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeCode`
-            ],
-        ]
-    },
-        where:{
-             mEmployeeId: {
-                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
-            }
-        },
+    //     attributes:{include: [ 
+    //         [
+    //             Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
+    //             `id`
+    //         ],
+    //         [
+    //             Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+    //             `mEmployeeRoleName`
+    //         ],
+    //         [
+    //             Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             `mEmployeeRole`
+    //         ],
+    //         [
+    //             Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             `mEmployeeStatus`
+    //         ],
+    //         [
+    //             Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             `mEmployeeCode`
+    //         ],
+    //     ]
+    // },
+        // where:{
+        //      mEmployeeId: {
+        //         [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
+        //     }
+        // },
         include:[
             {
                 model:this.models.mEmployeeCommission,

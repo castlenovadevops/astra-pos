@@ -3,8 +3,8 @@ const rest = require('restler');
 const Crypto= require('../utils/crypto');
 const crypto = new Crypto();
 module.exports = class APIManager{
-    // baseAPI = "https://api.ci.dev.castlenova.net/api/v1";
-    baseAPI = "http://localhost:3000/api/v1";
+    baseAPI = "https://api.ci.dev.castlenova.net/api/v1";
+    // baseAPI = "http://localhost:3000/api/v1";
 
     getRequest(url, req){ 
         return new Promise((resolve) => {

@@ -78,7 +78,7 @@ export default class OpenTicketsComponent extends React.Component{
                     renderCell: (params) => (
                     
                     <div style={{"float":"right", display:'flex', alignItems:'center', justifyContent:'center'}}>
-                        {(params.row.paymentStatus !== 'Paid')&&
+                        {/* {(params.row.paymentStatus !== 'Paid')&&
                         <Button
                             variant="contained"
                             color="primary"
@@ -91,7 +91,7 @@ export default class OpenTicketsComponent extends React.Component{
                         >
                             Pay
                         </Button>}
-                        {(params.row.paymentStatus === 'paid') && <b style={{textTransform:'capitalize'}}>{params.row.pay_mode}</b>}
+                        {(params.row.paymentStatus === 'paid') && <b style={{textTransform:'capitalize'}}>{params.row.pay_mode}</b>} */}
                         {/* <Print style={{marginLeft:'1rem'}} onClick={()=>this.handleTicketPrint(params.row)}/> */}
                     </div>
                     )
