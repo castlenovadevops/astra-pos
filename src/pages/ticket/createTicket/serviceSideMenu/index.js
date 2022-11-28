@@ -113,7 +113,7 @@ export default class ServiceSideMenu extends  React.Component{
 
     transferTicket(){
         console.log("TRANSFERRING TICKET")
-        if(this.state.transferto.ticket !== undefined){
+        if(this.state.transferto.ticketId !== undefined){
             console.log("TICKET TRANSFER") 
             this.httpManager.postRequest(`merchant/transfer/transferService`, {ticketDetail: this.state.transferto, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
                 this.props.data.afterCompleteTransfer()

@@ -30,7 +30,7 @@ module.exports = class TicketController extends baseController{
                     type:"post",
                     method: "transferServiceToExist",
                     authorization:'authorizationAuth'
-                },
+                }, 
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });

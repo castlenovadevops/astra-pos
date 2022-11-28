@@ -8,6 +8,7 @@ import NotesModal from './notes';
 import Loader from '../../../../components/Loader';
 import AlertModal from '../../../../components/Dialog'; 
 import TicketDiscount from './TicketDiscount'; 
+import CombineTicket from './CombineTicket';
 
 export default class TicketFooterComponent extends React.Component{  
     constructor(props){
@@ -282,23 +283,26 @@ export default class TicketFooterComponent extends React.Component{
 
             {this.state.alertPopup &&  <AlertModal title={this.state.alertTitle} children={this.state.alertMsg} actionsbuttons={actionsbuttons} onClose={()=>this.setState({alertPopup:false})} open={this.state.alertPopup}/>}
 
-            {/*this.state.isCombine && <CombineTicket data={{
+            {this.state.isCombine && <CombineTicket data={{
                                 closeCombine: ()=>{
                                     this.setState({isCombine:false})
                                 },
                                 closeCompletionCombine:(tickettransfered)=>{
                                     console.log("TICKET TRANSFER COMPLETION")
                                     console.log(tickettransfered)
-                                    this.props.data.reloadTicket(tickettransfered)
+                                    this.props.data.reloadTicket()
                                 }, 
+                                onSelectTicketToCombine:(ticket)=>{
+                                       this.setState({isCombine:false});
+                                    this.props.data.onSelectTicketToCombine(ticket)
+                                },
                                 ticketowner: this.props.data.ticketowner,
                                 ticketDetail: this.props.data.ticketDetail,
                                 price: this.props.data.price,
                                 customer_detail: this.props.data.customer_detail,
                                 selectedServices : this.props.data.selectedServices,
-                                selectedRowService: this.props.selectedRowService,
-                                selectedRowServiceIndex: this.props.data.selectedRowServiceIndex
-                            }}/>}*/}
+                                selectedRow : this.props.selectedRow
+                            }}/>}
 
             {this.state.discountPopup && <TicketDiscount data={{
                 ticketowner: this.props.data.selectedTech,

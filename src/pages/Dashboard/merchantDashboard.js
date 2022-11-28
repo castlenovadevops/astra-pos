@@ -82,14 +82,13 @@ export default class MerchantDashboard extends React.Component{
     }
 
     closeCreateTicket(){ 
-            // this.socket.emit("refreshTickets", {data:"success"}) 
-            window.location.href="/"
+            this.socket.emit("refreshTickets", {data:"success"}) 
+            // window.location.href="/"
         this.setState({showCreateTicket: false, ticketDetail:{}})
     }
 
     render(){
-        return <div className="fullHeight" >  
-
+        return <div className="fullHeight" >   
         {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer ticketDetail={this.state.ticketDetail} 
         ownerTechnician={this.state.ownerTechnician} functions={{
             closeCreateTicket:this.closeCreateTicket

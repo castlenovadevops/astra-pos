@@ -70,7 +70,28 @@ export default class CreateTicketComponent extends React.Component{
         this.selectCustomerDetail = this.selectCustomerDetail.bind(this);
         this.formatData = this.formatData.bind(this);
         // this.getTicketPayments = this.getTicketPayments.bind(this);
+        this.reloadTicket = this.reloadTicket.bind(this);
+        this.onSelectTicketToCombine = this.onSelectTicketToCombine.bind(this)
     } 
+
+    onSelectTicketToCombine(ticket){
+        this.setState({isLoading: true}, ()=>{
+            console.log(ticket)
+            this.httpManager.postRequest(`merchant/combine/ticket`,{combinedTicketId: ticket.ticketId, ticketDetail: this.state.ticketDetail}).then(res=>{
+                this.setState({selectedServices:[]},()=>{
+                    this.reloadTicket();
+                    setTimeout(() => {
+                        this.setState({isLoading: false})
+                    }, 1000);
+
+                })
+            })
+        })
+    }
+
+    reloadTicket(ticket){ 
+        this.getTicketServices(); 
+    }
 
     selectCustomerDetail(customer){ 
         console.log(customer)
@@ -894,7 +915,8 @@ export default class CreateTicketComponent extends React.Component{
                                                                             handleCloseTips:(msg, tipsInput)=>{
                                                                                 this.handleCloseTips(msg, tipsInput);
                                                                             }, 
-                                                                            updateTicketDiscount: this.updateTicketDiscount
+                                                                            updateTicketDiscount: this.updateTicketDiscount,
+                                                                            onSelectTicketToCombine: this.onSelectTicketToCombine
                                                                         }} />
                                     </Grid>
                                 </Grid>
