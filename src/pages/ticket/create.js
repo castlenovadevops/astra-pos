@@ -591,7 +591,7 @@ export default class CreateTicketComponent extends React.Component{
                 price.servicePrice = Number(price.servicePrice)+(Number(service.qty)* Number(service.perunit_cost))
             }
             price.ticketSubTotal =  Number(price.ticketSubTotal)+(Number(service.subTotal))
-            price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
+            // price.ticketDiscount = Number(price.ticketDiscount)+Number(service.totalDiscount)
             // console.log(service)
             // console.log(Number(price.taxAmount),"+",Number(service.totalTax))
             price.taxAmount = Number(price.taxAmount)+Number(service.totalTax)

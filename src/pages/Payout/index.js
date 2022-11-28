@@ -73,7 +73,7 @@ export default class PayoutComponent extends React.Component{
                     editable: false,
                     renderCell: (params) => (
                     <div>
-                        $  { Number(params.row.Discount).toFixed(2)}  
+                        $  { (Number(params.row.Discount)+Number(params.row.TicketDiscount)).toFixed(2)}  
                     </div>
                     )
                 },

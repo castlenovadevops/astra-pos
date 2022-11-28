@@ -31,6 +31,7 @@ export default class TicketFullPayment extends React.Component  {
 
 
     handlechangeDesc(e){
+        console.log(e)
         this.setState({description: e.target.value})
     }
     componentDidMount(){  
@@ -52,14 +53,14 @@ export default class TicketFullPayment extends React.Component  {
         <DialogContent>
                 {/* <ModalTitleBar onClose={()=> this.setState({notesPopup: false}) } title="Notes"/>   */}
                 <Grid item xs={12} style={{display:'flex',margin :10}}>
-                        <TextareaAutosize 
+                        <TextField 
                             fullWidth
                             label="Notes"
                             name="Notes"
                             id="Notes"
                             rows={3} 
                             multiline
-                            value={this.state.description}
+                            // value={this.state.description}
                             onChange={this.handlechangeDesc} 
                         />
                 </Grid>
@@ -79,7 +80,7 @@ export default class TicketFullPayment extends React.Component  {
                                 });
                             }}
                         >
-                            <MenuItem value={''}>Select Card Type</MenuItem> 
+                            <MenuItem value={''} selected>Select Card Type</MenuItem> 
                             <MenuItem value={'VISA'}>VISA</MenuItem> 
                             <MenuItem value={'VISA Master'}>VISA Master</MenuItem>
                             <MenuItem value={'American Express'}>American Express</MenuItem> 

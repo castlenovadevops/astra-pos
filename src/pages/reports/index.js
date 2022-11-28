@@ -42,7 +42,8 @@ export default class ReportComponent extends React.Component{
             formError:'',
             owner:{},
             payments:[],
-            employees:[]
+            employees:[], profit:'',
+            OwnerDiscount:0,
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
@@ -120,7 +121,7 @@ export default class ReportComponent extends React.Component{
         data.forEach(e=>{
             total = Number(total)+Number(e.discountAmount)
         })
-
+        total += Number(this.state.OwnerDiscount)
         return total.toFixed(2)
     }
 
@@ -129,7 +130,10 @@ export default class ReportComponent extends React.Component{
         console.log(data)
         var total = 0
         data.forEach(e=>{
-            total = Number(total)+Number(e.discountAmount)
+            if(e.mDiscountDivisionType === 'Both')
+                total = Number(total)+(Number(e.discountAmount) * Number(e.mEmployeeDivision)/100)
+            else
+                total = Number(total)+Number(e.discountAmount)
         })
 
         return total.toFixed(2)
@@ -147,7 +151,8 @@ export default class ReportComponent extends React.Component{
         if(this.state.tabName === 'Owner'){
             this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
                 console.log(res)
-                this.setState({payments: res.payments, owner: res.owner,discounts: res.discounts})
+                this.setState({payments: res.payments, owner: res.owner,discounts: res.discounts,OwnerDiscount:0})
+
                 this.formatOwnerReport(res.data,{
                     addedDates:[],
                     data:[]
@@ -157,6 +162,7 @@ export default class ReportComponent extends React.Component{
         else{
             this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
                 // console.log(res)
+                this.setState({OwnerDiscount:0})
                 this.formatEmployeeData(res.data, []) 
             })
         }
@@ -169,7 +175,9 @@ export default class ReportComponent extends React.Component{
                 addedDates:[],
                 data:[],
                 discounts:data[i].discounts,
-                empdetail: data[i].emp
+                empdetail: data[i].emp,
+                nettAmount:0,
+                nettTotal:0
             } 
             this.formatEmployeeReport(data, data[i].report, response, obj,i,  0)
         }
@@ -190,13 +198,19 @@ export default class ReportComponent extends React.Component{
                     ticketCount:1,
                     servicesCount: rec.ServiceCount,
                     serviceTotal: rec.TotalServiceAmount,
+                    serviceAmount: rec.ServiceAmount,
                     tips: rec.Tips,
                     discount: rec.Discount,
                     date: rec.created
                 }
-                response.data.push(obj);
-                response.addedDates.push(obj.date);
-                this.formatOwnerReport(data, response, i+1)
+                var dis = Number(this.state.OwnerDiscount)+(rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0)
+                this.setState({OwnerDiscount: dis}, ()=>{
+                    console.log(this.state.OwnerDiscount)
+                    response.data.push(obj);
+                    response.addedDates.push(obj.date);
+                    this.formatOwnerReport(data, response, i+1)
+                    console.log(rec.OwnerDiscount, dis)
+                })
             }
             else{
                 var idx = response.addedDates.indexOf(rec.created)
@@ -205,19 +219,34 @@ export default class ReportComponent extends React.Component{
                     ticketCount:obj.ticketCount+1,
                     servicesCount: Number(obj.servicesCount)+Number(rec.ServiceCount),
                     serviceTotal: Number(obj.serviceTotal)+Number(rec.TotalServiceAmount),
+                    serviceAmount:  Number(obj.serviceAmount)+Number(rec.ServiceAmount),
                     tips: Number(obj.tips)+Number(rec.Tips),
                     discount: Number(obj.discount)+Number(rec.Discount),
                     date: obj.date
-                }
+                } 
+                var dis1 = Number(this.state.OwnerDiscount)+(rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0)
+                this.setState({OwnerDiscount: dis1},()=>{
+
                 response.data[idx] = obj;
                 this.formatOwnerReport(data, response, i+1)
+                })
             }
         }   
         else{
+
             this.setState({employee_reportlist: response.data}, ()=>{
                 // console.log("EMP REPOTR", this.state.employee_reportlist)
             })
         }
+    }
+
+    getProfitAmount(){
+        var profit = 0;
+        this.state.employee_reportlist.forEach(e=>{
+            profit = Number(profit)+Number(e.serviceAmount)
+        })
+
+        return profit.toFixed(2)
     }
 
 
@@ -230,26 +259,36 @@ export default class ReportComponent extends React.Component{
                     ticketCount:1,
                     servicesCount: rec.ServiceCount,
                     serviceTotal: rec.TotalServiceAmount,
+                    serviceAmount: rec.ServiceAmount,
                     tips: rec.Tips,
                     discount: rec.Discount,
                     date: rec.created
                 }
+                empobj.nettAmount = Number(empobj.nettAmount)+Number(rec.ServiceAmount)
+                console.log("ID",empobj.nettTotal, empobj.Tips)
+                empobj.nettTotal = Number(empobj.nettTotal)+Number(rec.ServiceAmount)+(rec.Tips !== null ? Number(rec.Tips) : 0)
                 empobj.data.push(obj);
-                empobj.addedDates.push(obj.date);
+                empobj.addedDates.push(obj.date); 
                 this.formatEmployeeReport(emps, data, response, empobj,ei, i+1)
             }
             else{
                 var idx = empobj.addedDates.indexOf(rec.created)
+                console.log(rec.created, idx)
                 var obj  = Object.assign({}, empobj.data[idx]);
                 obj = {
                     ticketCount:obj.ticketCount+1,
                     servicesCount: Number(obj.servicesCount)+Number(rec.ServiceCount),
                     serviceTotal: Number(obj.serviceTotal)+Number(rec.TotalServiceAmount),
+                    serviceAmount: Number(obj.serviceAmount)+Number(rec.ServiceAmount),
                     tips: Number(obj.tips)+Number(rec.Tips),
                     discount: Number(obj.discount)+Number(rec.Discount),
                     date: obj.date
                 }
-                response.data[idx] = obj;
+                empobj.nettAmount = Number(empobj.nettAmount)+Number(rec.ServiceAmount)
+                empobj.nettTotal = Number(empobj.nettTotal)+Number(rec.ServiceAmount)+(rec.Tips !== null ? Number(rec.Tips) : 0)
+
+                console.log("else",obj.nettTotal, rec.Tips)
+                empobj.data[idx] = obj;
                 this.formatEmployeeReport(emps, data, response, empobj, ei, i+1)
             }
         }   
@@ -261,6 +300,7 @@ export default class ReportComponent extends React.Component{
 
     getDiscountAmount(option){
         var disamt = '0.00';
+        console.log(this.state.discounts)
         this.state.discounts.map((d, i)=>{
             if(d.mDiscountDivisionType === option && d.discountAmount){ 
                 disamt = d.discountAmount ? Number(d.discountAmount).toFixed(2)  : '0.00'
@@ -334,10 +374,10 @@ export default class ReportComponent extends React.Component{
 
                     <Typography variant="h6" style={{textTransform:'capitalize', fontWeight:'700'}}>Discounts</Typography>
 
-                    {/* <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                         <Grid item xs={8}>#</Grid>
-                        <Grid item xs={4}>{Number(discounttotal).toFixed(2)}</Grid>
-                    </Grid> */}
+                        <Grid item xs={4}>{Number(this.state.OwnerDiscount).toFixed(2)}</Grid>
+                    </Grid>
 
                     <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                         <Grid item xs={8}>Owner</Grid>
@@ -395,6 +435,12 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={8}>Amount Collected</Grid>
                         <Grid item xs={4}>${this.getTotalAmountcollected()}</Grid>
                     </Grid> 
+
+                    <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
+                        <Grid item xs={8}>profit</Grid>
+                        <Grid item xs={4}>${this.getProfitAmount()}</Grid>
+                    </Grid> 
+
                 </div>)
         }
         else{ 
@@ -416,6 +462,9 @@ export default class ReportComponent extends React.Component{
         emp.discounts.map((d, i)=>{
             if(d.mDiscountDivisionType === option && d.discountAmount){ 
                 disamt = d.discountAmount ? Number(d.discountAmount).toFixed(2)  : '0.00'
+                console.log(d)
+                if(option === 'Both')
+                disamt = d.discountAmount ? (Number(d.discountAmount)*Number(d.mEmployeeDivision)/100).toFixed(2)  : '0.00'
             }  
         })
         return disamt; 
@@ -475,8 +524,8 @@ export default class ReportComponent extends React.Component{
                     <Grid item xs={2}></Grid>
                     <Grid item xs={4}><b>Total</b></Grid>
                     <Grid item xs={2}><b>{"$"+Number(totalServicePrice).toFixed(2)}</b></Grid>
-                    <Grid item xs={1}><b>{"$"+Number(totalTips).toFixed(2)}</b></Grid>
-                    <Grid item xs={1}><b>{"$"+Number(discounttotal).toFixed(2)}</b></Grid>
+                    <Grid item xs={2}><b>{"$"+Number(totalTips).toFixed(2)}</b></Grid>
+                    {/* <Grid item xs={1}><b>{"$"+Number(discounttotal).toFixed(2)}</b></Grid> */}
                     <Grid item xs={2}><b>{"$"+Number(totalAmount).toFixed(2)}</b></Grid>
                 </Grid>
             </div>)
@@ -516,6 +565,16 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={8}>Supplies</Grid>
                         <Grid item xs={4}>${emp.empdetail.Supplies!== null ? Number(emp.empdetail.Supplies).toFixed(2) : "0.00"}</Grid>
                     </Grid>
+
+<Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
+    <Grid item xs={8}>Net</Grid>
+    <Grid item xs={4}>${emp.nettAmount!== null ? Number(emp.nettAmount).toFixed(2) : "0.00"}</Grid>
+</Grid>
+
+<Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
+    <Grid item xs={8}>Net Total</Grid>
+    <Grid item xs={4}>${emp.nettTotal!== null ? Number(emp.nettTotal).toFixed(2) : "0.00"}</Grid>
+</Grid>
 
                     {/* <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'2rem', width:'100%',}}>
                         <Grid item xs={8}>Payment Methods</Grid>

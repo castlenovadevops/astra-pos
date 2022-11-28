@@ -57,7 +57,12 @@ module.exports = class PayoutController extends baseController{
                     [
                         Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
                         'Discount'
-                    ],[
+                    ],
+                    [
+                        Sequelize.literal("(select sum(employeePercentage) from ticketdiscountcommission where  status=1 and ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"') and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+                        'TicketDiscount'
+                    ],
+                    [
                         Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mCommissionId"
                     ], 

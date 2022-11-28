@@ -281,7 +281,7 @@ module.exports = class reportController extends baseController{
                     'TotalServiceAmount'
                 ],
                 [
-                    Sequelize.literal("(select sum(employeePercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
+                    Sequelize.literal("(select sum(ownerPercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
                     'ServiceAmount'
                 ],
                 [
@@ -291,6 +291,10 @@ module.exports = class reportController extends baseController{
                 [
                     Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
                     'Discount'
+                ],
+                [
+                    Sequelize.literal("(select sum(ownerPercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
+                    'OwnerDiscount'
                 ],
             ] ,
             // group: [
@@ -389,15 +393,23 @@ module.exports = class reportController extends baseController{
     }
 
     getEmpTickets = async(req,res, emps, i, response)=>{ 
+        var dateformat = '%d-%m-%Y';
+        if(req.input.reportPeriod === 'monthly'){
+            dateformat = '%m-%Y';
+        }
+        if(req.input.reportPeriod === 'annually'){
+            dateformat = '%Y';
+        }
+
         if(i < emps.length){
             const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')";
             
             var empid= emps[i].dataValues.mEmployeeId || emps[i].mEmployeeId;
             console.log("$$$$$", emps[i])
             const reportoptions = { 
-                group: [
-                    [Sequelize.literal(' `created`'), 'ASC']
-                ],
+                // group: [
+                //     [Sequelize.literal(' `created`'), 'ASC']
+                // ],
                 where:{
                     ticketId:{
                         [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid' and ticketId in (select ticketId from ticketservices where serviceTechnicianId='"+empid+"' and status=1))")
@@ -405,7 +417,7 @@ module.exports = class reportController extends baseController{
                 }, 
                 attributes:[
                     [Sequelize.col('paymentStatus'), 'paymentStatus'],
-                    [Sequelize.fn('strftime','%m-%Y', Sequelize.col('`tickets`.`createdDate`')), 'created'],
+                    [Sequelize.fn('strftime', dateformat, Sequelize.col('`tickets`.`createdDate`')), 'created'],
                     [
                         Sequelize.literal("(select count(ticketServiceId) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
                         'ServiceCount'
@@ -434,6 +446,8 @@ module.exports = class reportController extends baseController{
             }
 
             const reports = await this.readAll(reportoptions, 'tickets') 
+            // console.log("**********")
+            // console.log(reports);
             const discountoptions = {
                 group:[
                     `mDiscountDivisionType`
@@ -447,6 +461,7 @@ module.exports = class reportController extends baseController{
                 attributes:[
                     [Sequelize.fn('sum', Sequelize.col('mDiscountAmount')), 'discountAmount'],
                     [Sequelize.col("`mDiscountDivisionType`"), 'mDiscountDivisionType'],
+                    [Sequelize.col("`mEmployeeDivision`"), 'mEmployeeDivision'],
                     
                 ]
             }
