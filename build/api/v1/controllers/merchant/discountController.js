@@ -3,8 +3,8 @@ const MsgController = require('../common/msgController');
 
 const express = require('express');
 const authenticate = require('../../middleware/index'); 
-const sequelize = require('sequelize');
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 module.exports = class DiscountController extends baseController{
     path = "/merchant/discounts";
     router = express.Router();
@@ -80,7 +80,7 @@ module.exports = class DiscountController extends baseController{
             merchantId:req.deviceDetails.merchantId,
             mDiscountStatus:1,
             id:{
-                [Sequelize.Op.in]:Sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
+                [Sequelize.Op.in]:sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
             }
         }
 
@@ -99,7 +99,7 @@ module.exports = class DiscountController extends baseController{
         where:{ 
             merchantId:req.deviceDetails.merchantId,
             id:{
-                [Sequelize.Op.in]:Sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
+                [Sequelize.Op.in]:sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
             }
         }
 

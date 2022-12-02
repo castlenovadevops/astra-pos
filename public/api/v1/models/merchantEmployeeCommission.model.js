@@ -3,7 +3,7 @@ const db = config.database;
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    sequelize.define("mEmployeeCommission", {
+     const mEmployeeCommission = sequelize.define("mEmployeeCommission", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -105,4 +105,12 @@ module.exports = (sequelize) => {
       updatedAt: 'updatedDate',
       deletedAt: false
     })
+
+    mEmployeeCommission.associate = function(models){ 
+          models.merchantEmployees.hasMany(models.mEmployeeCommission, {foreignKey: 'mEmployeeId',sourceKey: 'mEmployeeId'});
+          models.mEmployeeCommission.belongsTo(models.merchantEmployees, {foreignKey: 'mEmployeeId',targetKey: 'mEmployeeId'}); 
+    }
+
+
+    return mEmployeeCommission;
 }

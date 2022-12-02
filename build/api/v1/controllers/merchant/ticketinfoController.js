@@ -109,6 +109,8 @@ module.exports = class TicketController extends baseController{
                 }
             ]
         }
+
+        // let options = {};
         this.readAll(options, 'ticketservices').then(results=>{
             this.sendResponse({data: results}, res, 200)
         })

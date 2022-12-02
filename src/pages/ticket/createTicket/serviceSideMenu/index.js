@@ -69,6 +69,7 @@ export default class ServiceSideMenu extends  React.Component{
         if (nextProps.data.selectedRow !==  prevState.selectedRow) { 
             return {selectedRow: nextProps.data.selectedRow}
         }
+        return null;
     }
 
     componentDidMount(){

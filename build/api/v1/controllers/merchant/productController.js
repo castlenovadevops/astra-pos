@@ -3,8 +3,8 @@ const MsgController = require('../common/msgController');
 
 const express = require('express');
 const authenticate = require('../../middleware/index'); 
-const sequelize = require('sequelize');
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 module.exports = class ProductController extends baseController{
     path = "/merchant/product";
     router = express.Router();
@@ -175,7 +175,7 @@ module.exports = class ProductController extends baseController{
                     [Sequelize.Op.ne]:'2'
                 },
                 mProductId:{
-                    [Sequelize.Op.in]:Sequelize.literal("(select mProductId from mProductCategory where mCategoryId='"+req.input.categoryId+"' and status=1)")
+                    [Sequelize.Op.in]:sequelize.literal("(select mProductId from mProductCategory where mCategoryId='"+req.input.categoryId+"' and status=1)")
                 }
             },
             include:[
@@ -191,15 +191,15 @@ module.exports = class ProductController extends baseController{
                     attributes:{
                         include:[
                             [
-                                Sequelize.literal("(select mTaxName from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                sequelize.literal("(select mTaxName from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
                                 "mTaxName"
                             ], 
                             [
-                                Sequelize.literal("(select mTaxType from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                sequelize.literal("(select mTaxType from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
                                 "mTaxType"
                             ],
                             [
-                                Sequelize.literal("(select mTaxValue from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                sequelize.literal("(select mTaxValue from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
                                 "mTaxValue"
                             ]
                         ]

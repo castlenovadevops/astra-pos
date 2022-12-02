@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable no-useless-constructor */
-const {models} = require('../../models');
+const models = require('../../models');
 const Crypto = require('../../utils/crypto');
 const crypto = new Crypto();
 const MsgController = require('./msgController');

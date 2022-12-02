@@ -45,7 +45,7 @@ app.post('*', function (req, res,next) {
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   // // console.log(req)
-  var err = new Error('Not Found'+req.path);
+  var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
@@ -90,11 +90,6 @@ io.on('connection', function(socket) {
     // console.log("REFRESH SOCKET CALLED")
     socket.emit('refreshTechnicians',{data:'success'})
   })
-  socket.on('refreshTickets', function(){
-    console.log("REFRESH SOCKETTICKET CALLED")
-    socket.emit('refreshTickets',{data:'success'})
-  })
-
 
   //Whenever someone disconnects this piece of code executed
   socket.on('disconnect', function () {

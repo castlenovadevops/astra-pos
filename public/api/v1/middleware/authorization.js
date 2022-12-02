@@ -6,13 +6,13 @@ const Crypto= require('../utils/crypto');
 const secretKey = 'FGVxjxaLbnLT';//process.env.SECRETKEY || 'secret' ;
 const crypto = new Crypto();
 module.exports = (req, res, next) => {
-    // console.log("AUTHORIXATIONS AUTH CALLEd")
+    console.log("AUTHORIXATIONS AUTH CALLEd")
     try {
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, secretKey); 
         req.userData = decoded; 
-        // console.log("DECODED")
-        // console.log(decoded)
+        console.log("DECODED")
+        console.log(decoded)
 
         const devicetoken = req.headers.devicetoken 
         if(devicetoken){

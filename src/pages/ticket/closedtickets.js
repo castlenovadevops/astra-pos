@@ -111,6 +111,7 @@ export default class ClosedTicketsComponent extends React.Component{
         if(nextProps.refreshData !== prevState.refreshData){
             return {refreshData: nextProps.refreshData}
         }
+        return null;
       }
 
     handleTicketPayment(){

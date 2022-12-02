@@ -3,8 +3,8 @@ const MsgController = require('../common/msgController');
 
 const express = require('express');
 const authenticate = require('../../middleware/index'); 
-const sequelize = require('sequelize');
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 module.exports = class RegistrationController extends baseController{
     path = "/merchant/tax";
     router = express.Router();
@@ -237,7 +237,7 @@ module.exports = class RegistrationController extends baseController{
         ],
         where:{  merchantId:req.deviceDetails.merchantId,
             id:{
-            [Sequelize.Op.in]:Sequelize.literal("(select id from mTax where mTaxStatus!=2)")
+            [Sequelize.Op.in]:sequelize.literal("(select id from mTax where mTaxStatus!=2)")
         } }
         // attributes:{include: [ [
         //     Sequelize.col('mTaxId'),

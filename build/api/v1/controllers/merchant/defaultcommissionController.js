@@ -3,8 +3,8 @@ const MsgController = require('../common/msgController');
 
 const express = require('express');
 const authenticate = require('../../middleware/index'); 
-const sequelize = require('sequelize');
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 module.exports = class DefaultCommissionController extends baseController{
     path = "/merchant/defaultcommission";
     router = express.Router();
@@ -46,7 +46,7 @@ module.exports = class DefaultCommissionController extends baseController{
             this.create('mDefaultCommission', input).then(resp=>{
                 this.readOne({where:{
                     mEmployeeId:{
-                        [Sequelize.Op.in]:Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.deviceDetails.merchantId+"' and roleName='Owner'))")
+                        [Sequelize.Op.in]:sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.deviceDetails.merchantId+"' and roleName='Owner'))")
                     }
                 },
             include:[

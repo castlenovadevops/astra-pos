@@ -24,6 +24,9 @@ export default class Technicians extends React.Component{
         if(nextProps.refreshData !== prevState.refreshData){
             return {refreshData: nextProps.refreshData}
         }
+        else{
+            return null;
+        }
     }
 
     componentDidMount(){

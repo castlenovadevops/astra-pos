@@ -3,9 +3,8 @@
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
-const { Sequelize } = require('sequelize');
-const { service } = require('restler');
-
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize 
 module.exports = class TicketController extends baseController{
     path = "/merchant/combine";
     router = express.Router();

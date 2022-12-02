@@ -101,10 +101,10 @@ export default class MerchantDashboard extends React.Component{
                     this.setState({refreshData: false})}} refreshData={this.state.refreshData} setOwnerTech={this.setOwnerTech}/>
                 </Grid>
                 <Grid item xs={8} className={'dashboardDivider'}>
-                    <TicketListComponent  data={{
+                   {!this.state.showCreateTicket && <TicketListComponent  data={{
                         editTicket : this.editTicket.bind(this)
                     }} onCompleteRefresh={()=>{// console.log("COMPLETE REFRESH CALLED");
-                    this.setState({refreshData: false})}} refreshData={this.state.refreshData}/>
+                    this.setState({refreshData: false})}} refreshData={this.state.refreshData}/> }
                 </Grid>
             </Grid>
 

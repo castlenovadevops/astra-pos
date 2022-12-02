@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("tickets", {
+	const tickets = sequelize.define("tickets", {
         ticketId:{
             field:'ticketId',
             type: DataTypes.UUID,
@@ -142,4 +142,22 @@ module.exports = (sequelize) => {
       updatedAt: false,
       deletedAt: false
     })
+    tickets.associate = function(models){
+          models.mCustomers.hasMany(models.tickets, {foreignKey: 'customerId',sourceKey: 'mCustomerId'});
+     models.tickets.belongsTo(models.mCustomers, {foreignKey: 'customerId',targetKey: 'mCustomerId'});
+
+     models.tickets.hasMany(models.ticketservices, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
+     models.ticketservices.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
+
+     models.merchantEmployees.hasMany(models.tickets, {foreignKey: 'ownerTechnician',sourceKey: 'mEmployeeId'});
+     models.tickets.belongsTo(models.merchantEmployees, {foreignKey: 'ownerTechnician',targetKey: 'mEmployeeId'}); 
+
+     models.tickets.hasMany(models.ticketpayment, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
+     models.ticketpayment.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
+
+     models.tickets.hasMany(models.ticketdiscount, {foreignKey: 'ticketId',sourceKey: 'ticketId'});
+     models.ticketdiscount.belongsTo(models.tickets, {foreignKey: 'ticketId',targetKey: 'ticketId'});
+
+    }
+    return tickets;
 }      

@@ -3,7 +3,7 @@ const db = config.database;
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    sequelize.define("mDefaultDiscountDivision", {
+    const mDefaultDiscountDivision = sequelize.define("mDefaultDiscountDivision", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -67,4 +67,6 @@ module.exports = (sequelize) => {
       updatedAt: 'updatedDate',
       deletedAt: false
     })
+
+    return mDefaultDiscountDivision;
 }

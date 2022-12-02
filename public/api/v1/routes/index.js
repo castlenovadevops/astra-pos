@@ -17,10 +17,18 @@ const SyncDiscountController = require('../controllers/pos/syncDiscountsControll
 const SyncDefaultDiscountController = require('../controllers/pos/syncDefaultDiscountController');
 const SyncDefaultCommissionController = require('../controllers/pos/syncDefaultCommissionController');
 const SyncEmployeesController = require('../controllers/pos/syncEmployeeController');
+const SyncCustomerController = require('../controllers/pos/syncCustomerController');
 
 const ClockInController = require('../controllers/merchant/clockinController');
 const TicketController = require('../controllers/merchant/ticketController');
-
+const SaveTicketController = require('../controllers/merchant/saveticketController');
+const TransferController = require('../controllers/merchant/transferController')
+const PaymentController = require('../controllers/merchant/paymentController')
+const TransactionController = require('../controllers/merchant/transactionsController');
+const PayoutController = require('../controllers/merchant/payoutController');
+const ReportController = require('../controllers/merchant/reportController');
+const TicketInfoController = require('../controllers/merchant/ticketinfoController');
+const CombineController = require('../controllers/merchant/combineController');
 
 const express = require('express');
 const path = require('path');
@@ -49,7 +57,15 @@ const corsOptions ={
         new MEmployeeCommissionController(), 
         new ClockInController(),
         new TicketController(),
-
+        new SaveTicketController(),
+        new TransferController(),
+        new PaymentController(),
+        new TransactionController(),
+        new PayoutController(),
+        new ReportController(),
+        new TicketInfoController(),
+        new CombineController(),
+        
         new SyncController(),
         new SyncTaxController(),
         new SyncCategoryController(),
@@ -57,7 +73,8 @@ const corsOptions ={
         new SyncDiscountController(),
         new SyncDefaultDiscountController(),
         new SyncDefaultCommissionController(),
-        new SyncEmployeesController()
+        new SyncEmployeesController(),
+        new SyncCustomerController()
     ] 
     function initialize(){ 
             initializeControllers(0); 

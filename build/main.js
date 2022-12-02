@@ -60,11 +60,11 @@ const createWindow = () => {
   // mainWindow.setMenuBarVisibility(false);
   // mainWindow.setApplicationMenu(null);
     // mainWindow.removeMenu();
-  // if (isDev) {
-  //   mainWindow.webContents.on('did-frame-finish-load', () => {
-  //     mainWindow.webContents.openDevTools();
-  //   });
-  // } 
+  if (isDev) {
+    mainWindow.webContents.on('did-frame-finish-load', () => {
+      mainWindow.webContents.openDevTools();
+    });
+  } 
   /**app quit */
   mainWindow.on('quit', function(e){
     // console.log("before-quit")

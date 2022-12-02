@@ -20,6 +20,7 @@ export default class SelectedServicesComponent extends  React.Component{
         if (nextProps.data.selectedServices !==  prevState.selectedServices || nextProps.data.selectedRow !== prevState.selectedRow) { 
             return {selectedServices: nextProps.data.selectedServices, selectedRow: nextProps.data.selectedRow}
         }
+        return null;
     }
 
     onSelectRow(rowIndex){

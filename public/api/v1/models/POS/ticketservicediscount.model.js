@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("ticketservicediscount", {
+	const ticketservicediscount = sequelize.define("ticketservicediscount", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -15,48 +15,55 @@ module.exports = (sequelize) => {
             type: DataTypes.UUID,
             primaryKey: true
         }, 
-        discountAmount: {
-             field: 'discountAmount', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        discountId: {
-             field: 'discountId', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        discountValue: {
-             field: 'discountValue', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        discountType: {
-             field: 'discountType', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        discountDivisionType: {
-             field: 'discountDivisionType', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        },
-        discountOwnerDivision: {
-             field: 'discountOwnerDivision', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        discountEmployeeDivision: {
-             field: 'discountEmployeeDivision', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
+        mDiscountAmount: {
+          field: 'mDiscountAmount', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mDiscountId: {
+          field: 'mDiscountId', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mDiscountValue: {
+          field: 'mDiscountValue', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mDiscountType: {
+          field: 'mDiscountType', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mDiscountDivisionType: {
+          field: 'mDiscountDivisionType', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     },
+     mOwnerDivision: {
+          field: 'mOwnerDivision', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mEmployeeDivision: {
+          field: 'mEmployeeDivision', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     status: {
+          field: 'status', 
+          type: DataTypes.INTEGER, 
+          primaryKey: false, 
+          allowNull: false,
+          defaultValue:1
+     }, 
         createdDate: {
              field: 'createdDate', 
              type: DataTypes.STRING(255), 
@@ -76,4 +83,13 @@ module.exports = (sequelize) => {
       updatedAt: false,
       deletedAt: false
     })
+
+    ticketservicediscount.associate = function(models){
+     
+    models.mDiscounts.hasMany(models.ticketservicediscount, {foreignKey: 'mDiscountId',sourceKey: 'mDiscountId'});
+    models.ticketservicediscount.belongsTo(models.mDiscounts, {foreignKey: 'mDiscountId',targetKey: 'mDiscountId'});
+
+
+    }
+    return ticketservicediscount
 }      

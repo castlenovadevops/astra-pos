@@ -7,7 +7,8 @@ const jwt = require("jsonwebtoken");
 const  {jwtOptions} = require('../../config/jwtOptions')
 const express = require('express');
 const authenticate = require('../../middleware/index');  
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 module.exports = class EmployeeController extends baseController{
     path = "/merchant/employee";
     router = express.Router();
@@ -52,6 +53,11 @@ module.exports = class EmployeeController extends baseController{
                     type:"post",
                     method: "updateEmployee",
                     authorization:'authorizationAuth'
+                },{
+                    path:this.path+"/getByPasscode",
+                    type:"post",
+                    method: "getByPasscode",
+                    authorization:'authorizationAuth'
                 }
             ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
@@ -73,12 +79,12 @@ module.exports = class EmployeeController extends baseController{
             attributes:{
                 include:[
                     [
-                        Sequelize.literal("(select merchantName from merchant where merchantId = `mEmpRefMerchant`.`merchantId` )"),
+                        sequelize.literal("(select merchantName from merchant where merchantId = `mEmpRefMerchant`.`merchantId` )"),
                         'merchantName'
                     ],
 
                     [
-                        Sequelize.literal("(select roleName from lkup_role where roleId = `mEmpRefMerchant`.`mEmployeeRole` )"),
+                        sequelize.literal("(select roleName from lkup_role where roleId = `mEmpRefMerchant`.`mEmployeeRole` )"),
                         'mEmployeeRoleName'
                     ]
                 ]
@@ -117,14 +123,14 @@ module.exports = class EmployeeController extends baseController{
                     if(input.mEmployeeRole === 'Admin'){
                         var options = {where:{ 
                             mEmployeeRole: {
-                                [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
                             }
                         }}
                         if(input.id !== undefined){
                             options = {where:{
                                 mEmployeeId:input.id,
                                 mEmployeeRole: {
-                                    [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                    [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
                                 }
                             }}
                         }
@@ -140,14 +146,14 @@ module.exports = class EmployeeController extends baseController{
                     else if(input.mEmployeeRole === 'Employee'){
                         var  options = {where:{ 
                             mEmployeeRole: {
-                                [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
                             }
                         }}
                         if(input.id !== undefined){
                             options = {where:{
                                 mEmployeeId:input.id,
                                 mEmployeeRole: {
-                                    [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                    [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
                                 }
                             }}
                         }
@@ -269,27 +275,27 @@ module.exports = class EmployeeController extends baseController{
                 Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
                 `id`
             ],
-            [
-                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
-                `mEmployeeRoleName`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeRole`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeStatus`
-            ],
-            [
-                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeCode`
-            ],
+            // [
+            //     sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+            //     `mEmployeeRoleName`
+            // ],
+            // [
+            //     sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     `mEmployeeRole`
+            // ],
+            // [
+            //     sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     `mEmployeeStatus`
+            // ],
+            // [
+            //     sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     `mEmployeeCode`
+            // ],
         ]
     },
         where:{
-             mEmployeeId: {
-                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeRole in (select roleId from lkup_role where merchantId='"+req.deviceDetails.merchantId+"' and roleName != 'Owner'))")
+            mEmployeeRoleName: {
+                [Sequelize.Op.ne] : 'Owner'
             }
         },
         include:[
@@ -308,34 +314,34 @@ module.exports = class EmployeeController extends baseController{
         let customers = await this.readAll({order: [
             ['createdDate','ASC']
         ],
-        attributes:{include: [ 
-            [
-                Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
-                `id`
-            ],
-            [
-                Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
-                `mEmployeeRoleName`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeRole`
-            ],
-            [
-                Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeStatus`
-            ],
-            [
-                Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
-                `mEmployeeCode`
-            ],
-        ]
-    },
-        where:{
-             mEmployeeId: {
-                [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
-            }
-        },
+    //     attributes:{include: [ 
+    //         [
+    //             Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
+    //             `id`
+    //         ],
+    //         [
+    //             sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+    //             `mEmployeeRoleName`
+    //         ],
+    //         [
+    //             sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             `mEmployeeRole`
+    //         ],
+    //         [
+    //             sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             `mEmployeeStatus`
+    //         ],
+    //         [
+    //             sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             `mEmployeeCode`
+    //         ],
+    //     ]
+    // },
+        // where:{
+        //      mEmployeeId: {
+        //         [Sequelize.Op.in] : sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
+        //     }
+        // },
         include:[
             {
                 model:this.models.mEmployeeCommission,
@@ -365,13 +371,114 @@ module.exports = class EmployeeController extends baseController{
 
     loginEmployee = async(req,res, next)=>{
         if(req.input.passCode !== ''){
-            this.readOne({where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1}}, 'merchantEmployees').then(results=>{
+            let options={
+                where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1},
+                attributes:{
+                    include:[
+
+                        [
+                            sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mCommissionId"
+                        ], 
+                        [
+                            sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mOwnerPercentage"
+                        ], 
+                        [
+                            sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mEmployeePercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mCashPercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mCheckPercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mTipsCashPercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mTipsCheckPercentage"
+                        ]
+                    ]
+                }
+            }
+            this.readOne( options, 'merchantEmployees').then(results=>{
                 if(results !== null){
                     var userData = Object.assign({}, results.dataValues||results); 
                     let payload = { ...userData  }; 
-                    // console.log(payload)
-                    let token = jwt.sign(payload, jwtOptions.secretOrKey); 
-                    return this.sendResponse({  token:token, data: userData}, res, 200);
+                    this.update('empLog', {status:2}, {where:{mEmployeeId: userData.mEmployeeId, status:1}} ,true).then(results=>{
+                        let loginput = {
+                            mEmployeeId:userData.mEmployeeId,
+                            clockedInOn: this.getDate(),
+                            status:1,
+                            clockedOutOn:''
+                        }
+                        this.create('empLog', loginput, true).then(results=>{
+                            // console.log(payload)
+                            let token = jwt.sign(payload, jwtOptions.secretOrKey); 
+                            return this.sendResponse({  token:token, data: userData}, res, 200);
+                        })
+                    }) 
+
+                }
+                else{
+                    this.sendResponse({message:"Invalid passcode. Please try again later."}, res, 400)
+                }
+            })
+        }
+        else{
+            this.sendResponse({message:"Please enter the passcode."}, res, 400)
+        }
+    }
+
+    getByPasscode = async(req, res)=>{
+        if(req.input.passCode !== ''){
+            let options={
+                where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1},
+                attributes:{
+                    include:[
+
+                        [
+                            sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mCommissionId"
+                        ], 
+                        [
+                            sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mOwnerPercentage"
+                        ], 
+                        [
+                            sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mEmployeePercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mCashPercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mCheckPercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mTipsCashPercentage"
+                        ],
+                        [
+                            sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            "mTipsCheckPercentage"
+                        ]
+                    ]
+                }
+            }
+            this.readOne( options, 'merchantEmployees').then(results=>{
+                console.log(results);
+                if(results !== null){
+                    var userData = Object.assign({}, results.dataValues||results);  
+                    return this.sendResponse({ data: userData}, res, 200);
                 }
                 else{
                     this.sendResponse({message:"Invalid passcode. Please try again later."}, res, 400)

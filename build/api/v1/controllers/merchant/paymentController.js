@@ -3,7 +3,8 @@
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 
 module.exports = class TicketController extends baseController{
     path = "/merchant/payment";
@@ -53,7 +54,7 @@ module.exports = class TicketController extends baseController{
             }
             this.readOne({where:options.where, attributes:[
                 [
-                    Sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
+                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
                     "Paidamount"
                 ]
             ]},'ticketpayment').then(paidrec=>{ 
@@ -98,7 +99,7 @@ module.exports = class TicketController extends baseController{
         this.create('ticketpayment', payinput).then(r=>{
             this.readOne({where:options.where, attributes:[
                 [
-                    Sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
+                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
                     "Paidamount"
                 ]
             ]},'ticketpayment').then(paidrec=>{  

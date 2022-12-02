@@ -3,7 +3,7 @@ const db = config.database;
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    sequelize.define("mCustomers", {
+    const mCustomers = sequelize.define("mCustomers", {
         mCustomerId:{
             field:'mCustomerId',
             type: DataTypes.UUID,
@@ -85,7 +85,7 @@ module.exports = (sequelize) => {
         },
         mCustomerStatus: {
             field: 'mCustomerStatus', 
-            type: DataTypes.INTEGER, 
+            type: DataTypes.TEXT, 
             primaryKey: false, 
             allowNull: false,
         },
@@ -134,5 +134,5 @@ module.exports = (sequelize) => {
         updatedAt: 'updatedDate',
         deletedAt: false
     })
-
+    return mCustomers;
 }

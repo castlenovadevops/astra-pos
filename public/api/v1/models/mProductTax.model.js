@@ -5,7 +5,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("mProductTax", {
+	const mProductTax = sequelize.define("mProductTax", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -64,4 +64,12 @@ module.exports = (sequelize) => {
       updatedAt: 'updatedDate',
       deletedAt: false
     })
+
+    mProductTax.associate = function(models){
+     models.mProducts.hasMany(models.mProductTax, {foreignKey: 'mProductId',sourceKey: 'mProductId'});
+     models.mProductTax.belongsTo(models.mProducts, {foreignKey: 'mProductId', targetKey: 'mProductId'});
+ 
+    }
+
+    return mProductTax;
 }      

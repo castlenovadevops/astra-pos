@@ -3,7 +3,7 @@ import {  Container, Typography } from '@mui/material';
 import FormManager from '../../components/formComponents/FormManager';
 import schema from './schema.json'; 
 import { deviceDetect } from 'react-device-detect';
-
+import TestComponent from './test';
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
@@ -48,6 +48,7 @@ export default function SyncCode() {
 
     <Container maxWidth="sm">
       <ContentStyle className="mobileminautoform">  
+      {/* <TestComponent /> */}
              <FormManager formProps={schemaObj} />   
       </ContentStyle>
     </Container>

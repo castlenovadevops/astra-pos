@@ -7,7 +7,8 @@ const jwt = require("jsonwebtoken");
 const  {jwtOptions} = require('../../config/jwtOptions')
 const express = require('express');
 const authenticate = require('../../middleware/index');  
-const { Sequelize } = require('sequelize'); 
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 module.exports = class EmployeeController extends baseController{
     path = "/merchant/employee";
     router = express.Router();
@@ -78,12 +79,12 @@ module.exports = class EmployeeController extends baseController{
             attributes:{
                 include:[
                     [
-                        Sequelize.literal("(select merchantName from merchant where merchantId = `mEmpRefMerchant`.`merchantId` )"),
+                        sequelize.literal("(select merchantName from merchant where merchantId = `mEmpRefMerchant`.`merchantId` )"),
                         'merchantName'
                     ],
 
                     [
-                        Sequelize.literal("(select roleName from lkup_role where roleId = `mEmpRefMerchant`.`mEmployeeRole` )"),
+                        sequelize.literal("(select roleName from lkup_role where roleId = `mEmpRefMerchant`.`mEmployeeRole` )"),
                         'mEmployeeRoleName'
                     ]
                 ]
@@ -122,14 +123,14 @@ module.exports = class EmployeeController extends baseController{
                     if(input.mEmployeeRole === 'Admin'){
                         var options = {where:{ 
                             mEmployeeRole: {
-                                [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
                             }
                         }}
                         if(input.id !== undefined){
                             options = {where:{
                                 mEmployeeId:input.id,
                                 mEmployeeRole: {
-                                    [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                    [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Employee' or roleName='Owner') and merchantId is not null and merchantId!='')")
                                 }
                             }}
                         }
@@ -145,14 +146,14 @@ module.exports = class EmployeeController extends baseController{
                     else if(input.mEmployeeRole === 'Employee'){
                         var  options = {where:{ 
                             mEmployeeRole: {
-                                [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
                             }
                         }}
                         if(input.id !== undefined){
                             options = {where:{
                                 mEmployeeId:input.id,
                                 mEmployeeRole: {
-                                    [Sequelize.Op.in]:Sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
+                                    [Sequelize.Op.in]:sequelize.literal("(select roleId from lkup_role where (roleName='Admin' or roleName='Owner') and merchantId is not null and merchantId!='')")
                                 }
                             }}
                         }
@@ -275,19 +276,19 @@ module.exports = class EmployeeController extends baseController{
                 `id`
             ],
             // [
-            //     Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+            //     sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
             //     `mEmployeeRoleName`
             // ],
             // [
-            //     Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
             //     `mEmployeeRole`
             // ],
             // [
-            //     Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
             //     `mEmployeeStatus`
             // ],
             // [
-            //     Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+            //     sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
             //     `mEmployeeCode`
             // ],
         ]
@@ -319,26 +320,26 @@ module.exports = class EmployeeController extends baseController{
     //             `id`
     //         ],
     //         [
-    //             Sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
+    //             sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
     //             `mEmployeeRoleName`
     //         ],
     //         [
-    //             Sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             sequelize.literal("(select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
     //             `mEmployeeRole`
     //         ],
     //         [
-    //             Sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             sequelize.literal("(select mEmployeeStatus from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
     //             `mEmployeeStatus`
     //         ],
     //         [
-    //             Sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+    //             sequelize.literal("(select mEmployeePasscode from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
     //             `mEmployeeCode`
     //         ],
     //     ]
     // },
         // where:{
         //      mEmployeeId: {
-        //         [Sequelize.Op.in] : Sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
+        //         [Sequelize.Op.in] : sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
         //     }
         // },
         include:[
@@ -376,31 +377,31 @@ module.exports = class EmployeeController extends baseController{
                     include:[
 
                         [
-                            Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCommissionId"
                         ], 
                         [
-                            Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mOwnerPercentage"
                         ], 
                         [
-                            Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mEmployeePercentage"
                         ],
                         [
-                            Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCashPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCheckPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCashPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCheckPercentage"
                         ]
                     ]
@@ -443,31 +444,31 @@ module.exports = class EmployeeController extends baseController{
                     include:[
 
                         [
-                            Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCommissionId"
                         ], 
                         [
-                            Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mOwnerPercentage"
                         ], 
                         [
-                            Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mEmployeePercentage"
                         ],
                         [
-                            Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCashPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCheckPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCashPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCheckPercentage"
                         ]
                     ]

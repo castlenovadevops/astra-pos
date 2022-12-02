@@ -3,8 +3,8 @@
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
-const { Sequelize } = require('sequelize');
-const { response } = require('express');
+const Sequelize = require('sequelize')
+const sequelize =  require('../../models').sequelize
 
 module.exports = class reportController extends baseController{
     path = "/merchant/report";
@@ -42,13 +42,13 @@ module.exports = class reportController extends baseController{
 
 //         var groupoptions = {
 //             group: [
-//                 [Sequelize.literal('"created"'), 'ASC']
+//                 [sequelize.literal('"created"'), 'ASC']
 //             ],
 //             // where:{
 
 //             // } 
 //             attributes:[
-//                 // [ Sequelize.literal("select strftime('%m-%Y', createdDate) from tickets where ticketId=`tickets`.`ticketId`"),'created']
+//                 // [ sequelize.literal("select strftime('%m-%Y', createdDate) from tickets where ticketId=`tickets`.`ticketId`"),'created']
 //                 [Sequelize.fn('sum', Sequelize.col('ticketTotalAmount')), 'tickettotal'],
 //                 // [Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')), 'createdOn'],
 //                 [Sequelize.fn('strftime','%m-%Y', Sequelize.col('createdDate')), 'created'],
@@ -71,7 +71,7 @@ module.exports = class reportController extends baseController{
 //         // let ticketoptions = {
 //         //     where:{
 //         //         ticketId:{
-//         //             [Sequelize.Op.in]:Sequelize.literal(query)
+//         //             [Sequelize.Op.in]:sequelize.literal(query)
 //         //         }
 //         //     }
 //         // }
@@ -81,7 +81,7 @@ module.exports = class reportController extends baseController{
 //         // let ticketserviceoptions = {
 //         //     where:{
 //         //         ticketId:{
-//         //             [Sequelize.Op.in]:Sequelize.literal(query)
+//         //             [Sequelize.Op.in]:sequelize.literal(query)
 //         //         }
 //         //     }
 //         // }
@@ -97,46 +97,46 @@ module.exports = class reportController extends baseController{
 //         //     attributes:{
 //         //         include:[ 
 //         //         [
-//         //             Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and serviceTechnicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //             sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and serviceTechnicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //             'TotalServiceAmount'
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select sum(employeePercentage) from ticketcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //             sequelize.literal("(select sum(employeePercentage) from ticketcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //             'ServiceAmount'
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select sum(tipsAmount) from ticketTips where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //             sequelize.literal("(select sum(tipsAmount) from ticketTips where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //             'Tips'
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //             sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //             'Discount'
 //         //         ],[
-//         //             Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mCommissionId"
 //         //         ], 
 //         //         [
-//         //             Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mOwnerPercentage"
 //         //         ], 
 //         //         [
-//         //             Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mEmployeePercentage"
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mCashPercentage"
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mCheckPercentage"
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mTipsCashPercentage"
 //         //         ],
 //         //         [
-//         //             Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //             sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //             "mTipsCheckPercentage"
 //         //         ]
 //         //         ]
@@ -148,46 +148,46 @@ module.exports = class reportController extends baseController{
 //         //         attributes:{
 //         //             include:[ 
 //         //             [
-//         //                 Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and serviceTechnicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //                 sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and serviceTechnicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //                 'TotalServiceAmount'
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select sum(employeePercentage) from ticketcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //                 sequelize.literal("(select sum(employeePercentage) from ticketcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //                 'ServiceAmount'
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select sum(tipsAmount) from ticketTips where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //                 sequelize.literal("(select sum(tipsAmount) from ticketTips where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //                 'Tips'
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
+//         //                 sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where ticketServiceId in (select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"'))) and technicianId=`merchantEmployees`.`mEmployeeId`  and status=1)"),
 //         //                 'Discount'
 //         //             ],[
-//         //                 Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mCommissionId"
 //         //             ], 
 //         //             [
-//         //                 Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mOwnerPercentage"
 //         //             ], 
 //         //             [
-//         //                 Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mEmployeePercentage"
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mCashPercentage"
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mCheckPercentage"
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mTipsCashPercentage"
 //         //             ],
 //         //             [
-//         //                 Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+//         //                 sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
 //         //                 "mTipsCheckPercentage"
 //         //             ]
 //         //             ]
@@ -198,12 +198,12 @@ module.exports = class reportController extends baseController{
 
 //         // // var servicetaxes = await this.readAll({where:{
 //         // //     ticketServiceId:{
-//         // //         [Sequelize.Op.in]:Sequelize.literal("( select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"')))")
+//         // //         [Sequelize.Op.in]:sequelize.literal("( select ticketServiceId from ticketservices where ticketId in (select ticketId from ticketpayment where ticketId in (select ticketId from tickets where paymentStatus='Paid' ) and Date(createdDate) between Date('"+req.input.from_date.replace("T"," ").replace("Z","")+"') and  Date('"+req.input.to_date.replace("T"," ").replace("Z","")+"')))")
 //         // //     }
 //         // // },
 //         // // attributes: [
 //         // //         [
-//         // //             Sequelize.literal
+//         // //             sequelize.literal
 //         // //         ]
 //         // //     ]}, 'ticketservicetax')
 
@@ -226,39 +226,39 @@ module.exports = class reportController extends baseController{
                 attributes:{
                     include:[
                         [
-                            Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCommissionId"
                         ], 
                         [
-                            Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mOwnerPercentage"
                         ], 
                         [
-                            Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mEmployeePercentage"
                         ],
                         [
-                            Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCashPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCheckPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCashPercentage"
                         ],
                         [
-                            Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                            sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCheckPercentage"
                         ],
                         [
-                            Sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1 and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
+                            sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1 and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
                             "TotalTax"
                         ],
                         [
-                            Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
+                            sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
                             "Supplies"
                         ]
                 ]}}, 'merchantEmployees');
@@ -266,39 +266,39 @@ module.exports = class reportController extends baseController{
         const reportoptions = { 
             where:{ 
                 ticketId:{
-                    [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
                 }
             },
             attributes:[
                 [Sequelize.col('paymentStatus'), 'paymentStatus'],
                 [Sequelize.fn('strftime', dateformat, Sequelize.col('`tickets`.`createdDate`')), 'created'],
                 [
-                    Sequelize.literal("(select count(ticketServiceId) from ticketservices where ticketId=`tickets`.`ticketId`  and status=1)"),
+                    sequelize.literal("(select count(ticketServiceId) from ticketservices where ticketId=`tickets`.`ticketId`  and status=1)"),
                     'ServiceCount'
                 ],
                 [
-                    Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketId=`tickets`.`ticketId`  and status=1)"),
+                    sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketId=`tickets`.`ticketId`  and status=1)"),
                     'TotalServiceAmount'
                 ],
                 [
-                    Sequelize.literal("(select sum(ownerPercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
+                    sequelize.literal("(select sum(ownerPercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
                     'ServiceAmount'
                 ],
                 [
-                    Sequelize.literal("(select sum(tipsAmount) from ticketTips where   status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and   status=1)"),
+                    sequelize.literal("(select sum(tipsAmount) from ticketTips where   status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and   status=1)"),
                     'Tips'
                 ],
                 [
-                    Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
+                    sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
                     'Discount'
                 ],
                 [
-                    Sequelize.literal("(select sum(ownerPercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
+                    sequelize.literal("(select sum(ownerPercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and status=1)"),
                     'OwnerDiscount'
                 ],
             ] ,
             // group: [
-            //     [Sequelize.literal(' `created`'), 'ASC']
+            //     [sequelize.literal(' `created`'), 'ASC']
             // ], 
         } 
         const reports = await this.readAll(reportoptions, 'tickets')
@@ -310,7 +310,7 @@ module.exports = class reportController extends baseController{
             ],
             where:{
                 ticketId:{
-                    [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
                 }
             },
             attributes:[
@@ -319,7 +319,7 @@ module.exports = class reportController extends baseController{
                 [Sequelize.col("`paymentType`"), 'paymentType'],
                 [Sequelize.fn('sum', Sequelize.col('ticketPayment')), 'paymentAmount'],
                 // [
-                //     Sequelize.literal("(select sum(ticketPayment) from ticketpayment where transactionId=`ticketpayment`.`transactionId` and `payMode`=`ticketpayment`.`payMode` and `cardType`=`ticketpayment`.`cardType`)"),
+                //     sequelize.literal("(select sum(ticketPayment) from ticketpayment where transactionId=`ticketpayment`.`transactionId` and `payMode`=`ticketpayment`.`payMode` and `cardType`=`ticketpayment`.`cardType`)"),
                 //     "paymentAmount"
                 // ]
             ]
@@ -334,7 +334,7 @@ module.exports = class reportController extends baseController{
             where:{
                 status:1,
                 ticketId:{
-                    [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid')")
                 }
             },
             attributes:[
@@ -352,39 +352,39 @@ module.exports = class reportController extends baseController{
             attributes:{
                 include:[
                     [
-                        Sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mCommissionId"
                     ], 
                     [
-                        Sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mOwnerPercentage"
                     ], 
                     [
-                        Sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mEmployeePercentage"
                     ],
                     [
-                        Sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mCashPercentage"
                     ],
                     [
-                        Sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mCheckPercentage"
                     ],
                     [
-                        Sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mTipsCashPercentage"
                     ],
                     [
-                        Sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                        sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                         "mTipsCheckPercentage"
                     ],
                     [
-                        Sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1  and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
+                        sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1  and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
                         "TotalTax"
                     ],
                     [
-                        Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
+                        sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
                         "Supplies"
                     ], 
             ]}}, 'merchantEmployees'); 
@@ -408,38 +408,38 @@ module.exports = class reportController extends baseController{
             console.log("$$$$$", emps[i])
             const reportoptions = { 
                 // group: [
-                //     [Sequelize.literal(' `created`'), 'ASC']
+                //     [sequelize.literal(' `created`'), 'ASC']
                 // ],
                 where:{
                     ticketId:{
-                        [Sequelize.Op.in]: Sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid' and ticketId in (select ticketId from ticketservices where serviceTechnicianId='"+empid+"' and status=1))")
+                        [Sequelize.Op.in]: sequelize.literal("(select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid' and ticketId in (select ticketId from ticketservices where serviceTechnicianId='"+empid+"' and status=1))")
                     }
                 }, 
                 attributes:[
                     [Sequelize.col('paymentStatus'), 'paymentStatus'],
                     [Sequelize.fn('strftime', dateformat, Sequelize.col('`tickets`.`createdDate`')), 'created'],
                     [
-                        Sequelize.literal("(select count(ticketServiceId) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
+                        sequelize.literal("(select count(ticketServiceId) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
                         'ServiceCount'
                     ],
                     [
-                        Sequelize.literal("(select serviceTechnicianId from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
+                        sequelize.literal("(select serviceTechnicianId from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
                         'serviceTechnicianId'
                     ],
                     [
-                        Sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
+                        sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from ticketservices where ticketId=`tickets`.`ticketId` and serviceTechnicianId='"+empid+"'  and status=1)"),
                         'TotalServiceAmount'
                     ],
                     [
-                        Sequelize.literal("(select sum(employeePercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId='"+empid+"'  and status=1)"),
+                        sequelize.literal("(select sum(employeePercentage) from ticketcommission where status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId='"+empid+"'  and status=1)"),
                         'ServiceAmount'
                     ],
                     [
-                        Sequelize.literal("(select sum(tipsAmount) from ticketTips where   status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId='"+empid+"'  and status=1)"),
+                        sequelize.literal("(select sum(tipsAmount) from ticketTips where   status=1 and ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` ) and technicianId='"+empid+"'  and status=1)"),
                         'Tips'
                     ],
                     [
-                        Sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and technicianId='"+empid+"'  and status=1)"),
+                        sequelize.literal("(select sum(employeePercentage) from ticketservicediscountcommission where  status=1 and  ticketServiceId in (select ticketServiceId from ticketservices where status=1 and ticketId= `tickets`.`ticketId` )  and technicianId='"+empid+"'  and status=1)"),
                         'Discount'
                     ]
                 ] 
@@ -455,7 +455,7 @@ module.exports = class reportController extends baseController{
                 where:{
                     status:1,
                     ticketServiceId:{
-                        [Sequelize.Op.in]: Sequelize.literal("(select ticketServiceId from ticketservices where status=1 and serviceTechnicianId='"+empid+"' and  ticketId in (select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid'))")
+                        [Sequelize.Op.in]: sequelize.literal("(select ticketServiceId from ticketservices where status=1 and serviceTechnicianId='"+empid+"' and  ticketId in (select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid'))")
                     }
                 },
                 attributes:[

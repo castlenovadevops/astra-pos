@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("ticketservicetax", {
+	return sequelize.define("ticketservicetax", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -16,42 +16,43 @@ module.exports = (sequelize) => {
             primaryKey: false
         }, 
         mTaxId: {
-             field: 'mTaxId', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        mTaxName: {
-             field: 'mTaxName', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        mTaxAmount: {
-             field: 'mTaxAmount', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        mTaxType: {
-             field: 'mTaxType', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        mTaxValue: {
-             field: 'mTaxValue', 
-             type: DataTypes.STRING(255), 
-             primaryKey: false, 
-             allowNull: false,
-        }, 
-        status: {
-             field: 'status', 
-             type: DataTypes.INTEGER, 
-             primaryKey: false, 
-             allowNull: false,
-             defaultValue:1
-        }, 
+          field: 'mTaxId', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mTaxName: {
+          field: 'mTaxName', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mTaxAmount: {
+          field: 'mTaxAmount', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mTaxType: {
+          field: 'mTaxType', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+     mTaxValue: {
+          field: 'mTaxValue', 
+          type: DataTypes.STRING(255), 
+          primaryKey: false, 
+          allowNull: false,
+     }, 
+
+     status: {
+          field: 'status', 
+          type: DataTypes.INTEGER, 
+          primaryKey: false, 
+          allowNull: false,
+          defaultValue:1
+     }, 
         createdDate: {
              field: 'createdDate', 
              type: DataTypes.STRING(255), 

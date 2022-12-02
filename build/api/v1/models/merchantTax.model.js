@@ -5,7 +5,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("mTax", {
+	const mTax = sequelize.define("mTax", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -89,4 +89,5 @@ module.exports = (sequelize) => {
       updatedAt: 'updatedDate',
       deletedAt: false
     })
+    return mTax;
 }      

@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable no-useless-constructor */
-const {models} = require('../../models');
+const models = require('../../models');
 const Crypto = require('../../utils/crypto');
 const crypto = new Crypto();
 const MsgController = require('./msgController');
@@ -61,7 +61,7 @@ module.exports = class baseController extends MsgController{
 
     async create(model,data, updateTobeSync=true){ 
         return new Promise(async (resolve) => { 
-            let results =  await this.models[model].create(data);
+            let results =  await this.models[model].create(data).catch(e=>{console.log(e)});
             if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){
                  var pkfield = pkfields[model]
                 var input = {
@@ -69,7 +69,7 @@ module.exports = class baseController extends MsgController{
                     tableRowId: results[pkfield],
                     merchantId: data["merchantId"] || ''
                 }
-                await this.models["toBeSynced"].create(input);
+                // await this.models["toBeSynced"].create(input);
                 resolve(results)
             }
             else{
@@ -97,7 +97,7 @@ module.exports = class baseController extends MsgController{
                     tableRowId: data[pkfield],
                     merchantId: data["merchantId"] || ''
                 }
-                await this.models["toBeSynced"].create(input);
+                // await this.models["toBeSynced"].create(input);
                 resolve(results)
             }
             else{
@@ -120,7 +120,7 @@ module.exports = class baseController extends MsgController{
                         tableRowId: data[pkfield],
                         merchantId: data["merchantId"] || ''
                     }
-                    await this.models["toBeSynced"].create(input);
+                    // await this.models["toBeSynced"].create(input);
                     resolve(results)
                 }
                 else{

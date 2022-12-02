@@ -3,7 +3,7 @@ const db = config.database;
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    sequelize.define("mDefaultCommission", {
+    const mDefaultCommission = sequelize.define("mDefaultCommission", {
         id:{
             field:'id',
             type: DataTypes.UUID,
@@ -93,4 +93,6 @@ module.exports = (sequelize) => {
       updatedAt: 'updatedDate',
       deletedAt: false
     })
+
+    return mDefaultCommission;
 }
