@@ -44,30 +44,6 @@ export default class FormManager extends React.Component{
         this.submitForm = this.submitForm.bind(this);
         this.handleCloseDialog = this.handleCloseDialog.bind(this); 
         this.renderErrorActionButtons = this.renderErrorActionButtons.bind(this);
-        this.resetForm = this.resetForm.bind(this);
-    }
-
-    resetForm(){
-        this.setState({
-            formName:'',
-            properties:[],
-            buttons:[],
-            required:[],
-            onSubmit:{},
-            isLoading: false,
-            isDisabled: true,
-            redirect: false,
-            redirectURL: '', 
-            formError:'',
-            showFormError: false,
-            openDialog: false,
-            showMsg:'',
-            showTitle:'',
-            isChanged: false,
-            showFormActionError: false,
-            formActionError:'',
-            onError:{}
-        })
     }
 
     handleCloseDialog(){
@@ -81,10 +57,7 @@ export default class FormManager extends React.Component{
             var obj={}
             console.log("CHANGES")
             const formProps = Object.assign({}, nextProps.formProps);
-
-            obj["required"] = formProps.required
-            console.log("REQUIRED", obj.required)
-            if((!prevState.isChanged || nextProps.formProps.force === true) && !prevState.showFormActionError  && !prevState.isLoading){
+            if(!prevState.isChanged || nextProps.formProps.force === true){
                 console.log(nextProps.formProps)
                 formProps.properties.forEach(field=>{
                     if(field.name!==undefined){
@@ -115,6 +88,8 @@ export default class FormManager extends React.Component{
                         }
                     }
                 }) 
+
+                obj["required"] = formProps.required||[]
                 obj["isDisabled"]=false;
                 Object.keys(obj).forEach(field=>{  
                     if(obj.required.indexOf(field) !== -1){
@@ -181,9 +156,6 @@ export default class FormManager extends React.Component{
                                     this.props.formFunctions[field.onChange](stateVariable);
                                 }
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             });
                         }}
                     /></Grid>)
@@ -210,9 +182,6 @@ export default class FormManager extends React.Component{
                                 }
                                 
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             });
                             ////console.log(this.state);
                         }}/>
@@ -242,9 +211,6 @@ export default class FormManager extends React.Component{
                                     this.props.formFunctions[field.onBlur](newField, this.getFormFields());
                                 }     
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             });
                             ////console.log(this.state);
                         }}/>
@@ -274,9 +240,6 @@ export default class FormManager extends React.Component{
                                     this.props.formFunctions[field.onBlur](newField, this.getFormFields());
                                 }     
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             });
                             ////console.log(this.state);
                         }}/>
@@ -306,9 +269,6 @@ export default class FormManager extends React.Component{
                                     this.props.formFunctions[field.onBlur](newField, this.getFormFields());
                                 }     
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             });
                             ////console.log(this.state);
                         }}/>
@@ -328,9 +288,6 @@ export default class FormManager extends React.Component{
                                     this.props.formFunctions[field.onChange](stateVariable);
                                 }
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             }); 
                         }}/>
                     </Grid>)
@@ -346,9 +303,6 @@ export default class FormManager extends React.Component{
                                     this.props.formFunctions[field.onChange](stateVariable);
                                 }
                                 this.handleChangeValidation();
-                                setTimeout(() => {
-                                    this.handleChangeValidation();
-                                }, 1000);
                             });
                             ////console.log(this.state);
                         }}/> }
@@ -367,11 +321,7 @@ export default class FormManager extends React.Component{
                             if(field.onChange !== undefined && field.onChange !== ''){
                                 this.props.formFunctions[field.onChange](this.getFormFields());
                             }
-                            console.log("KJHKJKJKJKJK")
                             this.handleChangeValidation();
-                            setTimeout(() => {
-                                this.handleChangeValidation();
-                            }, 1000);
                         });
                         ////console.log(this.state);
                     }}/> 
@@ -380,18 +330,13 @@ export default class FormManager extends React.Component{
 
             else if(component === 'Checkbox'){ 
                 formFields.push(<> {field.type !== 'hidden' &&<Grid item xs={grid}> 
-                     <FCheckBox disabled={disabled}  emptyMsg={field.emptyMsg}  fullWidth required={required} style={{width:field.checkboxWidth ? field.checkboxWidth :'auto'}} dataformat={field.dataformat}  label={label} data={data} placeholder={placeholder} name={name} value={this.state[name]} onChange={e=>{
+                     <FCheckBox disabled={disabled}  fullWidth required={required} style={{width:field.checkboxWidth ? field.checkboxWidth :'auto'}} dataformat={field.dataformat}  label={label} data={data} placeholder={placeholder} name={name} value={this.state[name]} onChange={e=>{
                         
                         var stateVariable = Object.assign({}, this.state);
                         var values = stateVariable[name];
                         //console.log(values)
                         if(e.target.checked){
-                            if(field.multiple === undefined || field.multiple === true)
-                                values.push(e.target.value.toString())
-                            else{
-                                values = [];
-                                values.push(e.target.value.toString())
-                            }
+                            values.push(e.target.value.toString())
                         }
                         else{
                             var idx = values.indexOf(e.target.value.toString());
@@ -405,9 +350,6 @@ export default class FormManager extends React.Component{
                                 this.props.formFunctions[field.onChange](stateVariable);
                             }
                             this.handleChangeValidation();
-                            setTimeout(() => {
-                                this.handleChangeValidation();
-                            }, 1000);
                         });
                         ////console.log(this.state);
                     }}/>
@@ -444,8 +386,6 @@ export default class FormManager extends React.Component{
                         this.props.closeForm();
                     }
                     if(type === 'closeWithAction'){
-                        console.log("TTTTTTTTTT")
-                        console.log(this.getFormFields())
                         this.props.closeForm(label, this.getFormFields())
                     }
                 }
@@ -457,9 +397,9 @@ export default class FormManager extends React.Component{
 
     handleChangeValidation(){
         var stateVariable = this.getFormFields()
-        var requiredFields = Object.assign([], this.props.formProps.required); 
+        var requiredFields = Object.assign([], this.state.required); 
         this.setState({isDisabled:false}, ()=>{
-            console.log(requiredFields,  this.state)
+            //console.log(stateVariable)
             Object.keys(stateVariable).forEach(field=>{
                 if(requiredFields.indexOf(field) !== -1){
                     if(stateVariable[field] instanceof Array){
@@ -475,13 +415,13 @@ export default class FormManager extends React.Component{
                         }
                     }
                     else{ 
-                        console.log("$$$$$", field);
+
                         if((stateVariable[field] !== null && stateVariable[field].toString().trim() === '') || stateVariable[field] === undefined || stateVariable[field] === null){
-                            console.log("$$$$$", field);
+                            ////console.log("$$$$$", field);
                           this.setState({isDisabled: true})
                         }
                     }
-                }  
+                } 
             })
         })
     }
@@ -489,6 +429,7 @@ export default class FormManager extends React.Component{
     submitForm(){
         this.setState({showFormError: false, formError:''});
         var props=[];
+        console.log(this.getFormFields())
         this.state.properties.forEach((el, idx)=>{
             delete el["error"];
             delete el["helperText"];
@@ -497,8 +438,8 @@ export default class FormManager extends React.Component{
                 this.setState({properties: props});
             }
         })
-        //console.log(this.state.onSubmit)
-        this.successCallback(this.props.formProps.onSubmit);
+        console.log(this.state.onSubmit)
+        this.successCallback(this.state.onSubmit);
     }
 
     getFormFields(){
@@ -534,10 +475,10 @@ export default class FormManager extends React.Component{
     }
 
     successCallback(obj, response={}){
-        console.log(this.state)
-        this.setState({showFormError: false, formError: '', isLoading: true})
         const {action, method, url, onSuccess} = Object.assign({}, obj);  
-        if(obj.action !== undefined){
+        console.log(obj)
+        if(action !== undefined){
+            this.setState({showFormError: false, formError: '', isLoading: true})
             switch(action.toLowerCase()){
                 case 'api': 
                     if(method.toLowerCase() === 'post'){  
@@ -549,10 +490,14 @@ export default class FormManager extends React.Component{
                         }).catch(e=>{
                             ////console.log(e)
                             this.setState({isLoading: false})
-                            console.log(this.getFormFields())
                             this.setFormErrorBlocks(e, obj)
                         })
                     } 
+                    else if(method.toLowerCase() === 'get'){
+                        this.httpManager.getRequest(url).then(response=>{
+                            console.log(response.data)
+                        })
+                    }
                     break;
                 case 'savelocalstorage':
                     var options = obj.options;
@@ -574,12 +519,10 @@ export default class FormManager extends React.Component{
                     this.setState({ redirectURL: url,showTitle: response.title, showMsg: response.message, openDialog: true })
                     break;
                 case 'redirect':
-                    this.resetForm();
                     this.setState({isLoading: false})
                     this.setState({redirect: true, redirectURL: url})
                     break;
                 case 'reloaddata':
-                    this.resetForm();
                     this.setState({isLoading: false})
                     this.props.reloadData(response.message);
                     break;
@@ -661,12 +604,9 @@ export default class FormManager extends React.Component{
                 const {label, type,  variant} = btn;
 
                 buttons.push( 
-                    <FButton style={{  width:'100%', margin:'5px 0'}}  fullWidth size="large" variant={variant} label={label} onClick={()=>{
+                    <FButton  style={{marginRight:'10px', width:'max-content'}} fullWidth size="large" variant={variant} label={label} onClick={()=>{
                         
                         if(type === 'closeWithAction'){
-                            console.log("YYYYYYYY")
-                            console.log(this.state)
-                            console.log(this.getFormFields())
                             this.props.closeForm(label, this.getFormFields())
                         }
                     }
@@ -686,9 +626,10 @@ export default class FormManager extends React.Component{
                     {/* <Grid item xs={9}>
                         <Grid container spacing={3}  alignItems="center"  justifyContent="center">  */}
                             {this.renderFields()}
-                            <Grid container spacing={3}  alignItems="center" sx={{mt:2}}  justifyContent="center">  
+                            {this.props.formProps.formName !== 'syncCode' && <Grid container spacing={12}  alignItems="center" sx={{mt:2}}  justifyContent="center">  
                                 {this.renderButtons()}
-                            </Grid>
+                            </Grid>}
+                            {this.props.formProps.formName === 'syncCode'&& this.renderButtons()} 
                         {/* </Grid>
                     </Grid> */}
                     <Grid item xs={3}></Grid>
@@ -738,7 +679,9 @@ export default class FormManager extends React.Component{
                 </Dialog>
 
 
-                <Dialog 
+                <Dialog
+                    fullWidth
+                    maxWidth="lg"
                     open={this.state.showFormActionError}
                     onClose={this.handleCloseDialog}
                     aria-labelledby="alert-dialog-title"
@@ -753,9 +696,9 @@ export default class FormManager extends React.Component{
                     </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <div style={{display:'flex', alignItems:'center', justifyContent:'center', width:'100%', flexDirection:'column'}}>
+                        <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
                             {this.renderErrorActionButtons()}
-                            <Button variant="outlined" style={{width:'100%', margin:'5px 0'}} onClick={()=>{
+                            <Button variant="outlined" style={{marginRight:'10px'}} onClick={()=>{
                                 this.setState({showFormActionError: false, formActionError:'', onError:{}})
                             }}>Cancel </Button> 
                         </div>

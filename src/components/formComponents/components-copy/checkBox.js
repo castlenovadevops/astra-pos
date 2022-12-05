@@ -7,15 +7,12 @@ import Checkbox from '@mui/material/Checkbox';
 import RadioGroup from '@mui/material/RadioGroup';
 import HTTPManager from "../../../utils/httpRequestManager";
 import {  Typography } from "@mui/material";
-import Spinner from '../../Spinner';
-
 export default class FCheckBox extends React.Component{
   httpManager = new HTTPManager();
     constructor(props){
         super(props);
         this.state={
-          options:[],
-          isLoading: false
+          options:[]
         }
         this.getLabel = this.getLabel.bind(this);
         this.getValue = this.getValue.bind(this);
@@ -25,22 +22,18 @@ export default class FCheckBox extends React.Component{
             this.setState({options: this.props.data})
         }
         else if(this.props.data !== ''){ 
-          this.setState({isLoading: true},()=>{
-            this.httpManager.getRequest(this.props.data).then(response=>{
-              var options = [];  
-              response.data.forEach(el=>{ 
-                options.push({
-                  label:this.getLabel(el),
-                  value:this.getValue(el)
-                })
-                this.setState({options: options, isLoading: false})
+
+          this.httpManager.postRequest(this.props.data,{data:"CHECKBOX COMPONENT"}).then(response=>{
+            var options = [];  
+            response.data.forEach(el=>{ 
+              options.push({
+                label:this.getLabel(el),
+                value:this.getValue(el)
               })
-              if(response.data.length === 0){ 
-                this.setState({options: [], isLoading:false})
-              }
-            }).catch(e=>{
-              console.log("ERROR::::", e)
+              this.setState({options: options})
             })
+          }).catch(e=>{
+            // console.log("ERROR::::", e)
           })
         }
     }
@@ -60,9 +53,8 @@ export default class FCheckBox extends React.Component{
         return item[valuekey];
     }
     render() {
-        return (<>
-          {this.state.isLoading && <Spinner/>}
-          {!this.state.isLoading && <FormControl fullWidth> 
+        return (
+          <FormControl fullWidth> 
           {this.props.label && <Typography variant="body2" style={{fontWeight:'bold', fontSize:'500'}} >
             {this.props.label}
           </Typography> }
@@ -81,11 +73,7 @@ export default class FCheckBox extends React.Component{
                 />
               })}
             </RadioGroup>
-          </FormControl>}
-          {!this.state.isLoading && this.state.options.length === 0 && <Typography variant="subtitle" style={{fontSize:'13px',color:'#999' }} >
-            {this.props.emptyMsg}
-          </Typography>}
-          </>
+          </FormControl>
         );
     }
 }

@@ -47,12 +47,12 @@ export default class FPhoneNumber extends React.Component {
                 }
               }}
               onKeyDown={(e)=>{  
-                console.log(e)
-                // if(e.target.value.toString().length > 2){
-                //   if(e.target.value.toString().substr(0,2)==='+1' && (e.keyCode === 8  || e.keyCode === 46) ){
-                //     e.preventDefault()
-                //   }
-                // }
+
+                if(e.target.value.toString().length > 2){
+                  if(e.target.value.toString().substr(0,2)==='+1' && (e.keyCode === 8  || e.keyCode === 46) ){
+                    e.preventDefault()
+                  }
+                }
                 if(e.target.value.length === 2 && (e.keyCode === 8  || e.keyCode === 46)){
                   e.preventDefault();
                 }

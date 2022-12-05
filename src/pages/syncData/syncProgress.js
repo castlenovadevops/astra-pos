@@ -48,81 +48,55 @@ export default class SyncProgress extends React.Component{
         // console.log("did mount")
         this.setState({mastertables:[
             
-            {
-                name: "merchantEmployees",
-                tablename: 'merchantEmployees',
-                progressText: "Synchronizing Staff details...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/employees`
-            } ,
-            {
-                name: "mCustomers",
-                tablename: 'mCustomers',
-                progressText: "Synchronizing Customers...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/getCustomers`
-            },
-            {
-                name: "mCategory",
-                tablename: 'mCategory',
-                progressText: "Synchronizing Categories...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/category`
-            },
-            {
-                name: "mProducts",
-                tablename: 'mProducts',
-                progressText: "Synchronizing Products/Services...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/products`
-            } ,
-            {
-                name: "mDefaultDiscountDivision",
-                tablename: 'mDefaultDiscountDivision',
-                progressText: "Synchronizing Default Discount Division Settings...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/defaultDiscountDivision`
-            } ,
-            {
-                name: "mDefaultCommission",
-                tablename: 'mDefaultCommission',
-                progressText: "Synchronizing Default Commission Settings...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/defaultCommission`
-            } ,
-            {
-                name: "mDiscounts",
-                tablename: 'mDiscounts',
-                progressText: "Synchronizing Discounts...",
-                progresscompletion: 10,
-                url:  `/pos/syncData/discounts`
-            } ,
-            
             // {
-            //     name: "default_commission",
-            //     tablename: 'default_commission',
-            //     progressText: "Synchronizing Commission...",
+            //     name: "merchantEmployees",
+            //     tablename: 'merchantEmployees',
+            //     progressText: "Synchronizing Staff details...",
             //     progresscompletion: 10,
-            //     url: config.root + `/settings/default_commission/list/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:''
-            // } , 
-            // {
-            //     name: "default_discount_division",
-            //     tablename: 'default_discount_division',
-            //     progressText: "Synchronizing Discount Division...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/settings/default_discount/list/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:''
+            //     url:  `/pos/syncData/employees`
             // } ,
-
             // {
-            //     name: "employee_salary",
-            //     tablename: 'employee_salary',
-            //     progressText: "Synchronizing Salary Division...",
+            //     name: "mCustomers",
+            //     tablename: 'mCustomers',
+            //     progressText: "Synchronizing Customers...",
             //     progresscompletion: 10,
-            //     url: config.root + `/settings/employee_salary/list/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:''
+            //     url:  `/pos/syncData/getCustomers`
+            // },
+            // {
+            //     name: "mCategory",
+            //     tablename: 'mCategory',
+            //     progressText: "Synchronizing Categories...",
+            //     progresscompletion: 10,
+            //     url:  `/pos/syncData/category`
+            // },
+            // {
+            //     name: "mProducts",
+            //     tablename: 'mProducts',
+            //     progressText: "Synchronizing Products/Services...",
+            //     progresscompletion: 10,
+            //     url:  `/pos/syncData/products`
             // } ,
+            // {
+            //     name: "mDefaultDiscountDivision",
+            //     tablename: 'mDefaultDiscountDivision',
+            //     progressText: "Synchronizing Default Discount Division Settings...",
+            //     progresscompletion: 10,
+            //     url:  `/pos/syncData/defaultDiscountDivision`
+            // } ,
+            // {
+            //     name: "mDefaultCommission",
+            //     tablename: 'mDefaultCommission',
+            //     progressText: "Synchronizing Default Commission Settings...",
+            //     progresscompletion: 10,
+            //     url:  `/pos/syncData/defaultCommission`
+            // } ,
+            // {
+            //     name: "mDiscounts",
+            //     tablename: 'mDiscounts',
+            //     progressText: "Synchronizing Discounts...",
+            //     progresscompletion: 10,
+            //     url:  `/pos/syncData/discounts`
+            // } ,  
             {
                 name: "mTax",
                 tablename: 'mTax',
@@ -130,110 +104,6 @@ export default class SyncProgress extends React.Component{
                 progresscompletion: 10,
                 url:  `/pos/syncData/tax`
             } ,
-            // {
-            //     name: "customers",
-            //     tablename: 'customers',
-            //     progressText: "Synchronizing Customers...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/customer/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/customer/saveorupdate'
-            // },
-            // {
-            //     name: "discounts",
-            //     tablename: 'discounts',
-            //     progressText: "Synchronizing Discounts...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/discount/list/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/discount/saveorupdate'
-            // },
-            // {
-            //     name: "services",
-            //     tablename: 'services',
-            //     progressText: "Synchronizing Services...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/inventory/servicesbybusiness/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/inventory/services/saveorupdate'
-            // } ,
-            // {
-            //     name: "services_category",
-            //     tablename: 'services_category',
-            //     progressText: "Synchronizing Services...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/inventory/servicescategory/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/inventory/services/category/saveorupdate'
-            // } ,
-            // {
-            //     name: "services_tax",
-            //     tablename: 'services_tax',
-            //     progressText: "Synchronizing Services...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/inventory/servicestax/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/inventory/services/tax/saveorupdate'
-            // },
-            // {
-            //     name: "ticket",
-            //     tablename: 'ticket',
-            //     progressText: "Synchronizing Ticket...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/ticket/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/ticket/saveorupdate'
-            // } ,
-            // {
-            //     name: "ticket_services",
-            //     tablename: 'ticket_services',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/ticket/allservices/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/ticket/service/saveorupdate'
-            // } ,
-            // {
-            //     name: "ticketservice_taxes",
-            //     tablename: 'ticketservice_taxes',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/ticket/alltaxes/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/ticket/tax/saveorupdate'
-            // },
-            // {
-            //     name: "ticketservice_requestnotes",
-            //     tablename: 'ticketservice_requestnotes',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/ticket/allnotes/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/ticket/service/saveorupdatenotes'
-            // },
-            // {
-            //     name: "ticket_payment",
-            //     tablename: 'ticket_payment',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/ticket/payments/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/ticket/payment/saveorupdate'
-            // },
-            // {
-            //     name: "employee_commission_detail",
-            //     tablename: 'employee_commission_detail',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/ticket/empcommission/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/employee_commission/save'
-            // },
-            // {
-            //     name: "emp_payment",
-            //     tablename: 'emp_payment',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url: config.root + `/payment/getPayments/` + JSON.parse(window.localStorage.getItem('merchantDetail')).id,
-            //     syncurl:'/payment/savePayment'
-            // },
-            // {
-            //     name: "staff_clockLog",
-            //     tablename: 'staff_clockLog',
-            //     progressText: "Synchronizing Logs...",
-            //     progresscompletion: 10,
-            //     url:'',
-            //     syncurl:'/employee/synclog'
-            // }
         ]}, ()=>{
             
             var condition = navigator.onLine ? 'online' : 'offline';

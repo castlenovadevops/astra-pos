@@ -123,6 +123,22 @@ export default class FTextField extends React.Component{
                         e.preventDefault();
                     }
                 } 
+                else if(this.props.format === 'stringnumeric'){
+                    // var m;
+                    // document.all ? m = e.keyCode : m = e.which; 
+                    // if(((m > 64 && m < 91) || (m > 96 && m < 123) || (m>47 && m<58  ) || m===39 || m===37 || m===9 || m === 8 || m === 32 || m === 50 || m === 190)){
+                    //     console.log("IF")
+                    // }
+                    // else{
+                    //     console.log("ELSE stringnumeric", Number(e.key))
+                    //     e.preventDefault();
+                    // }
+                    const pattern = /^[a-z0-9]+$/i;  
+                    if(!pattern.test(e.key) && e.keyCode !== 9 && e.keyCode !== 37 && e.keyCode !== 39){
+                        e.preventDefault();
+                    }
+                    
+                }
                 else if(this.props.format === 'email'){
                     var m;
                     document.all ? m = e.keyCode : m = e.which; 

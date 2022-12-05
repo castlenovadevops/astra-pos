@@ -6,82 +6,58 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import HTTPManager from '../../../utils/httpRequestManager';
-import Spinner from "../../Spinner";
 
 export default class FSelect extends React.Component{
   httpManager = new HTTPManager();
     constructor(props){
         super(props);
         this.state={
-            options:[],
-            isLoading: false
+            options:[]
         }
         this.getLabel = this.getLabel.bind(this);
         this.getValue = this.getValue.bind(this);
     }
 
-
-    static getDerivedStateFromProps(nextProps, prevState) { 
-      if(nextProps.data instanceof Array){
-        if(nextProps.data !== prevState.options){
-          console.log(nextProps.data)
-          return {options: nextProps.data} 
-        }
-        return null;
-      } 
-      else if(nextProps !== ''){  
-        var httpManager = new HTTPManager();
-         httpManager.getRequest(nextProps.data).then(response=>{
-          var options = []; 
-          console.log(response);
-          response.data.forEach(el=>{ 
-            options.push({
-              label:this.getLabel(el),
-              value:this.getValue(el)
-            })
-            return {options: options, isLoading:false}
-          })
-          if(response.data.length === 0){ 
-             return {options: [], isLoading:false}
-          }
-          else{
-            return null;
-          }
-        }).catch(e=>{
-          return null;
-        }) 
-      }
-      else{
-        return null;
-      }
-    }
     componentDidMount(){ 
-      console.log(this.props)
         if(this.props.data instanceof Array){
             this.setState({options: this.props.data})
         }
         else if(this.props.data !== ''){ 
+          var url = this.props.data;
+          if(url.indexOf('https://') === -1){
+            url = process.env.REACT_APP_LOCALAPIURL+url;
 
-          this.setState({isLoading: true},()=>{
-            this.httpManager.getRequest(this.props.data).then(response=>{
-              var options = []; 
-              console.log(response);
-              response.data.forEach(el=>{ 
-                options.push({
-                  label:this.getLabel(el),
-                  value:this.getValue(el)
-                })
-                this.setState({options: options, isLoading:false})
+          this.httpManager.postRequest(url,{data:"SELECT COMPONENT"}).then(response=>{
+            var options = []; 
+            // console.log(response);
+            response.data.forEach(el=>{ 
+              options.push({
+                label:this.getLabel(el),
+                value:this.getValue(el)
               })
-              if(response.data.length === 0){ 
-                this.setState({options: [], isLoading:false})
-              }
-            }).catch(e=>{
-              console.log("ERROR::::", e)
+              this.setState({options: options})
             })
-          });
+          }).catch(e=>{
+            // console.log("ERROR::::", e)
+          })
         }
-    } 
+        else{
+          this.httpManager.getRequest(url).then(response=>{
+            var options = []; 
+            // console.log(response);
+            response.data.forEach(el=>{ 
+              options.push({
+                label:this.getLabel(el),
+                value:this.getValue(el)
+              })
+              this.setState({options: options})
+            })
+          }).catch(e=>{
+            // console.log("ERROR::::", e)
+          })
+        }
+        }
+    }
 
     getLabel(item){
       var labelkey = this.props.dataformat !== undefined ? this.props.dataformat.label : 'label';
@@ -91,16 +67,14 @@ export default class FSelect extends React.Component{
     getValue(item){  
         var valuekey = this.props.dataformat !== undefined ? this.props.dataformat.value : 'value';
         if(valuekey === 'all'){
-          console.log(item)
+          // console.log(item)
           return item;
         }
         return item[valuekey];
     }
     render() {
-        return (<>
-          {this.state.isLoading && <Spinner/>}
-         {!this.state.isLoading && <FormControl
-          required={this.props.required} fullWidth>
+        return (
+          <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{this.props.label}</InputLabel> 
              <Select
               labelId="demo-simple-select-label"
@@ -121,9 +95,7 @@ export default class FSelect extends React.Component{
                 </MenuItem>
               ))}
             </Select>
-          </FormControl> } 
-
-          </>
+          </FormControl>
         );
       }
     }
