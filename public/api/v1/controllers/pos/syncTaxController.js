@@ -37,7 +37,8 @@ module.exports = class SyncTaxController extends baseController{
     } 
     
     syncTax = async(req, res, next)=>{
-        let toBeSynced = this.readAll({where:{syncTable:'mTax'}}, 'toBeSynced')
+        let toBeSynced = await this.readAll({where:{syncTable:'mTax'}}, 'toBeSynced')
+        console.log("TO BE SYNCED", toBeSynced.length)
         if(toBeSynced.length > 0){  
             this.syncData(0, toBeSynced, req, res, next);
         }
@@ -48,8 +49,17 @@ module.exports = class SyncTaxController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            // console.log("SAVE TAX CALLED")
-            this.apiManager.postRequest('/pos/sync/saveTax', toBeSynced[idx] , req).then(response=>{
+            console.log("SAVE TAX CALLED")
+            let tobesync = toBeSynced[idx];
+            let datares = await this.readOne({where:{
+                id: tobesync.tableRowId
+            }}, 'mTax')
+            var data = datares.dataValues
+            data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
+            data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
+            data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
+            console.log(data)
+            this.apiManager.postRequest('/pos/sync/saveTax', data , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
                 })
