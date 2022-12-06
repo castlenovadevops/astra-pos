@@ -5,6 +5,7 @@ const crypto = new Crypto();
 module.exports = class APIManager{
     // baseAPI = "https://api.ci.dev.castlenova.net/api/v1";
     baseAPI = "http://localhost:3000/api/v1";
+    // baseAPI = "http://192.168.242.123:3000/api/v1"
 
     getRequest(url, req){ 
         return new Promise((resolve) => {

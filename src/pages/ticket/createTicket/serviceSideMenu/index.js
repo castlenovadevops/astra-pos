@@ -296,10 +296,10 @@ export default class ServiceSideMenu extends  React.Component{
                                 </DialogContentText>
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button variant="contained" onClick={()=>{
+                                    <Button color="primary" variant="contained" onClick={()=>{
                                         this.props.data.onVoidItem()
                                     }}>Yes </Button> 
-                                    <Button variant="contained" onClick={()=>{
+                                    <Button  color="primary" variant="outlined" onClick={()=>{
                                         this.props.data.onSelectSideMenu(-1)
                                     }}>No </Button> 
                                 </DialogActions>

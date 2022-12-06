@@ -52,6 +52,22 @@ export default function Clockin(props) {
           return `${result}${item}`
       }, "")
 
+      console.log(props.clockinemp.mEmployeePasscode, stringData)
+      if(props.clockinemp.mEmployeeId !== undefined){
+        if(props.clockinemp.mEmployeePasscode === stringData){
+          sendData(stringData)
+        }
+        else{
+          setFormError('Invalid Passcode. Please try again later');
+          setShowFormError(true)
+        }
+      }
+      else{
+        sendData(stringData)
+      }
+    }
+    const sendData = (stringData)=>{
+
       httpManager.postRequest(`/merchant/employee/clocklog`, {passCode: stringData}).then(res=>{
         // window.localStorage.setItem('userdetail', JSON.stringify(res.data))
         // window.localStorage.setItem('token', res.token);

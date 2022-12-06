@@ -187,7 +187,7 @@ class SplitService extends React.Component  {
                     </Typography>
                     </Grid>
                     <Grid item xs={6} alignItems='flex-end' justify='flex-end' style={{padding:'10px', display:'flex'}}>
-                    <Button variant="contained" style={{height:'100%', maxHeight:'50px', background: this.state.canaddSplit ? '#009E60' : '#ccc !important'  }} disabled={!this.state.canaddSplit}  onClick={()=>{this.addNewSplit();}}>Split</Button>
+                    <Button variant="contained" style={{height:'100%', maxHeight:'50px'  }} disabled={!this.state.canaddSplit}  onClick={()=>{this.addNewSplit();}}>Split</Button>
                     </Grid>
                 </Grid> 
 
@@ -267,7 +267,7 @@ class SplitService extends React.Component  {
             <Grid item xs={12} style={{display:'flex', position: 'absolute',bottom:'0', height: 60,width: '100%', background: '', marginBottom: 0 }}>
                     <Grid item xs={4}></Grid>
                     <Grid item xs={4} style={{display:'flex'}}>
-                        <Button style={{marginRight: 10}} color="secondary" disabled={this.state.splittedservice.length===1 ? true : (this.state.isDisabled)} onClick={()=>{  this.saveSplit()}} fullWidth variant="primary">Save</Button>
+                        <Button style={{marginRight: 10}} variant={"contained"}  color="primary" disabled={this.state.splittedservice.length===1 ? true : (this.state.isDisabled)} onClick={()=>{  this.saveSplit()}} fullWidth >Save</Button>
                         <Button color="primary" fullWidth variant="outlined" onClick={() => this.props.data.closeSplit()} >Cancel</Button>
                     </Grid>
                     <Grid item xs={4}></Grid>

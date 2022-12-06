@@ -494,8 +494,14 @@ overflow-x: hidden !important;
 .splitpopup .MuiBox-root{ 
 
 }
+ 
 
-
-/* .MuiButton-contained:not(:disabled){
+.MuiDialogContent-root .MuiButton-contained:not(:disabled), .MuiDialogActions-root  .MuiButton-contained:not(:disabled){
     background-color: #134163 !important;
-} */
+    color:#fff;
+}
+
+.MuiDialogContent-root .MuiButton-outlined:not(:disabled),.MuiDialogActions-root  .MuiButton-outlined:not(:disabled){
+    color: #134163 !important;
+    border:1px solid #134163;
+}

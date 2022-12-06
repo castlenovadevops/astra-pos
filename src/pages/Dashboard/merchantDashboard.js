@@ -30,13 +30,21 @@ export default class MerchantDashboard extends React.Component{
             showCreateTicket:false,
             ownerTechnician: {},
             refreshData: false,
-            ticketDetail:{}
+            ticketDetail:{},
+            clockinemp:{}
         }
         this.loadData = this.loadData.bind(this);  
         this.handleCloseDialog = this.handleCloseDialog.bind(this);
         this.setOwnerTech = this.setOwnerTech.bind(this);
         this.closeCreateTicket = this.closeCreateTicket.bind(this);
         this.editTicket = this.editTicket.bind(this)
+        this.setClockIn = this.setClockIn.bind(this)
+    }
+
+    setClockIn(obj){
+        this.setState({clockinemp: obj},()=>{
+            this.setState({showClockIn: true})
+        })
     }
 
     editTicket(detail){
@@ -98,7 +106,7 @@ export default class MerchantDashboard extends React.Component{
             <Grid container className="fullHeight">
                 <Grid item xs={4} className={'dashboardDivider'}>
                     <Technicians onCompleteRefresh={()=>{// console.log("COMPLETE REFRESH CALLED");
-                    this.setState({refreshData: false})}} refreshData={this.state.refreshData} setOwnerTech={this.setOwnerTech}/>
+                    this.setState({refreshData: false})}} refreshData={this.state.refreshData} setClockIn={this.setClockIn} setOwnerTech={this.setOwnerTech}/>
                 </Grid>
                 <Grid item xs={8} className={'dashboardDivider'}>
                    {!this.state.showCreateTicket && <TicketListComponent  data={{
@@ -151,7 +159,7 @@ export default class MerchantDashboard extends React.Component{
                         <Clockin handleCloseDialog={()=>{
                             this.socket.emit("refreshTechnicians", {data:"success"})
                                 this.setState({showClockIn: false})
-                        }} />
+                        }} clockinemp={this.state.clockinemp} />
                     </DialogContentText>
                     </DialogContent> 
                 </Dialog>

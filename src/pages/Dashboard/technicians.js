@@ -52,12 +52,18 @@ export default class Technicians extends React.Component{
         })
     }
 
-    renderEmpNames(data, color){
+    renderEmpNames(data, color, opt){
         var empBox = []
         data.forEach(emp=>{
             empBox.push(<Grid className='techbtn'  item xs={4} style={{padding:'10px 5px', background:"",paddingRight: 2,paddingLeft: 2, paddingTop:2,paddingBottom:2,  height:65,cursor:'pointer'}}> 
             <div style={{background: color,borderBottom: '0px solid #bee1f7', borderRadius: 10, display:'flex',alignItems:'center', justifyContent:'center', }} 
             onDoubleClick={()=>{
+                if(opt){
+                    this.props.setOwnerTech(emp);
+                }
+                else{
+                    this.props.setClockIn(emp)                    
+                }
                     //  this.setState({ticketowner:staff})
                     //  this.handleOpenClockin()
             }}>
@@ -93,7 +99,7 @@ export default class Technicians extends React.Component{
                 <div style={{height:'calc(100% - 60px)'}}>
                     <Grid container>
                         <Grid item xs={12} style={{display:'flex', flexDirection:'row', flexWrap:'wrap'}}>
-                            {this.renderEmpNames(this.state.clockedInEmps, '#bee1f7')}
+                            {this.renderEmpNames(this.state.clockedInEmps, '#bee1f7', true)}
                         </Grid>
                     </Grid>
                 </div>

@@ -1,5 +1,5 @@
 import { Button, Typography, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText } from '@mui/material';
-import React from 'react';    
+import React from 'react';     
 
 export default function VoidModal(
     {
@@ -17,9 +17,7 @@ export default function VoidModal(
 
     <Dialog
         open={true}
-        onClose={()=>{
-            this.props.data.selectedMenu(1)
-        }}
+        onClose={handleCloseVoidAlert}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         style={{zIndex:'99999'}}
@@ -32,9 +30,9 @@ export default function VoidModal(
             <Typography id="modal-modal-title" variant="subtitle2" component="h2" align="left" style={{marginLeft:20}}>{msg}</Typography>
         </DialogContentText>
         </DialogContent>
-        <DialogActions>
-            <Button style={{marginRight: 10, background:'#134163', color: '#ffffff'}} onClick={updateVoidTicket} variant="contained">Yes</Button>
-            <Button onClick={handleCloseVoidAlert} style={{ borderColor:'#134163',color: '#134163'}} variant="outlined">No</Button> 
+        <DialogActions> 
+            <Button onClick={updateVoidTicket}  variant="contained">Yes</Button>
+            <Button onClick={handleCloseVoidAlert} variant="outlined">No</Button> 
         </DialogActions> 
     </Dialog> 
         
