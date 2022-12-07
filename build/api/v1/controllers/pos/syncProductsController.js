@@ -3,7 +3,7 @@ const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
 const APIManager = require('../../utils/apiManager'); 
-
+const Sequelize = require('sequelize')
 const settings = require('../../config/settings');
 let sequelize = settings.database; 
 const db = settings.database;
@@ -38,7 +38,7 @@ module.exports = class SyncCategoryController extends baseController{
     } 
     
     syncProducts = async(req, res, next)=>{
-        let toBeSynced = this.readAll({where:{syncTable:'mProducts'}}, 'toBeSynced')
+        let toBeSynced = await this.readAll({where:{syncTable:'mProducts'}}, 'toBeSynced')
         if(toBeSynced.length > 0){  
             this.syncData(0, toBeSynced, req, res, next);
         }
@@ -50,7 +50,36 @@ module.exports = class SyncCategoryController extends baseController{
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
             // console.log("SAVE sync Products CALLED")
-            this.apiManager.postRequest('/pos/sync/saveProduct', toBeSynced[idx] , req).then(response=>{
+            let detail = await this.readOne({
+                order: [
+                    ['createdDate','ASC']
+                ],
+                where:{
+                    id: toBeSynced[idx].tableRowId , 
+                    mProductStatus:{
+                        [Sequelize.Op.ne]:'2'
+                    }
+                },
+                include:[
+                    {
+                        model:this.models.mProductCategory, 
+                        where:{
+                            status:1, 
+                        },
+                        required: false
+                    },
+                    {
+                        model:this.models.mProductTax, 
+                        where:{
+                            status:1
+                        },
+                        required: false
+                    }
+                ]
+                
+            }, 'mProducts')
+            let product = detail || detail.dataValues;
+            this.apiManager.postRequest('/pos/sync/saveProduct',  product, req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
                 })

@@ -38,7 +38,8 @@ module.exports = class SyncCategoryController extends baseController{
     } 
     
     syncCategory = async(req, res, next)=>{
-        let toBeSynced = this.readAll({where:{syncTable:'mCategory'}}, 'toBeSynced')
+        let toBeSynced = await this.readAll({where:{syncTable:'mCategory'}}, 'toBeSynced')
+        console.log("SYNC CATEGORY::::: ", toBeSynced.length)
         if(toBeSynced.length > 0){  
             this.syncData(0, toBeSynced, req, res, next);
         }
@@ -49,12 +50,22 @@ module.exports = class SyncCategoryController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            // console.log("SAVE syncCategory CALLED")
-            this.apiManager.postRequest('/pos/sync/saveCategory', toBeSynced[idx] , req).then(response=>{
+            console.log("SAVE syncCategory CALLED")
+
+            let tobesync = toBeSynced[idx];
+            let datares = await this.readOne({where:{
+                id: tobesync.tableRowId
+            }}, 'mCategory')
+            var data = datares.dataValues
+            data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
+            data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
+            data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
+            console.log(data)
+            this.apiManager.postRequest('/pos/sync/saveCategory', data , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
                 })
-            })
+            }) 
         }
         else{
             this.pullData(req, res, next)

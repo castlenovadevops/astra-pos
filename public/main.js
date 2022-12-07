@@ -32,7 +32,9 @@ const createWindow = () => {
 
   mainWindow = new BrowserWindow({
     width: 600,
-    height: 600, 
+    height: 600,  
+    minHeight: 800, 
+    minWidth: 800, 
     show: false, 
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: {   

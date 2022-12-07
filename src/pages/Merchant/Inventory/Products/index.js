@@ -57,15 +57,15 @@ export default class ProductService extends React.Component{
                         </div>
                     )
                 },
-                // {
-                //     field: 'Action',
-                //     headerName:'Actions',
-                //     flex:1,
-                //     minWidth:100,
-                //     renderCell: (params) => (
-                //         this.getActions(params)                    
-                //     ),
-                // }
+                {
+                    field: 'Action',
+                    headerName:'Actions',
+                    flex:1,
+                    minWidth:100,
+                    renderCell: (params) => (
+                        this.getActions(params)                    
+                    ),
+                }
 
             ],
             defaultTaxes:[]
@@ -158,14 +158,14 @@ export default class ProductService extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>       
-                
+                {(userdetail.mEmployeeRoleName !== 'Admin' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
                 {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&& <FButton
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mProductStatus==='1' &&
+                {/* {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mProductStatus==='1' &&
                     <FButton
                     variant="contained" 
                     size="small" 
@@ -178,7 +178,7 @@ export default class ProductService extends React.Component{
                     size="small" 
                     onClick={()=>{this.updateRecord(params.row, 1)}} 
                     label="Activate"/>
-                }
+                } */}
                
             </div>
         }

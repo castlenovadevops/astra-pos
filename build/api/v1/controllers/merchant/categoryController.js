@@ -54,7 +54,7 @@ module.exports = class CategoryController extends baseController{
         input.updatedBy=  req.userData.mEmployeeId;
         input.updatedDate = this.getDate();
         // console.log(input)
-        if(input.id != undefined){
+        if(input.id !== undefined){
             this.update('mCategory', input, {where:{id :input.id}}).then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
             })
@@ -72,12 +72,8 @@ module.exports = class CategoryController extends baseController{
                 merchantId:req.deviceDetails.merchantId
             },
             order: [
-            ['createdDate','ASC']
-        ],
-        attributes:{include: [ [
-            Sequelize.col('id'),
-            `id`
-        ], ]}
+                ['createdDate','ASC']
+            ], 
         }, 'mCategory')
         this.sendResponse({ data: category}, res, 200);
     }

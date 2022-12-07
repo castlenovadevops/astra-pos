@@ -11,7 +11,8 @@ const db = settings.database;
 const pkfields = {
     'mTax':"id",
     "mCategory":"id",
-    "mProducts":"id"
+    "mProducts":"id",
+    "mDiscounts":"id"
 }
 
 module.exports = class baseController extends MsgController{

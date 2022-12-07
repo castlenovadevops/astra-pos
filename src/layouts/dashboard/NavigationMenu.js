@@ -5,6 +5,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Box, Link,   Typography, Avatar, FormControl, Select, MenuItem } from '@mui/material';
 // components
 import Logo from '../../components/Logo';
+import LogoutOutlined from '@mui/icons-material/ExitToAppOutlined'
 import Scrollbar from '../../components/Scrollbar';
 import NavSection from '../../components/NavSection';
 import { styled } from '@mui/material/styles';
@@ -21,7 +22,7 @@ const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 const AccountStyle = styled('div')(({ theme }) => ({
     display: 'flex', 
     flexDirection:'column',
-    padding: theme.spacing(2, 2.5),
+    padding: theme.spacing(2, 1),
     borderRadius: Number(theme.shape.borderRadius) * 1.5,
     backgroundColor: theme.palette.grey[500_12],
   }));
@@ -144,18 +145,23 @@ export default class NavigationMenu extends React.Component{
           <Box sx={{ mb: 5, mx: 2.5, mt:2 }}>
             <Link underline="none" component={RouterLink} to="#">
               <AccountStyle>
-                <div style={{display:'flex'}}>
+                <div style={{display:'flex', alignItems:'center'}}>
                 <Avatar src={'/static/icons/avataricon.png'} style={{maxHeight:'40px'}} alt="photoURL" />
-                <Box sx={{ ml: 2 }}>
+                <Box sx={{ ml: 2, width:'70%' }}>
                   <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
                     {this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}
                   </Typography> 
+
+                </Box>
+                  <Typography   sx={{ color: 'text.primary', fontSize:'12px' }}>
+                    <img src={'/static/icons/logout.png'} alt="Logout" style={{maxHeight:'40px'}} />
+                  </Typography> 
+                </div>  
+                <div style={{display:'flex', alignItems:'center'}}>
                   <Typography   sx={{ color: 'text.primary', fontSize:'12px' }}>
                     Version - Development
                   </Typography> 
-                </Box>
-                </div> 
-
+                </div>
               </AccountStyle>
             </Link>
           </Box>

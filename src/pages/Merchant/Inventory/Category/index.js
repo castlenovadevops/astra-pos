@@ -46,15 +46,15 @@ export default class Category extends React.Component{
                       </div>
                     )
                 },
-                // {
-                //     field: 'Action',
-                //     headerName:'Actions',
-                //     flex:1,
-                //     minWidth:100,
-                //     renderCell: (params) => (
-                //         this.getActions(params)                    
-                //     ),
-                // }
+                {
+                    field: 'Action',
+                    headerName:'Actions',
+                    flex:1,
+                    minWidth:100,
+                    renderCell: (params) => (
+                        this.getActions(params)                    
+                    ),
+                }
             ]
         }
         this.handleCloseform = this.handleCloseform.bind(this); 
@@ -82,14 +82,14 @@ export default class Category extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>       
-                
+                {(userdetail.mEmployeeRoleName !== 'Admin' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
                 {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  <FButton
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mCategoryStatus==='1' &&
+                {/* {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mCategoryStatus==='1' &&
                     <FButton
                     variant="contained" 
                     size="small" 
@@ -102,7 +102,7 @@ export default class Category extends React.Component{
                     size="small" 
                     onClick={()=>{this.updateRecord(params.row, 1)}} 
                     label="Activate"/>
-                }
+                } */}
                
             </div>
         }
@@ -188,7 +188,7 @@ export default class Category extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Category
                     </Typography>
@@ -199,7 +199,7 @@ export default class Category extends React.Component{
                     label="Add Category"
                     startIcon={getIcon('mdi:plus')}
                     />
-                </Stack> */}
+                </Stack>
 
                 <Card>
                     <TableView

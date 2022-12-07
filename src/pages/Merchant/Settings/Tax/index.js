@@ -184,7 +184,7 @@ export default class Tax extends React.Component{
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mTaxStatus.toString()==='1' &&
+                {/* {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && params.row.mTaxStatus.toString()==='1' &&
                     <FButton
                     variant="contained" 
                     size="small" 
@@ -212,7 +212,7 @@ export default class Tax extends React.Component{
                     size="small" 
                     onClick={()=>{this.makeDefault({isDefault:1, id:params.row.id}, params.row)}} 
                     label="Make Default"/>
-                }
+                } */}
                
             </div>
         }
