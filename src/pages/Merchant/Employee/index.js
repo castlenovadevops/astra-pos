@@ -9,7 +9,7 @@ import FormManager from "../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Box, Grid, Card,  Container, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@mui/material';
 import FButton from '../../../components/formComponents/components/button';
-
+import { Offline, Online } from "react-detect-offline";
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class Employee extends React.Component{
@@ -69,15 +69,15 @@ export default class Employee extends React.Component{
                       </div>
                   )
                 },
-                // {
-                //     field: 'Action',
-                //     headerName:'Actions',
-                //     flex:1,
-                //     minWidth:100,
-                //     renderCell: (params) => (
-                //         this.getActions(params)                    
-                //     ),
-                // }
+                {
+                    field: 'Action',
+                    headerName:'Actions',
+                    flex:1,
+                    minWidth:100,
+                    renderCell: (params) => (
+                        this.getActions(params)                    
+                    ),
+                }
             ]
         }
         this.handleCloseform = this.handleCloseform.bind(this); 
@@ -106,15 +106,24 @@ export default class Employee extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>       
+            {(userdetail.mEmployeeRoleName !== 'Admin' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
+                <Offline>
+                    {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
+                    variant="outlined" 
+                    size="small" 
+                    disabled={ true }
+                    onClick={()=>this.openEdit(params.row)} 
+                    label="Edit"/>}
+                </Offline>
+                <Online>
+                    {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
+                        variant="outlined" 
+                        size="small" 
+                        disabled={ !navigator.onLine }
+                        onClick={()=>this.openEdit(params.row)} 
+                        label="Edit"/>}
                 
-               {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
-                variant="outlined" 
-                size="small" 
-                disabled={ !navigator.onLine }
-                onClick={()=>this.openEdit(params.row)} 
-                label="Edit"/>}
-                
-                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  params.row.mEmployeeStatus.toString() === '1' &&
+                {/* {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  params.row.mEmployeeStatus.toString() === '1' &&
                     <FButton
                     variant="contained" 
                     size="small" 
@@ -129,8 +138,8 @@ export default class Employee extends React.Component{
                     disabled={ !navigator.onLine }
                     onClick={()=>{this.updateRecord(params.row, '1')}} 
                     label="Activate"/>
-                }
-               
+                } */}
+                </Online>               
             </div>
         }
     }
@@ -139,6 +148,8 @@ export default class Employee extends React.Component{
         var properties = Object.assign([], this.state.schema.properties);
         var props=[];
         properties.forEach((field,i)=>{
+            console.log("EMP EDIT")
+            console.log(data, field.name)
             field.value = data[field.name];
             props.push(field);
             if(i === properties.length-1){
@@ -160,6 +171,32 @@ export default class Employee extends React.Component{
             }
         })
     }
+
+    syncData(){
+        var table = {
+            name: "merchantEmployees",
+            tablename: 'merchantEmployees',
+            progressText: "Synchronizing Staff details...",
+            progresscompletion: 10,
+            url:  `/pos/syncData/employees`
+        }
+        this.httpManager.postRequest(table.url, {data:"TAX"}).then(res=>{ 
+            this.httpManager.postRequest(`merchant/defaultcommission/get`,{data:"EMP GET"}).then(response=>{ 
+                // this.openEdit(response.data); 
+                if(response.data.length > 0){
+                    this.setState({defaultcommission: response.data[0] }, ()=>{ 
+                        this.getEmpslist()
+                    });
+                }
+                else{
+                    this.getEmpslist()
+                }
+            })
+        }).catch(e=>{
+
+        })
+    }
+
     reloadData(msg=''){
         if(msg !== ''){ 
             toast.dismiss();
@@ -175,17 +212,7 @@ export default class Employee extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/defaultcommission/get`,{data:"EMP GET"}).then(response=>{ 
-                // this.openEdit(response.data); 
-                if(response.data.length > 0){
-                    this.setState({defaultcommission: response.data[0] }, ()=>{ 
-                        this.getEmpslist()
-                    });
-                }
-                else{
-                    this.getEmpslist()
-                }
-            })
+            this.syncData()
         })
     }
 
@@ -239,19 +266,30 @@ export default class Employee extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Employee Management
                     </Typography>
-                    <FButton 
-                    onClick={()=>this.openAdd()}
-                    size="large"
-                    disabled={ !navigator.onLine }
-                    variant="contained"
-                    label="Add Employee"
-                    startIcon={getIcon('mdi:plus')}
-                    />
-                </Stack> */}
+                    <Online>
+                        <FButton 
+                        onClick={()=>this.openAdd()}
+                        size="large"
+                        disabled={ !navigator.onLine }
+                        variant="contained"
+                        label="Add Employee"
+                        startIcon={getIcon('mdi:plus')}
+                        />
+                    </Online>
+                    <Offline>
+                        <FButton  
+                        size="large"
+                        disabled={ true }
+                        variant="contained"
+                        label="Add Employee"
+                        startIcon={getIcon('mdi:plus')}
+                        />
+                    </Offline>
+                </Stack>
 
                 <Card>
                     <TableView
@@ -264,7 +302,7 @@ export default class Employee extends React.Component{
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
                      <Grid item xs={12}> 
                         <Stack spacing={3}> 
-                            <FormManager formProps={this.state.schema}  reloadData={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()}/>
+                            <FormManager disableOffline={true} formProps={this.state.schema}  reloadData={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()}/>
                         </Stack>
                     </Grid>
                 </Grid>

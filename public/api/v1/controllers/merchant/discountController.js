@@ -63,11 +63,13 @@ module.exports = class DiscountController extends baseController{
         if(input.id !== undefined){
             // console.log(input)
             this.updateWithNew('mDiscounts', input, {where:{id:input.id}}, 'mDiscountStatus', 'id').then(resp=>{
+                console.log("DISCOUNT UPDATED")
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
             })
         }
         else{
             this.create('mDiscounts', input).then(resp=>{
+                console.log("DISCOUNT SAVED")
                 this.sendResponse({message:"Saved sucessfully"}, res, 200)
             })
         }

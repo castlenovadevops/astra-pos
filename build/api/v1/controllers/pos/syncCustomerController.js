@@ -38,7 +38,7 @@ module.exports = class SyncCustomerController extends baseController{
     } 
     
     syncCustomers = async(req, res, next)=>{
-        let toBeSynced = this.readAll({where:{syncTable:'mCustomers'}}, 'toBeSynced')
+        let toBeSynced = await this.readAll({where:{syncTable:'mCustomers'}}, 'toBeSynced')
         if(toBeSynced.length > 0){  
             this.syncData(0, toBeSynced, req, res, next);
         }
@@ -49,12 +49,23 @@ module.exports = class SyncCustomerController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            // console.log("SAVE syncCategory CALLED")
-            this.apiManager.postRequest('/pos/sync/saveCustomers', toBeSynced[idx] , req).then(response=>{
+            console.log("SAVE sync Customer CALLED")
+            
+
+            let tobesync = toBeSynced[idx];
+            let datares = await this.readOne({where:{
+                mCustomerId: tobesync.tableRowId
+            }}, 'mCustomers')
+            var data = datares.dataValues
+            data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
+            data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
+            data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
+            console.log(data)
+            this.apiManager.postRequest('/pos/sync/saveCustomer', data , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
                 })
-            })
+            }) 
         }
         else{
             this.pullData(req, res, next)

@@ -75,11 +75,17 @@
         }
     ],
     "required": ["mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
-    "buttons":[ 
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"merchant/defaultcommission/save",
+        "url":"http://localhost:3000/api/v1/merchant/defaultcommission/saveFromPOS",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

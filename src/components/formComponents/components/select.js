@@ -31,7 +31,7 @@ export default class FSelect extends React.Component{
       } 
       else if(nextProps !== ''){  
         var httpManager = new HTTPManager();
-         httpManager.getRequest(nextProps.data).then(response=>{
+         httpManager.postRequest(nextProps.data, {data:"FROM SELECT"}).then(response=>{
           var options = []; 
           console.log(response);
           response.data.forEach(el=>{ 
@@ -56,12 +56,33 @@ export default class FSelect extends React.Component{
       }
     }
     componentDidMount(){ 
-      console.log(this.props)
         if(this.props.data instanceof Array){
             this.setState({options: this.props.data})
         }
+        else if(this.props.data !== '' && this.props.data.indexOf('http') === -1 && ( this.props.dataMethod === 'POST' || this.props.dataMethod === undefined)){ 
+         this.setState({isLoading: true},()=>{
+            this.httpManager.postRequest(this.props.data, {data:"FROM SELECT"}).then(response=>{
+              var options = []; 
+              console.log(response);
+              response.data.forEach(el=>{ 
+                options.push({
+                  label:this.getLabel(el),
+                  value:this.getValue(el)
+                })
+                this.setState({options: options, isLoading:false})
+              })
+              if(response.data.length === 0){ 
+                this.setState({options: [], isLoading:false})
+              }
+            }).catch(e=>{
+              console.log("ERROR::::", e)
+            })
+          });
+        }
         else if(this.props.data !== ''){ 
-
+          console.log(this.props.data, this.props.dataMethod,  (this.props.dataMethod === 'POST' || this.props.dataMethod === undefined))
+      
+          
           this.setState({isLoading: true},()=>{
             this.httpManager.getRequest(this.props.data).then(response=>{
               var options = []; 

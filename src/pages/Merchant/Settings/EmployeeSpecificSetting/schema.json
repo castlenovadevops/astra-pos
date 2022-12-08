@@ -99,10 +99,16 @@
     ],
     "required": ["minimumSalary","mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
     "buttons":[ 
+        {
+            "label":"Save",
+            "type":"submit",
+            "variant":"contained",
+            "grid":2
+          }
     ],
     "onSubmit":{   
         "action":"API",
-        "url":"merchant/employeecommission/saveCommission",
+        "url":"http://localhost:3000/api/v1/merchant/employeecommission/saveCommission",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

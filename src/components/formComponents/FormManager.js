@@ -15,6 +15,7 @@ import FCheckBox from './components/checkBox';
 import HTTPManager from '../../utils/httpRequestManager';
 import parse from 'html-react-parser'
 
+import { Offline, Online } from "react-detect-offline";
 export default class FormManager extends React.Component{
     httpManager = new HTTPManager(); 
     constructor(props){
@@ -337,7 +338,7 @@ export default class FormManager extends React.Component{
                 }
                 else{ 
                     formFields.push(<Grid item xs={grid}>
-                        {field.type !== 'hidden' && <FSelect fullWidth disabled={disabled}  required={required} dataformat={field.dataformat}  label={label} data={data} placeholder={placeholder} name={name} value={this.state[name]} onChange={e=>{
+                        {field.type !== 'hidden' && <FSelect fullWidth disabled={disabled} dataMethod={field.dataMethod} required={required} dataformat={field.dataformat}  label={label} data={data} placeholder={placeholder} name={name} value={this.state[name]} onChange={e=>{
                             var stateVariable = Object.assign({}, this.state);
                             stateVariable[name]=e.target.value;
                             stateVariable["isChanged"]=true;
@@ -434,23 +435,48 @@ export default class FormManager extends React.Component{
         var buttonfields = [];
         this.state.buttons.forEach(btn=>{
             const {label, type, grid, variant, disabled} = btn;
+            if(this.props.disableOffline !== undefined && this.props.disableOffline){
+                buttonfields.push(<Grid item xs={grid}> 
+                    <Online>
+                        <FButton fullWidth size="large" variant={variant} disabled={type==='submit' ? this.state.isDisabled : (type==='closeWithAction' ? (this.state[disabled] === null || this.state[disabled] === '' || this.state[disabled] === undefined ? true : false) : false)} label={label} onClick={()=>{
+                                if(type==='submit'){
+                                    this.submitForm()
+                                }
+                                if(type==='close'){
+                                    this.props.closeForm();
+                                }
+                                if(type === 'closeWithAction'){
+                                    console.log("TTTTTTTTTT")
+                                    console.log(this.getFormFields())
+                                    this.props.closeForm(label, this.getFormFields())
+                                }
+                            }
+                        }/>
+                    </Online>
 
-            buttonfields.push(<Grid item xs={grid}>
-                <FButton fullWidth size="large" variant={variant} disabled={type==='submit' ? this.state.isDisabled : (type==='closeWithAction' ? (this.state[disabled] === null || this.state[disabled] === '' || this.state[disabled] === undefined ? true : false) : false)} label={label} onClick={()=>{
-                    if(type==='submit'){
-                        this.submitForm()
-                    }
-                    if(type==='close'){
-                        this.props.closeForm();
-                    }
-                    if(type === 'closeWithAction'){
-                        console.log("TTTTTTTTTT")
-                        console.log(this.getFormFields())
-                        this.props.closeForm(label, this.getFormFields())
-                    }
-                }
-                }/>
-            </Grid>)
+                    <Offline>
+                        <FButton fullWidth size="large" variant={variant} disabled={true} label={label}/>
+                    </Offline>
+                </Grid>)
+            }
+            else{
+                buttonfields.push(<Grid item xs={grid}> 
+                    <FButton fullWidth size="large" variant={variant} disabled={type==='submit' ? this.state.isDisabled : (type==='closeWithAction' ? (this.state[disabled] === null || this.state[disabled] === '' || this.state[disabled] === undefined ? true : false) : false)} label={label} onClick={()=>{
+                            if(type==='submit'){
+                                this.submitForm()
+                            }
+                            if(type==='close'){
+                                this.props.closeForm();
+                            }
+                            if(type === 'closeWithAction'){
+                                console.log("TTTTTTTTTT")
+                                console.log(this.getFormFields())
+                                this.props.closeForm(label, this.getFormFields())
+                            }
+                        }
+                    }/>
+                </Grid>)
+            }
         });
         return buttonfields;
     }

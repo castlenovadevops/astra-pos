@@ -22,6 +22,26 @@ export default class FRadio extends React.Component{
         if(this.props.data instanceof Array){
             this.setState({options: this.props.data})
         }
+        else if(this.props.data !== '' && this.props.data.indexOf('https://') === -1){ 
+
+          this.setState({isLoading: true},()=>{
+              this.httpManager.postRequest(this.props.data,{data:"FROM CHECKBOX"}).then(response=>{
+                var options = [];  
+                response.data.forEach(el=>{ 
+                  options.push({
+                    label:this.getLabel(el),
+                    value:this.getValue(el)
+                  })
+                  this.setState({options: options, isLoading:false})
+                })
+                if(response.data.length === 0){ 
+                  this.setState({options: [], isLoading:false})
+                }
+              }).catch(e=>{
+                console.log("ERROR::::", e)
+              })
+            });
+      }
         else if(this.props.data !== ''){ 
 
           this.setState({isLoading: true},()=>{

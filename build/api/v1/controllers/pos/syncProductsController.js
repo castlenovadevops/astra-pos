@@ -49,16 +49,13 @@ module.exports = class SyncCategoryController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            // console.log("SAVE sync Products CALLED")
+            console.log("SAVE sync Products CALLED", toBeSynced.length)
             let detail = await this.readOne({
                 order: [
                     ['createdDate','ASC']
                 ],
                 where:{
-                    id: toBeSynced[idx].tableRowId , 
-                    mProductStatus:{
-                        [Sequelize.Op.ne]:'2'
-                    }
+                    id: toBeSynced[idx].tableRowId ,  
                 },
                 include:[
                     {
@@ -78,7 +75,11 @@ module.exports = class SyncCategoryController extends baseController{
                 ]
                 
             }, 'mProducts')
-            let product = detail || detail.dataValues;
+            var product = detail || detail.dataValues; 
+            console.log(product)
+            product["createdDate"] = product["createdDate"].replace("T"," ").replace("Z","");
+            product["updatedDate"] = product["updatedDate"].replace("T"," ").replace("Z","");
+            product["addedOn"] = req.deviceDetails.device.POSId || 'POS';
             this.apiManager.postRequest('/pos/sync/saveProduct',  product, req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
@@ -95,9 +96,10 @@ module.exports = class SyncCategoryController extends baseController{
         var input = { 
             merchantId: req.deviceDetails.merchantId,
             POSId: req.deviceDetails.device.POSId,
-            // syncAll: true
+            syncAll: true
         }
         this.apiManager.postRequest('/pos/sync/getProducts',  input ,req).then(resp=>{ 
+            console.log("PRODUCTS ", resp.response.data.length)
             if(resp.response.data.length > 0){
                 this.saveData(0, resp.response.data, req, res, next, [])
             }

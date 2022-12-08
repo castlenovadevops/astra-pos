@@ -144,7 +144,7 @@ export default class UserProfile extends React.Component {
     }
 
     getUserDetails(){
-        this.httpManager.getRequest('/merchant/profile/getProfile').then(profile=>{
+        this.httpManager.postRequest('/merchant/profile/getProfile',{data:"FROM CHECKBOX"}).then(profile=>{
             this.setState({  merchantList: profile.merchants})
         })
     }

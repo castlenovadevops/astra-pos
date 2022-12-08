@@ -85,6 +85,31 @@ export default class CommissionPayment extends React.Component{
         });
     }
 
+    syncData(){
+        var table = {
+            name: "mDefaultCommission",
+            tablename: 'mDefaultCommission',
+            progressText: "Synchronizing Default Commission Settings...",
+            progresscompletion: 10,
+            url:  `/pos/syncData/defaultCommission`
+        } 
+        this.httpManager.postRequest(table.url, {data:"TAX"}).then(res=>{ 
+            this.httpManager.postRequest(`merchant/defaultcommission/get`,{data:"GET COMMISSION"}).then(response=>{ 
+                // this.openEdit(response.data); 
+                if(response.data.length > 0){
+                    this.setState({selectedcommission: response.data[0] }, ()=>{
+                        this.openEdit(this.state.selectedcommission)
+                    });
+                }
+                else{
+                    this.setState({isLoading: false})
+                }
+            })
+        }).catch(e=>{
+
+        })
+    }
+
     reloadData(msg=''){
         if(msg !== ''){ 
             toast.dismiss();
@@ -100,17 +125,7 @@ export default class CommissionPayment extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/defaultcommission/get`,{data:"GET COMMISSION"}).then(response=>{ 
-                // this.openEdit(response.data); 
-                if(response.data.length > 0){
-                    this.setState({selectedcommission: response.data[0] }, ()=>{
-                        this.openEdit(this.state.selectedcommission)
-                    });
-                }
-                else{
-                    this.setState({isLoading: false})
-                }
-            })
+            this.syncData();
         })
     }
     
@@ -118,6 +133,13 @@ export default class CommissionPayment extends React.Component{
         var schema = Object.assign({}, this.state.schema);
         var properties = Object.assign([], this.state.schema.properties);
         var props=[];
+        var dstr= window.localStorage.getItem("merchantdetail");
+        var merchantdetail = JSON.parse(dstr);
+        var ustr= window.localStorage.getItem("userdetail");
+        var udetail = JSON.parse(ustr);
+        var merchantId = merchantdetail.merchantId
+        var posid = merchantdetail.device.POSId
+        var empid = udetail.mEmployeeId
         properties.forEach((field,i)=>{
             field.value = data[field.name];
             props.push(field);
@@ -133,6 +155,43 @@ export default class CommissionPayment extends React.Component{
                     "placeholder":"id",
                     "value":data.id
                   })
+
+
+                props.push({
+                    "component":"TextField", 
+                    "type": "hidden", 
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "grid":6,
+                    "name":"merchantId",
+                    "label":"id",
+                    "placeholder":"id",
+                    "value":merchantId
+                  })
+
+                  props.push({
+                      "component":"TextField", 
+                      "type": "hidden", 
+                      "minLength": 1,
+                      "maxLength": 50,
+                      "grid":6,
+                      "name":"empid",
+                      "label":"id",
+                      "placeholder":"id",
+                      "value":empid
+                    })
+
+                    props.push({
+                        "component":"TextField", 
+                        "type": "hidden", 
+                        "minLength": 1,
+                        "maxLength": 50,
+                        "grid":6,
+                        "name":"POSId",
+                        "label":"id",
+                        "placeholder":"id",
+                        "value":posid
+                      })
                 schema.properties = props; 
                 this.setState({schema: schema,selectedcommission: data, isLoading: false},()=>{
                    // console.log("SCHEMA")
@@ -168,7 +227,7 @@ export default class CommissionPayment extends React.Component{
                      <Grid item xs={12}>
 
                         <Stack spacing={3}> 
-                            {this.state.schema.formName && <FormManager formProps={this.state.schema} formFunctions={{  
+                            {this.state.schema.formName && <FormManager disableOffline={true} formProps={this.state.schema} formFunctions={{  
                                 changePercentage: (props, values)=>{
                                    this.changePercentage(props,values);
                                 }

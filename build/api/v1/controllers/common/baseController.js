@@ -12,13 +12,14 @@ const pkfields = {
     'mTax':"id",
     "mCategory":"id",
     "mProducts":"id",
-    "mDiscounts":"id"
+    "mDiscounts":"id",
+    "mCustomers" : "mCustomerId"
 }
 
 module.exports = class baseController extends MsgController{
     models = models;
 
-    syncTables = ["mTax", "mCategory", "mProduct", "mDiscounts", "mCustomers"]
+    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers"]
 
     constructor(props){
         super(props);
@@ -98,6 +99,7 @@ module.exports = class baseController extends MsgController{
                     tableRowId: data[pkfield],
                     merchantId: data["merchantId"] || ''
                 }
+                console.log(input)
                 await this.models["toBeSynced"].create(input);
                 resolve(results)
             }

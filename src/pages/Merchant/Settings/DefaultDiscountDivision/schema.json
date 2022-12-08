@@ -27,11 +27,17 @@
         }
     ],
     "required": ["mOwnerDivision", "mEmployeeDivision"],
-    "buttons":[ 
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"merchant/defaultdiscount/save",
+        "url":"http://localhost:3000/api/v1/merchant/defaultdiscount/saveFromPOS",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

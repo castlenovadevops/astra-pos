@@ -59,8 +59,10 @@ module.exports = class CustomerController extends baseController{
 
         input.updatedBy= req.userData.mEmployeeId;
         input.updatedDate = this.getDate();
-        // console.log(input)
-        if(input.id != undefined){
+        console.log("UPDATE CALLED")
+        console.log(input)
+        if(input.id !== undefined){
+            input["mCustomerId"] = input.id;
             this.update('mCustomers', input, {where:{mCustomerId :input.id}}).then(resp=>{
                 this.sendResponse({message:"Updated sucessfully"}, res, 200)
             })

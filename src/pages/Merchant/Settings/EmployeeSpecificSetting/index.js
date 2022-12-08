@@ -110,6 +110,32 @@ export default class EmployeeSetting extends React.Component{
             this.reloadData();
         })
     }
+
+    syncData(){
+        var table = {
+            name: "merchantEmployees",
+            tablename: 'merchantEmployees',
+            progressText: "Synchronizing Staff details...",
+            progresscompletion: 10,
+            url:  `/pos/syncData/employees`
+        }
+        this.httpManager.postRequest(table.url, {data:"TAX"}).then(res=>{ 
+            this.httpManager.postRequest(`merchant/defaultcommission/get`, {data:"DEFAULT COMMISSION"}).then(response=>{ 
+                // this.openEdit(response.data); 
+                if(response.data.length > 0){
+                    this.setState({defaultCommission: response.data[0] }, ()=>{ 
+                        this.getEmpslist()
+                    });
+                }
+                else{
+                    this.getEmpslist()
+                }
+            })
+        }).catch(e=>{
+
+        })
+    }
+
     reloadData(msg=''){
         if(msg !== ''){ 
             toast.dismiss();
@@ -125,17 +151,7 @@ export default class EmployeeSetting extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/defaultcommission/get`, {data:"DEFAULT COMMISSION"}).then(response=>{ 
-                // this.openEdit(response.data); 
-                if(response.data.length > 0){
-                    this.setState({defaultCommission: response.data[0] }, ()=>{ 
-                        this.getEmpslist()
-                    });
-                }
-                else{
-                    this.getEmpslist()
-                }
-            })
+            this.syncData()
         })
     }
 
@@ -213,7 +229,7 @@ export default class EmployeeSetting extends React.Component{
                      </Grid>
                      <Grid item xs={8} style={{borderLeft:'1px solid #f0f0f0'}}> 
                         <Stack spacing={3}>  
-                           {this.state.schema.onSubmit && <FormManager formProps={this.state.schema} formFunctions={{
+                           {this.state.schema.onSubmit && <FormManager disableOffline={true} formProps={this.state.schema} formFunctions={{
                                 changePercentage:this.changePercentage
                             }} reloadData={()=>{
                                 this.reloadData() }}/> }

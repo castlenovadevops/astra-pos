@@ -60,15 +60,15 @@ export default class Customer extends React.Component{
                         </div>
                     )
                 }, 
-                // {
-                //     field: 'Action',
-                //     headerName:'Actions',
-                //     flex:1,
-                //     minWidth:100,
-                //     renderCell: (params) => (
-                //         this.getActions(params)                    
-                //     ),
-                // }  
+                {
+                    field: 'Action',
+                    headerName:'Actions',
+                    flex:1,
+                    minWidth:100,
+                    renderCell: (params) => (
+                        this.getActions(params)                    
+                    ),
+                }  
             ],
         }
         this.handleCloseform = this.handleCloseform.bind(this); 
@@ -97,14 +97,14 @@ export default class Customer extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>       
-                
+                {(userdetail.mEmployeeRoleName !== 'Admin' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
                 {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') && <FButton  permission_id = "web_edit_customer" permission_label="Show edit customer"
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
                 label="Edit"/>}
                 
-                {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  params.row.mCustomerStatus.toString() === '1'  &&
+                {/* {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  params.row.mCustomerStatus.toString() === '1'  &&
                     <FButton permission_id = "web_status_customer" permission_label="Show status customer"
                     variant="contained" 
                     size="small" 
@@ -117,7 +117,7 @@ export default class Customer extends React.Component{
                     size="small" 
                     onClick={()=>{this.updateRecord(params.row, 1)}} 
                     label="Activate"/>
-                }
+                } */}
                
             </div>
         }
@@ -167,24 +167,7 @@ export default class Customer extends React.Component{
             this.httpManager.postRequest(`merchant/customers/getCustomer`,{data:"FROM CUSTOMER"}).then(response=>{
                 // console.log(response)
                 this.setState({customerlist: response.data, isLoading: false});
-            })
-
-            // this.httpManager.getRequest(`merchant/customers/getCustomer`).then(response=>{
-            //     var data = [];
-            //     // console.log("response",response.data);
-            //     if(response.data.length > 0){
-            //         response.data.forEach((elmt, i)=>{ 
-            //             elmt.id = elmt.mCustomerId;
-            //             data.push(elmt);
-            //             if(i === response.data.length-1){
-            //                 this.setState({customerlist: data, isLoading: false});
-            //             }
-            //         })
-            //     }
-            //     else{
-            //         this.setState({customerlist: data, isLoading: false});
-            //     }
-            // })
+            }) 
         })
     }
     openAdd(){
@@ -221,7 +204,7 @@ export default class Customer extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Customer Management
                     </Typography>
@@ -232,7 +215,7 @@ export default class Customer extends React.Component{
                     label="Add Customer"
                     startIcon={getIcon('mdi:plus')}
                     />
-                </Stack> */}
+                </Stack>
 
                 <Card>
                     <TableView

@@ -54,6 +54,31 @@ export default class DefaultDiscountDivision extends React.Component{
             this.reloadData();
         })
     } 
+
+    syncData(){
+        var table = {
+            name: "mDefaultDiscountDivision",
+            tablename: 'mDefaultDiscountDivision',
+            progressText: "Synchronizing Default Discount Division Settings...",
+            progresscompletion: 10,
+            url:  `/pos/syncData/defaultDiscountDivision`
+        } 
+        this.httpManager.postRequest(table.url, {data:"TAX"}).then(res=>{ 
+            this.httpManager.postRequest(`merchant/defaultdiscount/get`,{data:"GET DISCOUNT DIVISION"}).then(response=>{
+                if(response.data.length > 0){
+                    this.setState({selectedDiscount: response.data[0] }, ()=>{
+                        this.openEdit(this.state.selectedDiscount)
+                    });
+                }
+                else{
+                    this.setState({isLoading: false})
+                } 
+            })
+        }).catch(e=>{
+
+        })
+    }
+
     reloadData(msg=''){
         if(msg !== ''){ 
             toast.dismiss();
@@ -69,22 +94,20 @@ export default class DefaultDiscountDivision extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/defaultdiscount/get`,{data:"GET DISCOUNT DIVISION"}).then(response=>{
-                if(response.data.length > 0){
-                    this.setState({selectedDiscount: response.data[0] }, ()=>{
-                        this.openEdit(this.state.selectedDiscount)
-                    });
-                }
-                else{
-                    this.setState({isLoading: false})
-                } 
-            })
+            this.syncData()
         })
     }
     openEdit(data){ 
         var schema = Object.assign({}, this.state.schema);
         var properties = Object.assign([], this.state.schema.properties);
         var props=[];
+        var dstr= window.localStorage.getItem("merchantdetail");
+        var merchantdetail = JSON.parse(dstr);
+        var ustr= window.localStorage.getItem("userdetail");
+        var udetail = JSON.parse(ustr);
+        var merchantId = merchantdetail.merchantId
+        var posid = merchantdetail.device.POSId
+        var empid = udetail.mEmployeeId
         properties.forEach((field,i)=>{
             field.value = data[field.name];
             props.push(field);
@@ -100,6 +123,42 @@ export default class DefaultDiscountDivision extends React.Component{
                     "placeholder":"id",
                     "value":data.id
                   })
+
+                props.push({
+                    "component":"TextField", 
+                    "type": "hidden", 
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "grid":6,
+                    "name":"merchantId",
+                    "label":"id",
+                    "placeholder":"id",
+                    "value":merchantId
+                  })
+
+                  props.push({
+                      "component":"TextField", 
+                      "type": "hidden", 
+                      "minLength": 1,
+                      "maxLength": 50,
+                      "grid":6,
+                      "name":"empid",
+                      "label":"id",
+                      "placeholder":"id",
+                      "value":empid
+                    })
+
+                    props.push({
+                        "component":"TextField", 
+                        "type": "hidden", 
+                        "minLength": 1,
+                        "maxLength": 50,
+                        "grid":6,
+                        "name":"POSId",
+                        "label":"id",
+                        "placeholder":"id",
+                        "value":posid
+                      })
                 schema.properties = props; 
                 // console.log(schema)
                 this.setState({schema: schema,selectedDiscount: data},()=>{
@@ -135,7 +194,7 @@ export default class DefaultDiscountDivision extends React.Component{
 
                         <Stack spacing={3}>
                             
-                            {this.state.schema.formName && <FormManager formProps={this.state.schema} formFunctions={{
+                            {this.state.schema.formName && <FormManager disableOffline={true} formProps={this.state.schema} formFunctions={{
                                 changePercentage: this.changePercentage
                             }} reloadData={(msg)=>{
                                 this.reloadData(msg)

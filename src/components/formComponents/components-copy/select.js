@@ -42,7 +42,7 @@ export default class FSelect extends React.Component{
           })
         }
         else{
-          this.httpManager.getRequest(url).then(response=>{
+          this.httpManager.postRequest(url,{data:"FROM CHECKBOX"}).then(response=>{
             var options = []; 
             // console.log(response);
             response.data.forEach(el=>{ 

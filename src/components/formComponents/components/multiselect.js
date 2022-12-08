@@ -22,11 +22,29 @@ export default class FMultiSelect extends React.Component{
     componentDidMount(){
         if(this.props.data instanceof Array){
             this.setState({options: this.props.data})
+        } 
+        else if(this.props.data !== '' && this.props.data.indexOf('https://') === -1){ 
+          this.setState({isLoading: true},()=>{
+              this.httpManager.getRequest(this.props.data).then(response=>{
+                var options = [];  
+                response.data.forEach(el=>{ 
+                  console.log(el)
+                    options.push({
+                        label:this.getLabel(el),
+                        value:this.getValue(el)
+                    })
+                    this.setState({options: options, isLoading:false})
+                })
+                if(response.data.length === 0){ 
+                  this.setState({options: [], isLoading:false})
+                }
+              })
+            });
         }
         else if(this.props.data !== ''){
 
           this.setState({isLoading: true},()=>{
-              this.httpManager.getRequest(this.props.data).then(response=>{
+              this.httpManager.postRequest(this.props.data,{data:"FROM CHECKBOX"}).then(response=>{
                 var options = [];  
                 response.data.forEach(el=>{ 
                   console.log(el)

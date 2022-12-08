@@ -29,7 +29,7 @@ export default class HTTPManager{
                 // url = process.env.REACT_APP_APIURL+urlREACT_APP_LOCALAPIURL
             // }
 
-            if(url.indexOf('https://') === -1){
+            if(url.indexOf('http') === -1){
                 url = process.env.REACT_APP_LOCALAPIURL+url
             }
             axios.get( url, {headers: this.getAuthHeader()}).then(response=>{ 
@@ -51,7 +51,7 @@ export default class HTTPManager{
 
     postRequest(url, input){
         return new Promise((resolve, reject)=>{ 
-            if(url.indexOf('https://') === -1){
+            if(url.indexOf('http') === -1){
                 url = process.env.REACT_APP_LOCALAPIURL+url
             }
             axios.post(url, {data:this.crypto.AESEncrypt(input)}, {headers: this.getAuthHeader()}).then(response=>{ 

@@ -61,8 +61,8 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false 
         },
-        mEmployeeZipCode: {
-             field: 'mEmployeeZipCode', 
+        mEmployeeZipcode: {
+             field: 'mEmployeeZipcode', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: true 
