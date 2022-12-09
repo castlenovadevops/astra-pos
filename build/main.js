@@ -1,4 +1,4 @@
-const { app, BrowserWindow,  Menu} = require('electron'); 
+const { app, BrowserWindow,  Menu, ipcMain} = require('electron'); 
 const isDev = require('electron-is-dev'); 
 const path = require('path');
 // const sqlite3 = require('sqlite3');   
@@ -37,13 +37,13 @@ const createWindow = () => {
     minWidth: 800, 
     show: false, 
     icon: path.join(__dirname, 'icon.png'),
-    webPreferences: {   
+    webPreferences: {    
       nodeIntegration: true,
       enableRemoteModule: true, 
       contextIsolation: true,
-    //   preload: isDev 
-    //     ? path.join(__dirname, './preload.js')
-    //     : path.join(app.getAppPath(), './build/preload.js'),
+      preload: isDev 
+        ? path.join(__dirname, './preload.js')
+        : path.join(app.getAppPath(), './preload.js'), 
     },
   });  
   mainWindow.webContents.on('did-finish-load', function() {
@@ -120,3 +120,13 @@ process.on('uncaughtException', (error) => {
     app.quit();
   }
 });  
+
+
+ipcMain.handle('getPrinters', async(event)=>{
+  console.log("get printers called")
+    return new Promise((resolve, reject) => {  
+      let webContents = mainWindow.webContents;
+      let printers = webContents.getPrinters() 
+      resolve({printers:printers});
+    });
+}) 

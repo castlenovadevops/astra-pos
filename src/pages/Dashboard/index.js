@@ -13,6 +13,10 @@ export default class Dashboard extends React.Component{
         if(details !== ''){
             this.setState({userdetail: JSON.parse(details)})
         }
+
+        window.api.getPrinters().then(data=>{
+            console.log("RESULT ::::: ", data)
+        })
     }
     render(){
         return  <MerchantDashboard style={{height:'100%'}}/> 

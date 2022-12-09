@@ -31,6 +31,7 @@ import CreateTicket from './pages/ticket/create';
 import Transactions from './pages/Transactions';
 import PayoutComponent from './pages/Payout';
 import ReportComponent from './pages/reports';
+import Printers from './pages/PrintSettings'
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -64,10 +65,11 @@ export default function Router() {
         { path: 'commissionpayment', element: <CommissionPayment />},
         { path: 'defaultdiscount', element: <DefaultDiscountDivision />},
         { path: 'employeesetting', element: <EmployeeSetting />},
-        { path:'profile', element: <UserProfile/>},
-        { path:'transactions', element: <Transactions/>},
-        { path:'payout', element: <PayoutComponent/>},
-        { path:'report', element: <ReportComponent/>}
+        { path: 'profile', element: <UserProfile/>},
+        { path: 'transactions', element: <Transactions/>},
+        { path: 'payout', element: <PayoutComponent/>},
+        { path: 'report', element: <ReportComponent/>},
+        { path: 'printers', element: <Printers/>}
       ],
     }, {
       path: '/ticket/create', 

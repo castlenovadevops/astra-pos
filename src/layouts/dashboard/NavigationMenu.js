@@ -104,6 +104,10 @@ export default class NavigationMenu extends React.Component{
                           title: 'Employee Specific Setting',
                           path: '/app/employeesetting'   
                         },
+                        {
+                          title: 'Printer Settings',
+                          path: '/app/printers'   
+                        },
                       
                     ]
                 },
