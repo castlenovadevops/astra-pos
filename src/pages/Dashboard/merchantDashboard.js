@@ -1,5 +1,5 @@
 import React from "react";
-import {   Grid, Dialog, DialogTitle, DialogContent, DialogContentText } from "@mui/material"; 
+import {   Grid, Dialog, DialogTitle, DialogContent, DialogContentText, Button } from "@mui/material"; 
 import Loader from "../../components/Loader";
 import Iconify from '../../components/Iconify';
 import HTTPManager from "../../utils/httpRequestManager";
@@ -102,7 +102,11 @@ export default class MerchantDashboard extends React.Component{
             closeCreateTicket:this.closeCreateTicket
         }} /></div>}
             {this.state.isLoading && <Loader />}
-           
+           <Button variant="contained" onClick={()=>{
+                window.api.printData().then(r=>{
+                    
+                })
+           }}>Print</Button>
             <Grid container className="fullHeight">
                 <Grid item xs={4} className={'dashboardDivider'}>
                     <Technicians onCompleteRefresh={()=>{// console.log("COMPLETE REFRESH CALLED");

@@ -8,6 +8,9 @@ process.once('loaded', () => {
           },
       async getPrinters (args) {
         return await ipcRenderer.invoke("getPrinters", args)
+      },
+      async printData (args) {
+        return await ipcRenderer.invoke("printData", args)
       }
     })
   })

@@ -136,8 +136,9 @@ export default class Customer extends React.Component{
             this.setState({printerlist: res.data, isLoading: false})
         })
     }
+    
     handleCloseform(){
-
+        this.setState({addForm: false})
     }
 
     render(){
