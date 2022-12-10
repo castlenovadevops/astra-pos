@@ -221,7 +221,7 @@ export default class FormManager extends React.Component{
                 }
                 else if(format === 'percentage'){  
                     formFields.push(<Grid item xs={grid} style={{display: (fieldtype === 'hidden' ? 'none':'block')}}>
-                        <FTextField tabindex={tabindex} required={required} onBlur={(props)=>{
+                        <FTextField tabindex={tabindex} rows={field.rows} required={required} onBlur={(props)=>{
                             if(field.onBlur !== undefined && field.onBlur !== ''){
                                 this.props.formFunctions[field.onBlur](props, this.getFormFields());
                             }

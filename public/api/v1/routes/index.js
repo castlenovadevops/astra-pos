@@ -30,6 +30,9 @@ const ReportController = require('../controllers/merchant/reportController');
 const TicketInfoController = require('../controllers/merchant/ticketinfoController');
 const CombineController = require('../controllers/merchant/combineController');
 
+const PrintController = require('../controllers/print/printController');
+
+
 const express = require('express');
 const path = require('path');
 
@@ -74,7 +77,9 @@ const corsOptions ={
         new SyncDefaultDiscountController(),
         new SyncDefaultCommissionController(),
         new SyncEmployeesController(),
-        new SyncCustomerController()
+        new SyncCustomerController(),
+
+        new PrintController()
     ] 
     function initialize(){ 
             initializeControllers(0); 

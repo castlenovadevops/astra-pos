@@ -5,6 +5,7 @@ import HTTPManager from "../../utils/httpRequestManager";
 import TableView from '../../components/table/tableView';
 import { toast, ToastContainer } from 'react-toastify';
 import Iconify from '../../components/Iconify';
+import schema from './schema.json'
 import FormManager from "../../components/formComponents/FormManager";
 import { Button } from "@mui/material";
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
@@ -18,6 +19,7 @@ export default class Customer extends React.Component{
         this.state = {
             isLoading:false,
             printerlist:[],
+            schema:{},
             columns:[
                 {
                     field: 'printerName',
@@ -38,18 +40,104 @@ export default class Customer extends React.Component{
                     minWidth:100,
                     renderCell: (params) => (
                        <div>
-                            <Button onClick={()=>{
-                                console.log("Assign Clicked")
-                            }}>Assign</Button>
+                            <Button variant="outlined"  onClick={()=>{
+                                this.setState({isLoading: true},()=>{      
+                                    if(params.row.BillPrint === 0){
+                                        this.httpManager.postRequest(`pos/print/updatePrinter`,{id: params.row.id, BillPrint:1}).then(r=>{
+                                            this.reloadData()
+                                        })
+                                    }
+                                    else{
+                                        this.httpManager.postRequest(`pos/print/updatePrinter`,{id: params.row.id, BillPrint:0}).then(r=>{
+                                            this.reloadData()
+                                        })
+                                    }
+                                })
+                            }}>{params.row.BillPrint === 1 ? "UnAssign" : "Assign"} to Bill</Button>
+                            <Button variant="outlined" onClick={()=>{
+                                this.setState({isLoading: true},()=>{    
+                                    if(params.row.ReportPrint === 0){  
+                                        this.httpManager.postRequest(`pos/print/updatePrinter`,{id: params.row.id, ReportPrint:1}).then(r=>{
+                                            this.reloadData()
+                                        })
+                                    }
+                                    else{
+                                        this.httpManager.postRequest(`pos/print/updatePrinter`,{id: params.row.id, ReportPrint:0}).then(r=>{
+                                            this.reloadData()
+                                        })
+                                    }
+                                })
+                            }}>{params.row.ReportPrint === 1 ? "UnAssign" : "Assign"} to Report</Button>
                        </div>            
                     ),
                 }  
             ],
         }
+
+        this.reloadData = this.reloadData.bind(this);
+        this.handleCloseform = this.handleCloseform.bind(this);
+
+        this.openAdd = this.openAdd.bind(this);
+    }
+
+    openAdd(){
+        window.api.getPrinters().then(data=>{ 
+            var props = [];
+            props = schema.properties.map(field=>{
+                if(field.name === 'printerIdentifier'){
+                    field.data = data.printers;
+                    field.dataformat = {
+                        label:'displayName',
+                        value:'name'
+                    }
+                } 
+                return field;
+            })
+            schema.properties = props;
+            schema.force = true;
+            this.setState({schema: schema, addForm: true}, ()=>{
+            })
+        })       
     }
 
     componentDidMount(){
-        console.log("PRINT MANAGEENT")
+        this.setState({isLoading: false},()=>{
+             window.api.getPrinters().then(data=>{ 
+                var props = [];
+                props = schema.properties.map(field=>{
+                    if(field.name === 'printerIdentifier'){
+                        field.data = data.printers;
+                        console.log(field.data)
+                        field.dataformat = {
+                            label:'displayName',
+                            value:'name'
+                        }
+                    } 
+                    if(field.name === 'Title'){
+                        var mstr = window.localStorage.getItem('merchantdetail')
+                        var mdetail = JSON.parse(mstr);
+                        field.value = mdetail.merchantName
+                    }
+                    return field;
+                })
+                schema.properties = props;
+                schema.force = true;
+                this.setState({schema: schema}, ()=>{
+                    console.log(this.state.schema);
+                    this.reloadData()
+                })
+            })
+        })
+           
+    }
+
+    reloadData(){ 
+        this.httpManager.postRequest(`pos/print/getPrinters`,{data:"FOM PRINTER"}).then(res=>{
+            this.setState({printerlist: res.data, isLoading: false})
+        })
+    }
+    handleCloseform(){
+
     }
 
     render(){
@@ -91,7 +179,7 @@ export default class Customer extends React.Component{
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
                     <Grid item xs={12}> 
                         <Stack spacing={3}> 
-                            {/* <FormManager formProps={this.state.schema}  reloadData={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()}/> */}
+                            <FormManager formProps={this.state.schema}  reloadData={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()}/>
                         </Stack>
                     </Grid>
                 </Grid>

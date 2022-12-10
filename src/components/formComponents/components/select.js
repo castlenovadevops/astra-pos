@@ -24,8 +24,21 @@ export default class FSelect extends React.Component{
     static getDerivedStateFromProps(nextProps, prevState) { 
       if(nextProps.data instanceof Array){
         if(nextProps.data !== prevState.options){
-          console.log(nextProps.data)
-          return {options: nextProps.data} 
+          var options = [];
+          if(nextProps.dataformat !== undefined){
+            nextProps.data.forEach(el=>{ 
+              var labelkey = nextProps.dataformat !== undefined ? nextProps.dataformat.label : 'label';  
+                var valuekey = nextProps.dataformat !== undefined ? nextProps.dataformat.value : 'value'; 
+              options.push({
+                label:el[labelkey],
+                value:el[valuekey]
+              })
+            })
+            return {options: options}
+          }
+          else{
+            return {options: nextProps.data} 
+          }
         }
         return null;
       } 
@@ -35,10 +48,12 @@ export default class FSelect extends React.Component{
           var options = []; 
           console.log(response);
           response.data.forEach(el=>{ 
-            options.push({
-              label:this.getLabel(el),
-              value:this.getValue(el)
-            })
+            var labelkey = nextProps.dataformat !== undefined ? nextProps.dataformat.label : 'label';  
+              var valuekey = nextProps.dataformat !== undefined ? nextProps.dataformat.value : 'value';  
+              options.push({
+                label:el[labelkey],
+                value:el[valuekey]
+              }) 
             return {options: options, isLoading:false}
           })
           if(response.data.length === 0){ 
@@ -56,8 +71,23 @@ export default class FSelect extends React.Component{
       }
     }
     componentDidMount(){ 
+      if(this.props.data !== undefined){
+        console.log(this.props.data)
         if(this.props.data instanceof Array){
-            this.setState({options: this.props.data})
+          var options = [];
+          if(this.props.dataformat !== undefined){
+            this.props.data.forEach(el=>{ 
+              options.push({
+                label:this.getLabel(el),
+                value:this.getValue(el)
+              })
+            })
+            return {options: options}
+          }
+          else{
+            return {options: this.props.data} 
+          }
+            // this.setState({options: this.props.data})
         }
         else if(this.props.data !== '' && this.props.data.indexOf('http') === -1 && ( this.props.dataMethod === 'POST' || this.props.dataMethod === undefined)){ 
          this.setState({isLoading: true},()=>{
@@ -102,10 +132,12 @@ export default class FSelect extends React.Component{
             })
           });
         }
+      }
     } 
 
     getLabel(item){
       var labelkey = this.props.dataformat !== undefined ? this.props.dataformat.label : 'label';
+      console.log(labelkey, item[labelkey])
       return item[labelkey];
     }
 

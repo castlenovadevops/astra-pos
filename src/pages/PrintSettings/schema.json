@@ -1,0 +1,128 @@
+{
+    "formName":"customer",
+    "properties": [
+        {
+            "component":"div", 
+            "type": "text",
+            "format":"string",
+            "text" : "Add Printer",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
+        {
+            "component":"TextField", 
+            "type": "text",  
+            "minLength": 1,
+            "maxLength": 250,
+            "grid":6,
+            "name":"printerName",
+            "label":"Printer Name",
+            "placeholder":"Printer Name"
+        }, 
+        {
+            "component":"Select", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 250,
+            "grid":6,
+            "name":"printerIdentifier",
+            "label":"Printer Device",
+            "placeholder":"Printer Device"
+        },  
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "rows":3,
+            "name":"Title",
+            "label":"Title",
+            "placeholder":"Title"
+        },
+        {
+            "component":"Checkbox", 
+            "grid":6,
+            "name":"print",
+            "label":"",
+            "placeholder":"",
+            "checkboxWidth": "100%",  
+            "data":[
+              {
+                "label":"Bill Print",
+                "value":"Bill"
+              },
+              {
+                "label":"Report Print",
+                "value":"Report"
+              }
+            ]
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "rows":3,
+            "name":"headerText",
+            "label":"Header Text",
+            "placeholder":"Header Text"
+        },   
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "rows":3,
+            "name":"footerText",
+            "label":"Footer Text",
+            "placeholder":"Footer Text"
+        },  
+        {
+            "component":"Select", 
+            "type": "text", 
+            "minLength": 1,
+            "maxLength": 50,
+            "grid":6,
+            "name":"fontFamily",
+            "label":"Font Family",
+            "placeholder":"Font Family",
+            "data":"/pos/print/getFonts"
+        },
+        {
+            "component":"TextField", 
+            "type": "text",
+            "format":"number",
+            "minLength": 1,
+            "maxLength": 2,
+            "grid":6,
+            "name":"fontSize",
+            "label":"Font Size",
+            "placeholder":"Font Size"
+        }
+    ],
+    "required": ["printerName", "printerIdentifier"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        },
+        {
+          "label":"Cancel",
+          "type":"close",
+          "variant":"outlined",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"pos/print/savePrinter",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+    }
+}
