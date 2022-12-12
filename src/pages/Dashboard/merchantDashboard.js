@@ -102,11 +102,6 @@ export default class MerchantDashboard extends React.Component{
             closeCreateTicket:this.closeCreateTicket
         }} /></div>}
             {this.state.isLoading && <Loader />}
-           <Button variant="contained" onClick={()=>{
-                window.api.printData().then(r=>{
-                    
-                })
-           }}>Print</Button>
             <Grid container className="fullHeight">
                 <Grid item xs={4} className={'dashboardDivider'}>
                     <Technicians onCompleteRefresh={()=>{// console.log("COMPLETE REFRESH CALLED");

@@ -40,6 +40,13 @@ export default class Customer extends React.Component{
                     minWidth:100,
                     renderCell: (params) => (
                        <div>
+
+           <Button variant="contained" onClick={()=>{
+                window.api.printData(params.row.printerIdentifier).then(r=>{
+                    
+                })
+           }}>Print</Button>
+
                             <Button variant="outlined"  onClick={()=>{
                                 this.setState({isLoading: true},()=>{      
                                     if(params.row.BillPrint === 0){

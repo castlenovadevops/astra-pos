@@ -45,7 +45,7 @@ const createWindow = () => {
       contextIsolation: true,
       preload: isDev 
         ? path.join(__dirname, './preload.js')
-        : path.join(app.getAppPath(), './preload.js'), 
+        : path.join(app.getAppPath(), './build/preload.js'), 
     },
   });  
   mainWindow.webContents.on('did-finish-load', function() {
@@ -136,7 +136,7 @@ ipcMain.handle('getPrinters', async(event)=>{
 var open_printer_dialog = true;
 let print_window = {};   
 let current_time= Date.now()
-ipcMain.handle('printData', async(event)=>{
+ipcMain.handle('printData', async(event, printername)=>{
   return new Promise((resolve, reject) => { 
   let rand = Math.random();
   var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
@@ -144,7 +144,7 @@ ipcMain.handle('printData', async(event)=>{
   final_printed_data += '</body></html>';
   var print_copies = 1;
 
-  let new_file_location = path.resolve(__dirname, `./print_${current_time}_${rand}.html`);
+  let new_file_location = path.join(app.getAppPath(), `./build/print_${current_time}_${rand}.html`);
     current_time = current_time+'_'+rand;
     fs.writeFile(new_file_location, final_printed_data, async () => {
         console.log('file write ' +  new Date().toISOString());
@@ -164,7 +164,7 @@ ipcMain.handle('printData', async(event)=>{
             for(let i = 0 ; i < print_copies ; i++ ) { // loop based on copies 
                 try {
                     // result = await print_webcontents (print_window[current_time] , "EPSON_TM_T82X_S_A"); 
-                    result = await print_webcontents (print_window[current_time] , "Printer_1"); 
+                    result = await print_webcontents (print_window[current_time] , printername); 
                     console.log('print finish ' + new Date().toISOString());
                 } catch (ex) {
                     console.log(ex);
