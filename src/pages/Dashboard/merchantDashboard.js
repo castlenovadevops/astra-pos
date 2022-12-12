@@ -95,6 +95,10 @@ export default class MerchantDashboard extends React.Component{
         this.setState({showCreateTicket: false, ticketDetail:{}})
     }
 
+    redirectToPage(page){
+        window.location.href = "/app/"+page;
+    }
+
     render(){
         return <div className="fullHeight" >   
         {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer ticketDetail={this.state.ticketDetail} 
@@ -133,7 +137,9 @@ export default class MerchantDashboard extends React.Component{
                     <Grid item xs={2} className={'dashboardFooterDivider '}>
                         Waiting List
                     </Grid> 
-                    <Grid item xs={2} className={'dashboardFooterDivider '}>
+                    <Grid item xs={2} className={'dashboardFooterDivider '} onClick={()=>{
+                        this.redirectToPage('appointments')
+                    }}>
                         Appointments
                     </Grid>
                     <Grid item xs={2} className={'dashboardFooterDivider active'}>
