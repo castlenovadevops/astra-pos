@@ -5,17 +5,18 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("customerLoyaltyPoints", {
+	return sequelize.define("customerLoyaltyPoints", {
         id:{
             field:'id',
             type: DataTypes.UUID,
             primaryKey: true,
-            autoIncrement: false
+            autoIncrement: false,
+            defaultValue:DataTypes.UUIDV4
         }, 
         customerId:{
           field:'customerId',
           type: DataTypes.UUID,
-          primaryKey: true,
+          primaryKey: false,
           autoIncrement: false
           },
           ticketValue: {

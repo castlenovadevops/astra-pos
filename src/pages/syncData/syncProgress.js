@@ -104,6 +104,34 @@ export default class SyncProgress extends React.Component{
                 progresscompletion: 10,
                 url:  `/pos/syncData/tax`
             } ,
+            {
+                name: "LPSettings",
+                tablename: 'LPSettings',
+                progressText: "Synchronizing Loyalty Point Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/lpsettings`
+            } ,
+            {
+                name: "LPActivationSettings",
+                tablename: 'LPActivationSettings',
+                progressText: "Synchronizing Loyalty Point Activation Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/LPActivationSettings`
+            } ,
+            {
+                name: "LPRedeemSettings",
+                tablename: 'LPRedeemSettings',
+                progressText: "Synchronizing Loyalty Point Redeem Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/LPRedeemSettings`
+            } ,
+            {
+                name: "giftCards",
+                tablename: 'giftCards',
+                progressText: "Synchronizing Giftcards Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/giftCards`
+            } ,
         ]}, ()=>{
             
             var condition = navigator.onLine ? 'online' : 'offline';

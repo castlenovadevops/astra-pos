@@ -26,7 +26,7 @@ import FilterDrama from "@material-ui/icons/FilterDrama";
 import Opacity from "@material-ui/icons/Opacity";
 import ColorLens from "@material-ui/icons/ColorLens";
 import { withStyles } from "@material-ui/core/styles";
-import { owners } from "../../../demo-data/tasks";
+import { owners } from "./tasks";
 
 const appointments = [
   {

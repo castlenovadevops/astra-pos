@@ -1,0 +1,56 @@
+{
+    "formName":"commissionPayment",
+    "properties": [
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"number", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":12,
+            "name":"thresholdRedeemPoint",
+            "label":"Threshold Redeem Points",
+            "placeholder":"Threshold Redeem Points" 
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"number", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"minRedeemPoint",
+            "label":"Min % of Redeem Points",
+            "placeholder":"Min % of Redeem Points"
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"number", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"maxRedeemPoint",
+            "label":"Max % of Redeem Points",
+            "placeholder":"Max % of Redeem Points"
+        }
+    ],
+    "required": ["thresholdRedeemPoint"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/lpsettings/saveActivationSettings",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+       
+    }
+}

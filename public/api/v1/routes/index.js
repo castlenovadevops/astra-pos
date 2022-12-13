@@ -8,6 +8,8 @@ const TaxController = require('../controllers/merchant/taxController');
 const MerchantEmployeeController = require('../controllers/merchant/employeeController');
 const MEmployeeCommissionController = require('../controllers/merchant/employeeCommissionController');
 const CommonController = require('../controllers/common/commonController');
+const LoyaltyPointSettingsController = require('../controllers/merchant/loyaltyPointsController');
+const GiftCardsController = require('../controllers/merchant/giftCardController');
 
 const SyncController = require('../controllers/pos/syncCodeController');
 const SyncTaxController = require('../controllers/pos/syncTaxController');
@@ -18,6 +20,10 @@ const SyncDefaultDiscountController = require('../controllers/pos/syncDefaultDis
 const SyncDefaultCommissionController = require('../controllers/pos/syncDefaultCommissionController');
 const SyncEmployeesController = require('../controllers/pos/syncEmployeeController');
 const SyncCustomerController = require('../controllers/pos/syncCustomerController');
+const SyncLPSettingsController = require('../controllers/pos/syncLPSettingsController');
+const SyncLPActivationSettings = require('../controllers/pos/syncLPActivationSettingsController');
+const SyncLPRedeemSettings = require('../controllers/pos/syncLPRedeemSettingsController');
+const SyncGiftCardsSettings = require('../controllers/pos/syncGiftCardsController');
 
 const ClockInController = require('../controllers/merchant/clockinController');
 const TicketController = require('../controllers/merchant/ticketController');
@@ -68,6 +74,8 @@ const corsOptions ={
         new ReportController(),
         new TicketInfoController(),
         new CombineController(),
+        new LoyaltyPointSettingsController(),
+        new GiftCardsController(),
         
         new SyncController(),
         new SyncTaxController(),
@@ -78,6 +86,10 @@ const corsOptions ={
         new SyncDefaultCommissionController(),
         new SyncEmployeesController(),
         new SyncCustomerController(),
+        new SyncLPSettingsController(),
+        new SyncLPActivationSettings(),
+        new SyncLPRedeemSettings(),
+        new SyncGiftCardsSettings(),
 
         new PrintController()
     ] 

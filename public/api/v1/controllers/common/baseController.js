@@ -13,13 +13,17 @@ const pkfields = {
     "mCategory":"id",
     "mProducts":"id",
     "mDiscounts":"id",
-    "mCustomers" : "mCustomerId"
+    "mCustomers" : "mCustomerId",
+    "LPSettings":"id",
+    "LPActivationSettings":"id",
+    "LPRedeemSettings":"id",
+    "giftCards":"id"
 }
 
 module.exports = class baseController extends MsgController{
     models = models;
 
-    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers"]
+    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers","LPSettings","LPActivationSettings","LPRedeemSettings", "giftCards"]
 
     constructor(props){
         super(props);
@@ -60,11 +64,22 @@ module.exports = class baseController extends MsgController{
         });
     } 
     
+    generaterandomNumber(length) {
+        const characters ='0123456789';
+        let result = ' ';
+        const charactersLength = characters.length;
+        for ( let i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength)).trim();
+        }
+
+        return result;
+    }
 
     async create(model,data, updateTobeSync=true){ 
         return new Promise(async (resolve) => { 
             let results =  await this.models[model].create(data).catch(e=>{console.log(e)});
             if(this.syncTables.indexOf(model) !== -1 && updateTobeSync){
+                console.log(results, model)
                  var pkfield = pkfields[model]
                 var input = {
                     syncTable: model,

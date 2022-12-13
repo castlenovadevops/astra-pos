@@ -1,0 +1,47 @@
+{
+    "formName":"commissionPayment",
+    "properties": [
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"number", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"pointCount",
+            "label":"Point",
+            "placeholder":"Point",
+            "value":1,
+            "disabled":true
+        },
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"currency", 
+            "minLength": 1,
+            "maxLength": 5,
+            "grid":6,
+            "name":"dollarValue",
+            "label":"Amount",
+            "placeholder":"Amount"
+        }
+    ],
+    "required": ["dollarValue"],
+    "buttons":[
+        {
+          "label":"Save",
+          "type":"submit",
+          "variant":"contained",
+          "grid":2
+        }
+    ],
+    "onSubmit":{  
+        "action":"API",
+        "url":"merchant/lpsettings/save",
+        "method":"POST",
+        "onSuccess":{
+            "action":"reloadData"
+        }
+       
+    }
+}

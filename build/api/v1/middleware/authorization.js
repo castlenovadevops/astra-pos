@@ -18,8 +18,8 @@ module.exports = (req, res, next) => {
         if(devicetoken){
             const decoded_device = jwt.verify(devicetoken, secretKey); 
             req.deviceDetails = decoded_device; 
-            // // console.log("DECODED DEVICE");
-            // // console.log(decoded_device);
+            console.log("DECODED DEVICE");
+            console.log(decoded_device);
         }
 
         if(req.body.data)

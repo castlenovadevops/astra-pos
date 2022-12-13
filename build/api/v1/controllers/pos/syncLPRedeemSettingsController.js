@@ -10,7 +10,7 @@ const db = settings.database;
 
 const pkfields = {
     'mTax':"id",
-    'mCategory':"id"
+    'LPRedeemSettings':"id"
 }
 
 module.exports = class SyncCategoryController extends baseController{
@@ -27,9 +27,9 @@ module.exports = class SyncCategoryController extends baseController{
         return new Promise((resolve) => {
             this.routes = [
                 {
-                    path:this.path+"/category",
+                    path:this.path+"/LPRedeemSettings",
                     type:"post",
-                    method: "syncCategory",
+                    method: "syncLPRedeemSettings",
                     authorization:'accessAuth'
                 }
             ]
@@ -37,11 +37,13 @@ module.exports = class SyncCategoryController extends baseController{
         });
     } 
     
-    syncCategory = async(req, res, next)=>{
-        let toBeSynced = await this.readAll({where:{syncTable:'mCategory'}}, 'toBeSynced')
-        console.log("SYNC CATEGORY::::: ", toBeSynced.length)
+    syncLPRedeemSettings = async(req, res, next)=>{
+        let toBeSynced = await this.readAll({where:{syncTable:'LPRedeemSettings'}}, 'toBeSynced')
+        console.log("SYNC LPRedeemSettings::::: ", toBeSynced.length)
         if(toBeSynced.length > 0){  
-            this.syncData(0, toBeSynced, req, res, next);
+            this.apiManager.postRequest('/pos/sync/updateLPRedeemSettings',  {status:0, merchantId: req.deviceDetails.merchantId} ,req).then(resp=>{ 
+                this.syncData(0, toBeSynced, req, res, next);
+            }) 
         }
         else{
             this.pullData(req, res, next)
@@ -50,18 +52,17 @@ module.exports = class SyncCategoryController extends baseController{
 
     syncData = async(idx, toBeSynced, req, res, next)=>{
         if(idx < toBeSynced.length ){ 
-            console.log("SAVE syncCategory CALLED")
+            console.log("SAVE sync LPRedeemSettings CALLED")
 
             let tobesync = toBeSynced[idx];
             let datares = await this.readOne({where:{
                 id: tobesync.tableRowId
-            }}, 'mCategory')
+            }}, 'LPRedeemSettings')
             var data = datares.dataValues
-            data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
-            data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
+            data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z",""); 
             data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
             console.log(data)
-            this.apiManager.postRequest('/pos/sync/saveCategory', data , req).then(response=>{
+            this.apiManager.postRequest('/pos/sync/saveLPRedeemSettings', data , req).then(response=>{
                 this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
                     this.syncData(idx+1, toBeSynced, req, res, next);
                 })
@@ -79,25 +80,25 @@ module.exports = class SyncCategoryController extends baseController{
             POSId: req.deviceDetails.device.POSId,
             syncAll: true
         }
-        this.apiManager.postRequest('/pos/sync/getData',  input ,req).then(resp=>{ 
+        this.apiManager.postRequest('/pos/sync/getLPRedeemSettings',  input ,req).then(resp=>{ 
             console.log("CATEGORY LENGTH", resp)
             if(resp.response.data.length > 0){
                 this.saveData(0, resp.response.data, req, res, next, [])
             }
             else{
-                this.sendResponse({message:"Category Module synced successfully"}, res, 200);
+                this.sendResponse({message:"LP Settings Module synced successfully"}, res, 200);
             }
         })
     }
 
     saveData = async(idx,data, req, res, next, syncedRows)=>{
-        var model = "mCategory"
+        var model = "LPRedeemSettings"
         if(idx<data.length){ 
             var detail = data[idx];
-            let detailexist = await this.readOne({where:{id: data[idx].id }}, 'mCategory')
+            let detailexist = await this.readOne({where:{id: data[idx].id}}, 'LPRedeemSettings')
             if(detailexist !== null){
-                this.delete('mCategory', {id:  data[idx].id}).then(r=>{
-                    this.create('mCategory', data[idx], false).then(async r=>{
+                this.delete('LPRedeemSettings', {id:  data[idx].id}).then(r=>{
+                    this.create('LPRedeemSettings', data[idx], false).then(async r=>{
                         var pkfield = pkfields[model]
                         syncedRows.push(detail[pkfield])
                         this.saveData(idx+1, data, req, res, next,syncedRows)
@@ -105,7 +106,7 @@ module.exports = class SyncCategoryController extends baseController{
                 })
             }
             else{
-                this.create('mCategory', data[idx], false).then(async r=>{ 
+                this.create('LPRedeemSettings', data[idx], false).then(async r=>{ 
                     var pkfield = pkfields[model]
                         syncedRows.push(detail[pkfield])
                         this.saveData(idx+1, data, req, res, next,syncedRows)
@@ -117,11 +118,11 @@ module.exports = class SyncCategoryController extends baseController{
                 merchantId: req.deviceDetails.merchantId,
                 POSId: req.deviceDetails.device.POSId,
                 tableRows: syncedRows,
-                syncedTable:'mCategory'
+                syncedTable:'LPRedeemSettings'
             }
             this.apiManager.postRequest('/pos/updateSync',  input ,req).then(resp=>{  
                 // console.log("SYNC UPDATES CALLED")
-                    this.sendResponse({message:"Categories Module synced successfully"}, res, 200); 
+                    this.sendResponse({message:"LP Settings Module synced successfully"}, res, 200); 
             }) 
         }
     }

@@ -33,6 +33,12 @@ import PayoutComponent from './pages/Payout';
 import ReportComponent from './pages/reports';
 // import AppointmentComponent from './pages/Appointments';
 
+
+import LPSettings from './pages/Merchant/Settings/LPSettings';
+import LPActivationSettings from './pages/Merchant/Settings/LPActivationSettings';
+import GiftCards from './pages/Merchant/GiftCards';
+import LoyaltyRedeemSettings from './pages/Merchant/Settings/LPRedeemSettings';
+
 import Printers from './pages/PrintSettings';
 // ----------------------------------------------------------------------
 
@@ -70,9 +76,14 @@ export default function Router() {
         { path: 'profile', element: <UserProfile/>},
         { path: 'transactions', element: <Transactions/>},
         { path: 'payout', element: <PayoutComponent/>},
-        { path: 'report', element: <ReportComponent/>},,
+        { path: 'report', element: <ReportComponent/>},
         // { path: 'appointments', element: <AppointmentComponent/>},
-        { path: 'printers', element: <Printers/>}
+        { path: 'printers', element: <Printers/>},
+
+        { path:'loyaltypointsettings', element: <LPSettings/>},
+        { path:'loyaltyactivatesettings', element: <LPActivationSettings/>},
+        { path:'giftcards', element: <GiftCards/>},
+        { path: 'loyaltyredeemsettings', element: <LoyaltyRedeemSettings/>}
       ],
     }, {
       path: '/ticket/create', 

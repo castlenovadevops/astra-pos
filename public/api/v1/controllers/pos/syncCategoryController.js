@@ -94,7 +94,7 @@ module.exports = class SyncCategoryController extends baseController{
         var model = "mCategory"
         if(idx<data.length){ 
             var detail = data[idx];
-            let detailexist = await this.readOne({where:{id: data[idx].id, mCategoryStatus:1}}, 'mCategory')
+            let detailexist = await this.readOne({where:{id: data[idx].id }}, 'mCategory')
             if(detailexist !== null){
                 this.delete('mCategory', {id:  data[idx].id}).then(r=>{
                     this.create('mCategory', data[idx], false).then(async r=>{

@@ -5,13 +5,20 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	sequelize.define("LPActivationSettings", {
+	return sequelize.define("LPActivationSettings", {
         id:{
             field:'id',
             type: DataTypes.UUID,
             primaryKey: true,
-            autoIncrement: false
+            autoIncrement: false,
+            defaultValue:DataTypes.UUIDV4
         },
+        merchantId:{
+          field:'merchantId',
+          type: DataTypes.UUID, 
+          primaryKey: false, 
+          allowNull: true 
+      },
         thresholdRedeemPoint: {
              field: 'thresholdRedeemPoint', 
              type: DataTypes.STRING(255), 
@@ -34,7 +41,8 @@ module.exports = (sequelize) => {
              field: 'status', 
              type: DataTypes.INTEGER, 
              primaryKey: false, 
-             allowNull: false 
+             allowNull: true,
+             defaultValue:1
         },
         createdBy: {
              field: 'createdBy', 

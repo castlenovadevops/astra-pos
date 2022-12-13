@@ -67,6 +67,11 @@ export default class NavigationMenu extends React.Component{
                     icon: getIcon('mdi:account-group')
                   },
                   {
+                    title: 'Digital Gift Cards',
+                    path: '/app/giftcards',
+                    icon: getIcon('mdi:gift')
+                  },
+                  {
                       title: 'Inventory', 
                       icon: getIcon('mdi:sitemap'),
                       children: [
@@ -108,6 +113,18 @@ export default class NavigationMenu extends React.Component{
                           title: 'Printer Settings',
                           path: '/app/printers'   
                         },
+                        {
+                          title: 'Loyalty Points Setting',
+                          path: '/app/loyaltypointsettings'   
+                        },
+                        {
+                          title: 'Loyalty Redeem Point Settings',
+                          path: '/app/loyaltyredeemsettings'   
+                        }  ,
+                        {
+                          title: 'Loyalty Program',
+                          path: '/app/loyaltyactivatesettings'   
+                        }  
                       
                     ]
                 },
