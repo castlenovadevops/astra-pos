@@ -66,7 +66,7 @@ module.exports = class TicketController extends baseController{
                 let options = {
                     where:{
                         ticketId:{
-                            [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) = Date('"+new Date().toISOString()+"')  and isDraft=0)")
+                            [Sequelize.Op.in] : Sequelize.literal("(select ticketId from tickets where Date(createdDate) = Date('"+new Date().toISOString()+"')  and isDraft=0 and ticketType != 'GiftCard')")
                         }
                     },
                     order:[
@@ -164,6 +164,9 @@ module.exports = class TicketController extends baseController{
                 ticketStatus:'Active',
                 paymentStatus:{
                     [Sequelize.Op.in]:['Pending', 'Partially Paid']
+                },
+                ticketType:{
+                    [Sequelize.Op.ne]:'GiftCard'
                 }
             },
             attributes:{
@@ -206,7 +209,10 @@ module.exports = class TicketController extends baseController{
             ],
             where:{
                 ticketStatus:'Active',
-                paymentStatus:'Paid'
+                paymentStatus:'Paid',
+                ticketType:{
+                    [Sequelize.Op.ne]:'GiftCard'
+                }
             },
             attributes:{
                 include:[

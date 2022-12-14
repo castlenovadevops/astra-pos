@@ -57,7 +57,14 @@ module.exports = (sequelize) => {
                 primaryKey: false, 
                 allowNull: false,
              //    defaultValue:'Full/Partial'
-           },        
+           },  
+           paymentFor: {
+                field: 'paymentFor', 
+                type: DataTypes.STRING(255), 
+                primaryKey: false, 
+                allowNull: false,
+                defaultValue:'ticket'
+           },       
            paymentNotes: {
                   field: 'paymentNotes', 
                   type: DataTypes.STRING(255), 

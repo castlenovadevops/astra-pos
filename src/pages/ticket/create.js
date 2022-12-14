@@ -220,7 +220,7 @@ export default class CreateTicketComponent extends React.Component{
 
     saveTicket(option){
         if(this.state.selectedServices.length > 0){
-            console.log("AAAA")
+            console.log("AAAA", this.state.ticketDetail)
             var ticketinput = {
                 ticketDetail:Object.assign({}, this.state.ticketDetail), 
                 selectedServices: Object.assign([], this.state.selectedServices),

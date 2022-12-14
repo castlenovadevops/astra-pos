@@ -14,7 +14,7 @@
             "type": "text", 
             "minLength": 1,
             "maxLength": 50,
-            "grid":6,
+            "grid":12,
             "name":"cardType",
             "label":"Card Type",
             "placeholder":"Card Type",
@@ -38,10 +38,30 @@
             "minLength": 1,
             "maxLength": 12,
             "grid":6,
+            "value":0,
+            "name":"cardSold",
+            "label":"Card Sold",
+            "placeholder":"Card Sold"
+        }, 
+        {
+            "component":"TextField", 
+            "type": "text", 
+            "format":"hidden", 
+            "minLength": 1,
+            "maxLength": 12,
+            "grid":6,
             "name":"cardNumber",
             "label":"Card Number",
             "placeholder":"Card Number"
         }, 
+        {
+            "component":"div", 
+            "name": "hiddendiv",
+            "format":"string",
+            "grid":6,
+            "text" : "",
+            "style":{"font-size":"20px", "margin-top":"1rem"}
+        },
         {
             "component":"TextField", 
             "type": "text", 

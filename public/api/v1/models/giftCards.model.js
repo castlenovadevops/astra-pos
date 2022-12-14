@@ -54,6 +54,13 @@ module.exports = (sequelize) => {
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false 
+        },
+        cardSold: {
+             field: 'cardSold', 
+             type: DataTypes.INTEGER, 
+             primaryKey: false, 
+             allowNull: false,
+             defaultValue: 0
         }, 
         status: {
              field: 'status', 

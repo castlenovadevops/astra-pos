@@ -38,7 +38,8 @@ export default class FormManager extends React.Component{
             isChanged: false,
             showFormActionError: false,
             formActionError:'',
-            onError:{}
+            onError:{},
+            showFormFielderror: false
         }
         this.getFormFields = this.getFormFields.bind(this);
         this.renderFields = this.renderFields.bind(this);
@@ -85,7 +86,7 @@ export default class FormManager extends React.Component{
 
             obj["required"] = formProps.required
             console.log("REQUIRED", obj.required)
-            if((!prevState.isChanged || nextProps.formProps.force === true) && !prevState.showFormActionError  && !prevState.isLoading){
+            if((!prevState.isChanged || nextProps.formProps.force === true) && !prevState.showFormFielderror && !prevState.showFormActionError  && !prevState.isLoading){
                 console.log(nextProps.formProps)
                 formProps.properties.forEach(field=>{
                     if(field.name!==undefined){
@@ -568,13 +569,15 @@ export default class FormManager extends React.Component{
                 case 'api': 
                     if(method.toLowerCase() === 'post'){  
                         this.httpManager.postRequest(url, this.getFormFields()).then(response=>{
+                            console.log("Success BLOCK CALLEd")
                             if(onSuccess !== undefined && onSuccess instanceof Object){
                                 this.successCallback(onSuccess, response);
                             }
                             this.setState({isLoading: false})
                         }).catch(e=>{
-                            ////console.log(e)
-                            this.setState({isLoading: false})
+                            console.log("ERROR BLOCK CALLEd")
+                            console.log(e)
+                            this.setState({isLoading: false })
                             console.log(this.getFormFields())
                             this.setFormErrorBlocks(e, obj)
                         })
@@ -607,7 +610,12 @@ export default class FormManager extends React.Component{
                 case 'reloaddata':
                     this.resetForm();
                     this.setState({isLoading: false})
-                    this.props.reloadData(response.message);
+                    if(this.props.reloadPayment !== undefined){ 
+                        this.props.reloadPayment(response);
+                    }
+                    else{
+                        this.props.reloadData(response.message);
+                    }
                     break;
                 default:
                     ////console.log(response);
@@ -630,7 +638,7 @@ export default class FormManager extends React.Component{
                 }
                 props.push(el);
                 if(idx === this.state.properties.length-1){
-                    this.setState({properties: props});
+                    this.setState({properties: props,showFormFielderror : true});
                 }
             })
         }
@@ -712,9 +720,10 @@ export default class FormManager extends React.Component{
                     {/* <Grid item xs={9}>
                         <Grid container spacing={3}  alignItems="center"  justifyContent="center">  */}
                             {this.renderFields()}
-                            <Grid container spacing={3}  alignItems="center" sx={{mt:2}}  justifyContent="center">  
+                            {this.props.formName !== 'syncCode' && <Grid container spacing={3}  alignItems="center" sx={{mt:2}}  justifyContent="center">  
                                 {this.renderButtons()}
-                            </Grid>
+                            </Grid>}
+                            {this.props.formName === 'syncCode' && this.renderButtons()}
                         {/* </Grid>
                     </Grid> */}
                     <Grid item xs={3}></Grid>

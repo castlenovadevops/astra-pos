@@ -1,19 +1,13 @@
 import React from "react";
 import Loader from '../../../components/Loader';
 import Page from '../../../components/Page';
-import HTTPManager from "../../../utils/httpRequestManager";
-import TableView from '../../../components/table/tableView';
-import { toast, ToastContainer } from 'react-toastify';
-import Iconify from '../../../components/Iconify';
+import HTTPManager from "../../../utils/httpRequestManager";   
 import FormManager from "../../../components/formComponents/FormManager";
 import schema from './schema.json';
-import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
-import FButton from '../../../components/formComponents/components/button';
-import moment from "moment/moment";
+import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material'; 
+import PaymentModal from "../../ticket/createTicket/footer/TicketPayment"; 
 
-const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
-
-export default class Discount extends React.Component{
+export default class GiftCards extends React.Component{
     httpManager = new HTTPManager();
 
     constructor(){
@@ -22,64 +16,19 @@ export default class Discount extends React.Component{
             isLoading:false,
             schema:{},
             cardlist:[],
-            addForm: false, 
-            columns:[
-                {
-                    field: 'cardType',
-                    headerName: 'Card Type',
-                    minWidth: 150,
-                    editable: false,
-                    renderCell: (params) => (
-                        <div style={{textTransform:'capitalize'}}>
-                            {params.row.cardType}
-                        </div>
-                    )
-                },
-                {
-                    field: 'cardNumber',
-                    headerName: 'Card Number',
-                    minWidth: 200,
-                    editable: false,
-                    renderCell: (params) => (
-                        <div>
-                            {params.row.cardNumber}
-                        </div>
-                    )
-                },
-                {
-                    field: 'cardValue',
-                    headerName: 'Card Value',
-                    minWidth: 150,
-                    editable: false,
-                    renderCell: (params) => (
-                        <div style={{textTransform:'capitalize'}}>
-                            {params.row.cardValue}
-                        </div>
-                    )
-                },
-                {
-                    field: 'validFrom',
-                    headerName: 'Validity',
-                    minWidth: 300,
-                    editable: false,
-                    renderCell: (params) => (
-                        <div> 
-                            {moment(params.row.validFrom).format('MM/DD/YYYY')} - 
-                            {moment(params.row.validTo).format('MM/DD/YYYY')}
-                        </div>
-                    )
-                },
-                {
-                    field: '',
-                    headerName:'Actions',
-                    flex:1,
-                    minWidth:100,
-                    renderCell: (params) => (
-                        this.getActions(params)                    
-                    ),
-                }
-
-            ]
+            addForm: false,  
+            isSellCard:false,
+            showPayment: false,
+            ticketDetail:{},
+            price:{ 
+                retailPrice:0,
+                servicePrice:0,
+                ticketSubTotal:0,
+                ticketDiscount:0,
+                taxAmount:0,
+                tipsAmount:0,
+                grandTotal:0
+            },
         }
         this.handleCloseform = this.handleCloseform.bind(this);  
         this.onStateChange = this.onStateChange.bind(this);
@@ -114,12 +63,20 @@ export default class Discount extends React.Component{
                 }
             } 
             else if(values.cardType === 'Plastic' && field.name === 'cardType'){
-                field.grid = 6;
+                field.grid = 12;
                 field.value = values[field.name];
+            } 
+            else if(values.cardType === 'Plastic' && field.name === 'hiddendiv' ){
+                field.grid = 6
+            }
+            else if(values.cardType === 'Digital' && field.name === 'hiddendiv' ){
+                field.grid = 12
             }
             else{ 
                 field.value = values[field.name];
             }
+
+
             props.push(field);
             if(i === properties.length-1){ 
                 schema.force = true
@@ -135,51 +92,48 @@ export default class Discount extends React.Component{
 
     componentDidMount(){ 
         this.setState({schema: schema},()=>{
-            console.log(schema)
-            this.reloadData();
+            console.log(schema) 
         })
     }
     handleCloseform(){
         this.setState({addForm: false})
-    }
-    getActions(params){
-        var detail = window.localStorage.getItem('userdetail')
-        if(detail !== '' && detail !== undefined && detail !=='{}'){
-          var userdetail = JSON.parse(detail);
-        return <div>      
-               {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  <FButton
-                variant="outlined" 
-                size="small" 
-                onClick={()=>{
-                    this.setState({isLoading:true})
-                    this.httpManager.postRequest(`merchant/giftcard/disable`,{status:'Disabled', id: params.row.id}).then(r=>{
-                        this.reloadData();
-                    })
-                }} 
-                label="Disable"/>} 
-            </div>
-        }
     } 
-    reloadData(msg=''){
-        if(msg !== ''){ 
-            toast.dismiss();
-            toast.success(msg, {
-                position: "top-center",
-                autoClose: 5000,
-                closeButton:false,
-                hideProgressBar: true,
-                closeOnClick: false,
-                pauseOnHover: false,
-                draggable: false,
-                progress: undefined,
-            });
+    reloadData(response){
+        if(this.state.isSellCard){
+            this.setState({ticketDetail:response.data,
+                price:{ 
+                    retailPrice:0,
+                    servicePrice:0,
+                    ticketSubTotal:response.data.serviceAmount,
+                    ticketDiscount:0,
+                    taxAmount:0,
+                    tipsAmount:0,
+                    grandTotal: response.data.ticketTotalAmount
+                }}, ()=>{
+                    this.setState({showPayment: true})
+                })
         }
-        this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/giftcard/getCards`,{data:"FROM TALE"}).then(response=>{
-                console.log(response)
-                this.setState({cardlist: response.data, isLoading: false});
-            }) 
-        })
+        else 
+            this.setState({addForm: false})
+        // if(msg !== ''){ 
+        //     toast.dismiss();
+        //     toast.success(msg, {
+        //         position: "top-center",
+        //         autoClose: 5000,
+        //         closeButton:false,
+        //         hideProgressBar: true,
+        //         closeOnClick: false,
+        //         pauseOnHover: false,
+        //         draggable: false,
+        //         progress: undefined,
+        //     });
+        // }
+        // this.setState({isLoading: true, addForm: false},()=>{
+        //     this.httpManager.postRequest(`merchant/giftcard/getCards`,{data:"FROM TALE"}).then(response=>{
+        //         console.log(response)
+        //         this.setState({cardlist: response.data, isLoading: false});
+        //     }) 
+        // })
     }
     openAdd(){
         this.setState({schema: {}},()=>{
@@ -188,6 +142,9 @@ export default class Discount extends React.Component{
             var props=[];
             properties.forEach((field,i)=>{  
                 console.log(field.name,"900930192090")
+
+                field.error = false
+                field.helperText = ''
                 if(field.name !== 'cardType'){
                     field.value = ''  
                 }
@@ -198,6 +155,17 @@ export default class Discount extends React.Component{
                 if(field.name === 'cardNumber'){
                     field.value = ''  
                     field.type = 'hidden'
+                }
+                if(field.name === 'cardSold' && this.state.isSellCard){
+                    field.value = 1
+                    field.type = 'hidden'
+                }
+                else if(field.name === 'cardSold' && !this.state.isSellCard){
+                    field.value = 0
+                    field.type = 'hidden'
+                }
+                if(field.name === 'hiddendiv' ){
+                    field.grid = 12 
                 }
                 props.push(field);
                 if(i === properties.length-1){
@@ -213,46 +181,58 @@ export default class Discount extends React.Component{
     render(){
         return <Page title="Gift Cards | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
-            <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss={false}
-            draggable={false}
-            pauseOnHover={false}
-            />
-            {!this.state.addForm ? 
+            
+            {!this.state.addForm &&
                 <Container maxWidth="xl">
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                     Gift Cards
-                    </Typography>
-                    <FButton 
-                    onClick={()=>this.openAdd()}
-                    size="large"
-                    variant="contained"
-                    label="Add Gift Card"
-                    startIcon={getIcon('mdi:plus')}
-                    />
-                </Stack>
+                    </Typography> 
+                </Stack> 
+                    <Container maxWidth="md">
+                        <Stack direction="row" alignItems="baseline" justifyContent="space-between" mb={5}>  
+                                <Card onClick={()=>{
+                                    this.setState({isSellCard: true}, ()=>{
+                                        this.openAdd()
+                                    })
+                                }} alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer', marginBottom:'1rem'}} >
+                                    <Typography variant="h6" textAlign={'center'} p={4} gutterBottom>Sell Card</Typography>
+                                </Card> 
+                                <Card  alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer'}}>
+                                    <Typography variant="h6" textAlign={'center'}  p={4} gutterBottom>Check Balance</Typography>
+                                </Card>  
+                                <Card  onClick={()=>{
+                                    this.setState({isSellCard: false}, ()=>{
+                                        this.openAdd()
+                                    })
+                                }}  alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer'}}>
+                                    <Typography variant="h6" textAlign={'center'}  p={4}  gutterBottom>Issue Card</Typography>
+                                </Card>   
+                        </Stack> 
+                    </Container>
 
-                <Card>
-                    <TableView
-                    data={this.state.cardlist} 
-                    columns={this.state.columns} />
-                </Card>
-                </Container> : ''
+                </Container> 
             }
             {this.state.addForm && <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
                      <Grid item xs={12}>  
                         <Stack spacing={3}> 
-                            <FormManager formProps={this.state.schema} reloadData={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()} formFunctions={{
+                            <FormManager formProps={this.state.schema} reloadPayment={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()} formFunctions={{
                                 onStateChange: this.onStateChange
                             }}/>
+                        </Stack>
+                    </Grid>
+                </Grid>
+            </Box>}
+
+
+            {this.state.showPayment && <Box sx={{ width: '100%' }}> 
+                <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
+                     <Grid item xs={12}>  
+                        <Stack spacing={3}> 
+                            <PaymentModal  
+                                handleClosePayment={(msg)=>this.handleClosePayment(msg)} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
+                            </PaymentModal>
                         </Stack>
                     </Grid>
                 </Grid>

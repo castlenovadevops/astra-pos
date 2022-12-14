@@ -14,8 +14,8 @@ const paymentStyle = {
     bgcolor: 'background.paper',
     border: '0',
     boxShadow: 24,
-    pt: 2,
-    pb:2,
+    pt: 2.5,
+    pb:2.5,
     pl:1,
     pr:1
 };
@@ -189,7 +189,7 @@ export default class TicketPayment extends React.Component  {
                 <Grid item xs={12} style={{display:'flex'}}> 
                     <Grid item xs={10}>
                         <Typography id="modal-modal-title" variant="subtitle" align="left" style={{"color":'#000', fontWeight:'500'}}>
-                            Pay Full Amount (${Number(this.props.ticketDetail.ticketTotalAmount).toFixed(2)})
+                          Pay Full Amount (${Number(this.props.ticketDetail.ticketTotalAmount).toFixed(2)})
                         </Typography>
                     </Grid>
                     <Grid item xs={2}>
@@ -201,7 +201,32 @@ export default class TicketPayment extends React.Component  {
             </Grid>
 
             <Grid container spacing={2} style={{height:'calc(100% - 18px)', marginTop:'7px'}}>
-                <Grid item xs={4} style={{ height:'100%', borderRight:'1px solid #f0f0f0;', background:'#f0f0f0', borderRadius:'0 0 0 10px', display:'flex', flexDirection:'column'}}> 
+                {this.props.ticketDetail.ticketType === 'GiftCard' && <Grid item xs={3}>
+                    <Typography id="modal-modal-title" variant="h6" align="left" style={{"color":'#000', fontWeight:'700'}}>
+                        Customer Order
+                    </Typography>
+                    <div style={{display:'flex', height:'calc(100% - 50px)', marginTop:'10px', alignItems:'center', justifyContent:'space-between', flexDirection:'column'}}>
+                        <div style={{display:'flex', marginTop:'10px',width:'100%', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
+                            <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Gift Card  <span style={{paddingLeft:'20px'}}>x1</span></Typography>
+                            <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.ticketSubTotal).toFixed(2)}</Typography>
+                        </div> 
+                        <div style={{display:'flex', marginTop:'10px', alignItems:'center', flexDirection:'column', width:'100%'}}>
+                            <div style={{display:'flex', marginTop:'10px', alignItems:'center', justifyContent:'space-between', width:'100%', flexDirection:'row'}}>
+                                <Typography  id="modal-modal-title" variant="h6"  style={{"color":'#000', fontWeight:'500'}} align="left"> Sub Total</Typography>
+                                <Typography id="modal-modal-title" variant="h6"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.ticketSubTotal).toFixed(2)}</Typography>
+                            </div> 
+                            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%', flexDirection:'row'}}>
+                                <Typography  id="modal-modal-title" variant="h6"  style={{"color":'#000', fontWeight:'500'}} align="left"> Tax</Typography>
+                                <Typography id="modal-modal-title" variant="h6"  style={{"color":'#000', fontWeight:'500'}} align="left"> $0.00</Typography>
+                            </div> 
+                            <div style={{display:'flex',  alignItems:'center', justifyContent:'space-between', width:'100%', flexDirection:'row'}}>
+                                <Typography  id="modal-modal-title" variant="h6"  style={{"color":'#000', fontWeight:'500'}} align="left"> Total</Typography>
+                                <Typography id="modal-modal-title" variant="h6"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.grandTotal).toFixed(2)}</Typography>
+                            </div> 
+                        </div>
+                   </div>
+                </Grid>}
+                <Grid item xs={this.props.ticketDetail.ticketType !== 'GiftCard' ? '4' :'3'} style={{ height:'100%', borderRight:'1px solid #f0f0f0;', background:'#f0f0f0', borderRadius:'0 0 0 10px', display:'flex', flexDirection:'column'}}> 
                     <Typography id="modal-modal-title" variant="h6" align="left" style={{"color":'#000', fontWeight:'700'}}>
                         Pay for this Order
                     </Typography>
@@ -210,20 +235,20 @@ export default class TicketPayment extends React.Component  {
                         <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.ticketSubTotal).toFixed(2)}</Typography>
                    </div> 
                    
-                   <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
+                   {this.props.ticketDetail.ticketType !== 'GiftCard' && <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Tips</Typography>
                         <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.tipsAmount).toFixed(2)}</Typography>
-                   </div>
+                   </div>}
                    
-                   <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
+                   {this.props.ticketDetail.ticketType !== 'GiftCard' && <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Discount</Typography>
                         <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.ticketDiscount).toFixed(2)}</Typography>
-                   </div>
+                   </div>}
                    
-                   <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
+                   {this.props.ticketDetail.ticketType !== 'GiftCard' && <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> Tax</Typography>
                         <Typography id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left"> ${Number(this.props.price.taxAmount).toFixed(2)}</Typography>
-                   </div>
+                   </div>}
                    
                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                         <Typography  id="modal-modal-title" variant="subtitle2"  style={{"color":'#000', fontWeight:'500'}} align="left">Total</Typography>
@@ -233,7 +258,7 @@ export default class TicketPayment extends React.Component  {
                     {this.state.ticketpayments.map((p, idx)=>{
                         return <div style={{display:'flex',marginTop:'5px', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
                                     <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left">Payment {idx+1}</Typography>
-                                    <Typography id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left"> ${Number(p.ticketPayment).toFixed(2)}</Typography>
+                                    <Typography id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left"> (${Number(p.ticketPayment).toFixed(2)})</Typography>
                             </div>  
                     })}
                    
@@ -242,7 +267,7 @@ export default class TicketPayment extends React.Component  {
                         <Typography id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'700'}} align="left"> ${Number(this.state.remainAmount).toFixed(2)}</Typography>
                    </div>           
                 </Grid>
-                <Grid item xs={8} style={{display:'flex' , height:'100%'}}> 
+                <Grid item xs={this.props.ticketDetail.ticketType !== 'GiftCard' ? '8' :'6'} style={{display:'flex' , height:'100%'}}> 
                         {this.renderPaymentTabs()}
                 </Grid>
             </Grid>

@@ -1,6 +1,6 @@
 import React from 'react'; 
 import TicketPayment from './payment';
-import {  Dialog, DialogTitle, DialogContent} from '@material-ui/core/'; 
+import {  Dialog, DialogTitle, DialogContent} from '@mui/material'; 
 export default function PaymentModal(
     {  
         handleClosePayment,

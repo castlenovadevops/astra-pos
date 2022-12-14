@@ -144,7 +144,7 @@ ipcMain.handle('printData', async(event, printername)=>{
   final_printed_data += '</body></html>';
   var print_copies = 1;
 
-  let new_file_location = path.join(app.getAppPath(), `./build/print_${current_time}_${rand}.html`);
+  let new_file_location = path.join(app.getAppPath(), `./print_${current_time}_${rand}.html`);
     current_time = current_time+'_'+rand;
     fs.writeFile(new_file_location, final_printed_data, async () => {
         console.log('file write ' +  new Date().toISOString());

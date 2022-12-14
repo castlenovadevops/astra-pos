@@ -67,7 +67,7 @@ export default class NavigationMenu extends React.Component{
                     icon: getIcon('mdi:account-group')
                   },
                   {
-                    title: 'Digital Gift Cards',
+                    title: 'Gift Cards',
                     path: '/app/giftcards',
                     icon: getIcon('mdi:gift')
                   },

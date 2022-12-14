@@ -12,10 +12,12 @@ module.exports = class APIManager{
             const token = req.headers.authorization !== undefined && req.headers.authorization !== '' ? req.headers.authorization.split(" ")[1] : '';
             rest.get( this.baseAPI+url,{headers:{"Authorization" : "Bearer "+token, "accessToken" : req.headers.accesstoken}}).on('complete', function(result) {
                 if (result instanceof Error) {
-                // console.log('Error:', result.message);
+                console.log('Error:', result.message);
                 } else {
-                // console.log(result);
+                console.log(result);
                 }
+            }).catch(e=>{
+                console.log('Error:', e);
             });
         });
     }
@@ -24,7 +26,7 @@ module.exports = class APIManager{
     postRequest(url, data, req ){
 
         return new Promise((resolve) => {
-            // console.log(this.baseAPI+url)
+            console.log(this.baseAPI+url)
             const token = req.headers.authorization !== undefined && req.headers.authorization !== '' ? req.headers.authorization.split(" ")[1] : '';
  
             rest.post( this.baseAPI+url,{

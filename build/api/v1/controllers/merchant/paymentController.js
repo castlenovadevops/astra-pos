@@ -54,7 +54,7 @@ module.exports = class TicketController extends baseController{
             }
             this.readOne({where:options.where, attributes:[
                 [
-                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
+                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+ticket.ticketId+"')"),
                     "Paidamount"
                 ]
             ]},'ticketpayment').then(paidrec=>{ 
@@ -62,8 +62,9 @@ module.exports = class TicketController extends baseController{
                 var paidamount = paidrec === null ? 0 : (paidrec.Paidamount || paidrec.dataValues.Paidamount)
                 if(paidamount === undefined || paidamount === null){
                     paidamount = 0
-                }
-                var remainAmount = ticket.ticketTotalAmount - paidamount
+                } 
+                var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                console.log("Payments remain",ticket.ticketTotalAmount,  remainAmount, paidamount)
                 this.readAll(options, 'ticketpayment').then(payments=>{
                     this.sendResponse({data: payments, remainAmount:remainAmount}, res, 200);
                 })
@@ -107,7 +108,8 @@ module.exports = class TicketController extends baseController{
                 if(paidamount === undefined || paidamount === null){
                     paidamount = 0
                 }
-                var remainAmount = ticket.ticketTotalAmount - paidamount
+                var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                console.log(remainAmount, paidamount)
                 if(remainAmount <= 0){
                     this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
                         this.sendResponse({message:"Paid successfully"}, res, 200);

@@ -85,7 +85,7 @@
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"http://localhost:3000/api/v1/merchant/defaultcommission/saveFromPOS",
+        "url":"https://api.ci.dev.castlenova.net/api/v1/merchant/defaultcommission/saveFromPOS",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"
