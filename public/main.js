@@ -135,16 +135,16 @@ ipcMain.handle('getPrinters', async(event)=>{
 
 var open_printer_dialog = true;
 let print_window = {};   
-let current_time= Date.now()
 ipcMain.handle('printData', async(event, printername)=>{
   return new Promise((resolve, reject) => { 
   let rand = Math.random();
+  let current_time= Date.now();
   var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
   final_printed_data += "<div style='width:300px'>Test PRINT Test PRINT Test PRINT Test PRINT Test PRINT Test PRINT Test PRINT Test PRINTTest PRINT Test PRINTTest PRINT Test PRINT Test PRINTTest PRINTTest PRINTTest PRINT</div>";
   final_printed_data += '</body></html>';
   var print_copies = 1;
 
-  let new_file_location = path.join(app.getAppPath(), `./print_${current_time}_${rand}.html`);
+  let new_file_location = path.join(app.getAppPath(), `../DB/print_${current_time}_${rand}.html`);
     current_time = current_time+'_'+rand;
     fs.writeFile(new_file_location, final_printed_data, async () => {
         console.log('file write ' +  new Date().toISOString());
@@ -173,9 +173,57 @@ ipcMain.handle('printData', async(event, printername)=>{
             
             print_window[current_time].close();
             
-            if(open_printer_dialog && await fs.existsSync(new_file_location)) {
-                await fs.unlinkSync(new_file_location);
+            // if(open_printer_dialog && await fs.existsSync(new_file_location)) {
+            //     await fs.unlinkSync(new_file_location);
+            // }
+          })
+    })
+    resolve("PRinted") 
+  });
+})
+
+
+ipcMain.handle('printHTML', async(event,html, printername)=>{
+  return new Promise((resolve, reject) => { 
+  let rand = Math.random();
+  let current_time= Date.now();
+  var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+  final_printed_data += "<div style='width:300px'>"+html+"</div>";
+  final_printed_data += '</body></html>';
+  var print_copies = 1;
+
+  let new_file_location = path.join(app.getAppPath(), `../DB/print_${current_time}_${rand}.html`);
+    current_time = current_time+'_'+rand;
+    fs.writeFile(new_file_location, final_printed_data, async () => {
+        console.log('file write ' +  new Date().toISOString());
+      print_window[current_time] = new BrowserWindow({ show: !open_printer_dialog }); 
+       
+      let filePath_order = new_file_location;
+      print_window[current_time].loadURL(url.format({
+          pathname: path.join(filePath_order),
+          protocol: 'file:',
+          slashes: true
+      })); 
+
+            print_window[current_time].webContents.on('did-finish-load', async () => {
+            console.log('did-finish-load ' + new Date().toISOString());
+          
+            let result = {"status" : false};
+            for(let i = 0 ; i < print_copies ; i++ ) { // loop based on copies 
+                try {
+                    // result = await print_webcontents (print_window[current_time] , "EPSON_TM_T82X_S_A"); 
+                    result = await print_webcontents (print_window[current_time] , printername); 
+                    console.log('print finish ' + new Date().toISOString());
+                } catch (ex) {
+                    console.log(ex);
+                }
             }
+            
+            print_window[current_time].close();
+            
+            // if(open_printer_dialog && await fs.existsSync(new_file_location)) {
+            //     await fs.unlinkSync(new_file_location);
+            // }
           })
     })
     resolve("PRinted") 

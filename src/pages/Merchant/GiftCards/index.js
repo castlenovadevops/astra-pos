@@ -3,7 +3,7 @@ import Loader from '../../../components/Loader';
 import Page from '../../../components/Page';
 import HTTPManager from "../../../utils/httpRequestManager";   
 import FormManager from "../../../components/formComponents/FormManager";
-import schema from './schema.json';
+import schema from './schema.js';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material'; 
 import PaymentModal from "../../ticket/createTicket/footer/TicketPayment"; 
 
@@ -178,6 +178,10 @@ export default class GiftCards extends React.Component{
             })
         })
     }
+
+    handleClosePayment(msg){
+        this.setState({showPayment: false, addForm: false})
+    }
     render(){
         return <Page title="Gift Cards | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
@@ -206,7 +210,7 @@ export default class GiftCards extends React.Component{
                                         this.openAdd()
                                     })
                                 }}  alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer'}}>
-                                    <Typography variant="h6" textAlign={'center'}  p={4}  gutterBottom>Issue Card</Typography>
+                                    <Typography variant="h6" textAlign={'center'}  p={4}  gutterBottom>Gift a Card</Typography>
                                 </Card>   
                         </Stack> 
                     </Container>
@@ -230,7 +234,7 @@ export default class GiftCards extends React.Component{
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
                      <Grid item xs={12}>  
                         <Stack spacing={3}> 
-                            <PaymentModal  
+                            <PaymentModal  customer_detail={{}}
                                 handleClosePayment={(msg)=>this.handleClosePayment(msg)} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
                             </PaymentModal>
                         </Stack>

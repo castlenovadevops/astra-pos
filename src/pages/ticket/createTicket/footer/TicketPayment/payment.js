@@ -4,8 +4,13 @@ import { Grid, Typography, Button,Box, FormControl,FormLabel,FormControlLabel,Ra
 import CloseIcon from '@mui/icons-material/Close';  
 import TicketFullPayment from './payfull';
 import TicketSplitPayment from './splitpay';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import './tab.css';
 import HTTPManager from '../../../../../utils/httpRequestManager';
+
+import DialogComponent from "../../../../../components/Dialog"; 
+import SelectCustomer from "../../topbar/selectCustomer";
+
 const paymentStyle = {
     position: 'absolute',
     top: '0', 
@@ -34,16 +39,28 @@ export default class TicketPayment extends React.Component  {
             remainAmount: 0,
             activeTab:'full',
             paymentSplitted: false,
-            splittedAmount: 0
+            splittedAmount: 0,
+            selectCustomerPopup: false
         }
 
         this.getTicketPayments = this.getTicketPayments.bind(this);
+        this.getPrintHTML = this.getPrintHTML.bind(this);
     }
 
     
     componentDidMount(){  
         this.loadData()
     } 
+
+
+    getPrintHTML(billtype){
+        this.httpManager.postRequest(`pos/print/getPrintHTML`,{ticketId : this.props.ticketDetail.ticketId}).then(htmlres=>{
+            // console.log(JSON.parse(htmlres.htmlMsg))
+            window.api.printHTML(htmlres.htmlMsg, htmlres.printers.printerIdentifier).then(r=>{
+                console.log("Printed Successfully.")
+            })
+        })
+    }
 
     loadData(){
         this.setState({isLoading: true})
@@ -106,9 +123,9 @@ export default class TicketPayment extends React.Component  {
     getTicketPayments(){
         this.httpManager.postRequest(`merchant/payment/getpayments`, {data: this.props.ticketDetail}).then(res=>{
             this.setState({ticketpayments: res.data, topayamount: res.remainAmount, remainAmount: res.remainAmount, isLoading:false});
-            if(res.remainAmount <= 0){
-                window.location.href="/"
-            }
+            // if(res.remainAmount <= 0){
+            //     window.location.href="/"
+            // }
         })
         // this.paymentController.getTicketPayments(this.state.ticketDetail.sync_id).then(res=>{ 
         //     console.log("ASdasdasdasds")
@@ -119,7 +136,7 @@ export default class TicketPayment extends React.Component  {
 
     renderPaymentTabs(){
         return <div style={{display:'flex', width:'100%', background:'transparent', flexDirection:'column', position:'relative'}}>
-                {!this.state.paymentSplitted && <>
+              {this.props.ticketDetail.paymentStatus !== 'Paid' && <>    {!this.state.paymentSplitted && <>
                     <div>
                         <div className='paymentTabContainer'>
                             <div className={this.state.activeTab === 'full' ? 'paymenttab active' : 'paymenttab'} onClick={()=>{
@@ -157,7 +174,7 @@ export default class TicketPayment extends React.Component  {
                         completePayment:()=>{
                             this.setState({splittedAmount: 0, paymentSplitted: false})
                             this.props.afterSubmit();
-                            window.location.reload()
+                            // window.location.reload()
                             this.loadData();
                         }
                     }} />
@@ -168,7 +185,7 @@ export default class TicketPayment extends React.Component  {
                                 <Button style={{marginRight: 10}} onClick={()=>{
                                     this.setState({splittedAmount: 0, paymentSplitted: false}, ()=>{
                                         this.props.afterSubmit();
-                                        window.location.reload()
+                                        // window.location.reload()
                                         this.loadData();
                                     })
                                 }} color="secondary" variant="contained">Cancel</Button> 
@@ -177,8 +194,39 @@ export default class TicketPayment extends React.Component  {
                         </Grid>
 
                     </>}
+</>}
 
+{this.props.ticketDetail.paymentStatus === 'Paid' && <>  
+<div style={{display:'flex', width:'100%', flexDirection:'row', marginTop:'1rem'}}>
+                 <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'700'}} align="left">How would you like your receipt?</Typography>
+            </div>
+            <div style={{display:'flex', width:'100%', flexDirection:'row'}}>
+                <Grid container spacing={2} >
+                    <Grid item xs={4} style={{display:'flex'}}> 
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:  '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                            this.getPrintHTML('bill')
+                        }}>Print Bill</Typography>
+                    </Grid>  
+                    <Grid item xs={4} style={{display:'flex'}}> 
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                             this.getPrintHTML('receipt')
+                        }}>Print Receipt</Typography>
+                    </Grid>  
+                    <Grid item xs={4} style={{display:'flex'}}> 
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                            this.getPrintHTML('empreceipt') 
+                        }}>Print Employee Receipt</Typography>
+                    </Grid>  
+                    
+                </Grid>
+            </div> 
+</>}
         </div>
+    }
+
+
+    onSelectCustomer(obj, opt){
+        this.props.selectCustomerDetail(obj, opt)
     }
 
     render(){
@@ -192,13 +240,33 @@ export default class TicketPayment extends React.Component  {
                           Pay Full Amount (${Number(this.props.ticketDetail.ticketTotalAmount).toFixed(2)})
                         </Typography>
                     </Grid>
-                    <Grid item xs={2}>
-                        <Typography variant="subtitle2" align="right" style={{cursor:'pointer'}} onClick={() => this.props.afterSubmit()}> 
+                    <Grid item xs={2} style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'flex-end'}}>
+                        {this.props.ticketDetail.ticketType !== 'GiftCard' && <div style={{marginRight:'10px', display:'flex', flexDirection:'row', alignItems:'center', cursor:'pointer', justifyContent:'flex-end'}} 
+                                onClick={()=>{ 
+                                            this.setState({selectCustomerPopup: true})
+                                        
+                                }}>
+                            <AccountCircle fontSize="large" className={"accnticon"}  /> 
+                                 {this.props.customerDetail.mCustomerName !== undefined && <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center', fontWeight:'500'}}>
+                                    {this.props.customerDetail.mCustomerName}
+                                 </Typography> }
+                        </div>}
+                        <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center'}} onClick={() => this.props.afterSubmit()}> 
                             <CloseIcon fontSize="small" style={{"color":'#134163'}}/>
                         </Typography>
                     </Grid>      
                 </Grid>
             </Grid>
+
+            {this.state.selectCustomerPopup && 
+                     <DialogComponent open={this.state.selectCustomerPopup} title={'Select Customer'}  onClose={()=>{
+                        this.setState({selectCustomerPopup: false})
+                     }} >
+                              
+                                <SelectCustomer customerDetail={this.props.customerDetail} handleCloseCustomer={()=>{this.setState({selectCustomerPopup: false})}} onSelectCustomer={(obj, opt)=>this.onSelectCustomer(obj, opt)}/>
+                    </DialogComponent>}
+
+
 
             <Grid container spacing={2} style={{height:'calc(100% - 18px)', marginTop:'7px'}}>
                 {this.props.ticketDetail.ticketType === 'GiftCard' && <Grid item xs={3}>
@@ -257,7 +325,7 @@ export default class TicketPayment extends React.Component  {
                              
                     {this.state.ticketpayments.map((p, idx)=>{
                         return <div style={{display:'flex',marginTop:'5px', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
-                                    <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left">Payment {idx+1}</Typography>
+                                    <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left">Payment {idx+1}  <span style={{textTransform:'capitalize'}}>{"("+p.payMode+")"}</span> </Typography>
                                     <Typography id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'500', fontSize:'16px'}} align="left"> (${Number(p.ticketPayment).toFixed(2)})</Typography>
                             </div>  
                     })}

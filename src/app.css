@@ -453,6 +453,14 @@
     margin:0;
 }
 
+.giftpopup .MuiDialog-paper{
+    width:500px;
+    height:300px;
+    max-width:500px;
+    max-height:300px;
+    margin:0;
+}
+
 .bgbtn{
     background-color: #134163 !important;
     color:#fff !important;

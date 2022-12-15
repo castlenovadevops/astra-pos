@@ -192,7 +192,7 @@ export default class FormManager extends React.Component{
                 }
                 else if(format === 'date'){  
                     formFields.push(<Grid item xs={grid} style={{display: (fieldtype === 'hidden' ? 'none':'block')}}>
-                        <FDatepicker disabled={disabled} inputFormat={field.inputFormat} required={required} onBlur={(props)=>{
+                        <FDatepicker disabled={disabled} minDate={field.minDate} inputFormat={field.inputFormat} required={required} onBlur={(props)=>{
                             if(field.onBlur !== undefined && field.onBlur !== ''){
                                 this.props.formFunctions[field.onBlur](props);
                             }

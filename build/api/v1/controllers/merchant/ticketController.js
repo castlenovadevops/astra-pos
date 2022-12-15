@@ -43,6 +43,12 @@ module.exports = class TicketController extends baseController{
                     authorization:'authorizationAuth'
                 },
                 
+                {
+                    path:this.path+"/getTicketDetail",
+                    type:"post",
+                    method: "getTicketDetail",
+                    authorization:'authorizationAuth'
+                },
                 
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -225,6 +231,49 @@ module.exports = class TicketController extends baseController{
         }
 
         this.readAll(options, 'tickets').then(results=>{
+            this.sendResponse({data: results}, res, 200);
+        })
+    }
+
+    getTicketDetail = async(req, res)=>{
+        var input = req.input;
+        let options = {
+            include:[
+                {
+                    model: this.models.mCustomers,
+                    required: false
+                },
+                {
+                    model: this.models.merchantEmployees,
+                    required: false
+                }, 
+                {
+                    model: this.models.ticketdiscount,
+                    required: false,
+                    where:{
+                        status:1
+                    }
+                }, 
+                {
+                    model: this.models.ticketpayment,
+                    required: false, 
+                }, 
+            ],
+            where:{
+                ticketStatus:'Active', 
+                ticketId: input.ticketId
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col('`tickets`.`ticketId`'),
+                        'id'
+                    ]
+                ]
+            }
+        }
+
+        this.readOne(options, 'tickets').then(results=>{
             this.sendResponse({data: results}, res, 200);
         })
     }

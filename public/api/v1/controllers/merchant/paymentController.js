@@ -100,7 +100,7 @@ module.exports = class TicketController extends baseController{
         this.create('ticketpayment', payinput).then(r=>{
             this.readOne({where:options.where, attributes:[
                 [
-                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
+                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+input.ticketDetail.ticketId+"')"),
                     "Paidamount"
                 ]
             ]},'ticketpayment').then(paidrec=>{  

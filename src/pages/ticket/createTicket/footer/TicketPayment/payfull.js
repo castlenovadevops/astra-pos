@@ -8,6 +8,7 @@ import { CardGiftcardOutlined, Close } from '@mui/icons-material';
 import HTTPManager from '../../../../../utils/httpRequestManager';
 import FTextField from '../../../../../components/formComponents/components/textField';
 import FButton from '../../../../../components/formComponents/components/button';
+import FMaskTextField from '../../../../../components/formComponents/components/masktextfield';
 import './tab.css'; 
 
 export default class TicketFullPayment extends React.Component  { 
@@ -147,7 +148,7 @@ export default class TicketFullPayment extends React.Component  {
                 }
                 this.httpManager.postRequest('merchant/payment/savePayment', input).then(res=>{
                     this.setState({notesPopup: false}, ()=>{
-                        // this.props.data.completePayment();
+                        this.props.data.completePayment();
                         this.setState({completionPopup: true})
                     })
                 })
@@ -190,26 +191,26 @@ export default class TicketFullPayment extends React.Component  {
 
     getPaymentValues(x,n){
         var values = []; 
-        var x1 = Math.round((x+1) / 10) * 10; 
-        if(x%10 === 0){
+        var x1 = Math.round((x+1) / 10) * 10;  
+        if(x1%10 === 0 ){
             x1 = Math.round((x+5) / 5) * 5; 
         }
         values.push(x1);
         var x2 = Math.round((x1+10) / 10) * 10;
-        if(x%10 === 0){
-            x2 = Math.round((x+5) / 10) * 10;
+        if(x2%10 === 0){
+            x2 = Math.round((x1+5) / 10) * 10;
         }
         values.push(x2);
         if(n === 3){ 
             var x3 = Math.round((x2+10) / 10) * 10;
             values.push(x3);
-        }
+        } 
         return values;
     }
     
     renderCardMethods(){
         return <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
-            <div style={{display:'flex', width:'100%', flexDirection:'row'}}>
+          <div style={{display:'flex', width:'100%', flexDirection:'row'}}>
                 <CreditCard/>&nbsp;
                 <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'700'}} align="left">Card</Typography>
             </div>
@@ -297,7 +298,7 @@ export default class TicketFullPayment extends React.Component  {
             </div>
 
 
-
+    {this.props.data.ticketDetail.ticketType !== 'GiftCard' && <>
             <div style={{display:'flex', width:'100%', flexDirection:'row', marginTop:'1rem'}}>
                 <CardGiftcardOutlined/>&nbsp;
                 <Typography  id="modal-modal-title" variant="subtitle"  style={{"color":'#000', fontWeight:'700'}} align="left">Others</Typography>
@@ -305,19 +306,19 @@ export default class TicketFullPayment extends React.Component  {
             <div style={{display:'flex', width:'100%', flexDirection:'row'}}>
                 <Grid container spacing={2} >
                     <Grid item xs={3} style={{display:'flex'}}> 
-                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:this.state.selectedAmount === this.props.data.topayamount ? '1px solid #bee1f7':'1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background:this.state.selectedAmount === this.props.data.topayamount ? '#bee1f7' :'transparent' }} align="left" onClick={()=>{
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:  '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                             this.setState({giftcardPopup: true})
                         }}>Gift Card</Typography>
                     </Grid>  
                     <Grid item xs={3} style={{display:'flex'}}> 
-                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:this.state.selectedAmount === this.props.data.topayamount ? '1px solid #bee1f7':'1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background:this.state.selectedAmount === this.props.data.topayamount ? '#bee1f7' :'transparent' }} align="left" onClick={()=>{
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                             
                         }}>Loyalty Points</Typography>
                     </Grid>  
                     
                 </Grid>
             </div> 
-
+            </>} 
         </div>
     }
 
@@ -409,9 +410,11 @@ export default class TicketFullPayment extends React.Component  {
     }
 
     checkAndPayGiftCard(){
+        // console.log(this.state.giftcardnumber.replaceAll("-",""))
         this.httpManager.postRequest(`merchant/giftcard/checkandpay`,{cardNumber: this.state.giftcardnumber, amountToPay: this.props.data.topayamount, ticketDetail:  this.props.data.ticketDetail}).then(res=>{
             this.setState({giftCardError: false, giftCardErrorText: ''})
             this.setState({giftcardPopup: false, giftcardnumber: ''})
+            this.props.data.completePayment()
         }).catch(e=>{
             if(e.message){
                 this.setState({giftCardError: true, giftCardErrorText: e.message})
@@ -437,7 +440,8 @@ export default class TicketFullPayment extends React.Component  {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
                 style={{zIndex:'99999'}}
-                className="paymentpopup"
+                className="giftpopup"
+                modal={false}
                 name="giftpopup"
             >
                 <DialogTitle id="alert-dialog-title"> 
@@ -460,18 +464,18 @@ export default class TicketFullPayment extends React.Component  {
 
                 <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0', marginTop:'2rem'}}>
                             <Grid item xs={12} style={{display:'flex'}}> 
-                                <Grid item xs={6}>
-                                    <FTextField  required={true} fullWidth error={this.state.giftCardError} helperText={this.state.giftCardErrorText} type={'text'} format={'number'} minLength={1} maxLength={16}  label={'Enter Card Number'} placeholder={'Enter Card Number'} name={'cardNumber'} value={this.state.giftcardnumber}   onChange={e=>{
+                                    <FMaskTextField  required={true} fullWidth error={this.state.giftCardError} helperText={this.state.giftCardErrorText} type={'text'} format={'number'} minLength={1} maxLength={16}  label={'Enter Card Number'} placeholder={'Enter Card Number'} name={'cardNumber'} value={this.state.giftcardnumber}   onChange={e=>{
                                         this.setState({giftcardnumber: e.target.value})
                                     }}/>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <FButton fullWidth size="large" variant={'contained'} disabled={this.state.isDisabled} label={"Redeem"} onClick={()=>{
-                                        this.checkAndPayGiftCard()
-                                    }
-                                    }/>
-                                </Grid>
                             </Grid>
+                            <Grid item xs={4}></Grid>
+                            <Grid item xs={4}>
+                                <FButton fullWidth size="large" variant={'contained'} disabled={this.state.giftcardnumber.replaceAll('-','').length < 16} label={"Redeem"} onClick={()=>{
+                                    this.checkAndPayGiftCard()
+                                }
+                                }/>
+                            </Grid>
+                            <Grid item xs={4}></Grid>
                     </Grid>
                 </DialogContent> 
             </Dialog>  

@@ -161,7 +161,7 @@ module.exports = class GiftCardController extends baseController{
         }}, 'giftCards').then(cards=>{
             if(cards.length > 0){
                 var carddetail = cards[0].dataValues || cards[0];
-                console.log(carddetail.cardBalance, input.amountToPay)
+                console.log("GIFTCARD PAYMENT::::", carddetail.cardBalance, input.amountToPay)
                 if(Number(carddetail.cardBalance) >= Number(input.amountToPay)){
                     var ticket = input.ticketDetail;
                     let options = {
@@ -191,7 +191,7 @@ module.exports = class GiftCardController extends baseController{
                         this.update('giftCards', cardinput, {where:{id: carddetail.id}}).then(re=>{
                             this.readOne({where:options.where, attributes:[
                             [
-                                sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId=`ticketpayment`.`ticketId`)"),
+                                sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+ticket.ticketId+"')"),
                                 "Paidamount"
                             ]
                             ]},'ticketpayment').then(paidrec=>{  
@@ -199,6 +199,7 @@ module.exports = class GiftCardController extends baseController{
                                 if(paidamount === undefined || paidamount === null){
                                     paidamount = 0
                                 }
+                                console.log("remainAmount", ticket.ticketTotalAmount, paidamount)
                                 var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
                                 console.log("remainAmount", remainAmount, paidamount)
                                 if(remainAmount <= 0){

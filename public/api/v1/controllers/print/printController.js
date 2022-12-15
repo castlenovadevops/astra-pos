@@ -3,7 +3,7 @@ const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
 const APIManager = require('../../utils/apiManager'); 
- 
+const  Sequelize  = require('sequelize');
 const fontList = require('font-list')
 
 module.exports = class SyncTaxController extends baseController{
@@ -42,7 +42,14 @@ module.exports = class SyncTaxController extends baseController{
                     type:"post",
                     method: "updatePrinter",
                     authorization:'accessAuth'
+                }, 
+                {
+                    path:this.path+"/getPrintHTML",
+                    type:"post",
+                    method: "getPrintHTML",
+                    authorization:'accessAuth'
                 }
+                
             ]
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
@@ -87,6 +94,78 @@ module.exports = class SyncTaxController extends baseController{
         var input = Object.assign({},  req.input);   
         this.update('printers', input, {where:{id: input.id}}).then(r=>{
             this.sendResponse({data:"Saved successfully"}, res, 200)
+        })
+    }
+
+    getPrintHTML = async(req, res, next)=>{
+        var input = req.input
+        var input = req.input;
+        let options = {
+            include:[
+                {
+                    model: this.models.mCustomers,
+                    required: false
+                },
+                {
+                    model: this.models.merchantEmployees,
+                    required: false
+                }, 
+                {
+                    model: this.models.ticketdiscount,
+                    required: false,
+                    where:{
+                        status:1
+                    }
+                }, 
+                {
+                    model: this.models.ticketpayment,
+                    required: false, 
+                }, 
+                {
+                    model: this.models.ticketservices,
+                    required: false, 
+                    include:[
+                        {
+                            model: this.models.ticketTips,
+                            required: false,
+                            where:{
+                                status:1
+                            }
+                        },
+                        {
+                            model: this.models.ticketservicetax,
+                            required: false,
+                            where:{
+                                status:1
+                            }
+                        },
+                        {
+                            model: this.models.ticketservicediscount,
+                            required: false,
+                            where:{
+                                status:1
+                            }
+                        }
+                    ]
+                }, 
+            ],
+            where:{
+                ticketStatus:'Active', 
+                ticketId: input.ticketId
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col('`tickets`.`ticketId`'),
+                        'id'
+                    ]
+                ]
+            }
+        }
+
+        this.readOne(options, 'tickets').then(async (results)=>{
+            var billprinters = await this.readOne({where:{BillPrint: 1}}, 'printers')
+            this.sendResponse({htmlMsg: JSON.stringify(results), printers: billprinters}, res, 200);
         })
     }
 }

@@ -11,6 +11,9 @@ process.once('loaded', () => {
       },
       async printData (args) {
         return await ipcRenderer.invoke("printData", args)
+      },
+      async printHTML(args){
+        return await ipcRenderer.invoke("printHTML", args)
       }
     })
   })

@@ -131,7 +131,13 @@ export default class TicketFooterComponent extends React.Component{
 
     handleClosePayment(msg=''){ 
         // this.props.data.closeTicket();
-        if(msg !== ''){
+        if( msg === undefined){
+            msg ='';
+        }
+        if(msg === 'reload'){
+            this.props.data.getTicketDetails();
+        }
+        else if(msg !== ''){
             this.props.data.closeTicket();
         }
         else{
@@ -273,7 +279,9 @@ export default class TicketFooterComponent extends React.Component{
             }
 
  
-            {this.state.openPayment && <PaymentModal  
+            {this.state.openPayment && <PaymentModal  customer_detail={this.props.data.customer_detail} selectCustomerDetail={(obj, opt)=>{
+                this.props.data.selectCustomerDetail(obj, opt)
+            }}
                 handleClosePayment={(msg)=>this.handleClosePayment(msg)} price={this.props.data.price} ticketDetail={this.props.data.ticketDetail}> 
             </PaymentModal>}
  

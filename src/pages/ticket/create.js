@@ -72,6 +72,7 @@ export default class CreateTicketComponent extends React.Component{
         // this.getTicketPayments = this.getTicketPayments.bind(this);
         this.reloadTicket = this.reloadTicket.bind(this);
         this.onSelectTicketToCombine = this.onSelectTicketToCombine.bind(this)
+        this.getTicketDetails = this.getTicketDetails.bind(this)
     } 
 
     onSelectTicketToCombine(ticket){
@@ -767,6 +768,14 @@ export default class CreateTicketComponent extends React.Component{
     //     })
     // }
 
+    getTicketDetails(){
+        this.httpManager.postRequest("/merchant/ticket/getTicketDetail",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
+            this.setState({ticketDetail: r.data}, ()=>{
+                // this.reloadTicket(r.data)
+            })
+        }) 
+    }
+
     componentDidMount(){ 
         if(this.props.data.ticketDetail.ticketId !== undefined){
             if(this.props.data.ticketDetail.paymentStatus === 'Paid'){
@@ -904,8 +913,7 @@ export default class CreateTicketComponent extends React.Component{
                                                                             },
                                                                             setLoader:(boolval)=>{
                                                                                 this.setState({isLoading: boolval})
-                                                                            },
-                                                                            price: this.state.totalValues,
+                                                                            }, 
                                                                             voidTicket:()=>{
                                                                                 this.voidTicket()
                                                                             },
@@ -916,7 +924,9 @@ export default class CreateTicketComponent extends React.Component{
                                                                                 this.handleCloseTips(msg, tipsInput);
                                                                             }, 
                                                                             updateTicketDiscount: this.updateTicketDiscount,
-                                                                            onSelectTicketToCombine: this.onSelectTicketToCombine
+                                                                            onSelectTicketToCombine: this.onSelectTicketToCombine, 
+                                                                            selectCustomerDetail:this.selectCustomerDetail,
+                                                                            getTicketDetails: this.getTicketDetails
                                                                         }} />
                                     </Grid>
                                 </Grid>

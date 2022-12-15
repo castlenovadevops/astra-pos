@@ -42,6 +42,7 @@ export default class FDatepicker extends React.Component{
             helperText={this.state.helperText} 
             type={this.props.type}
             value={this.props.value}
+            minDate={this.props.minDate}
             required={this.props.required}
             fullWidth={this.props.fullWidth}
             InputProps={this.props.InputProps}
