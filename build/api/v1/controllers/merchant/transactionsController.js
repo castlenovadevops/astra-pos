@@ -32,7 +32,7 @@ module.exports = class TicketController extends baseController{
     getTransactions = async(req, res)=>{
         var input = req.input
 
-        let options = {
+        var options = {
             where:{
                 id:{
                     [Sequelize.Op.in] : Sequelize.literal("(select id from ticketpayment where Date(createdDate) between Date('"+input.from_date+"') and Date('"+input.to_date+"') )")
@@ -59,6 +59,14 @@ module.exports = class TicketController extends baseController{
                         'mEmployeeLastName'
                     ]
                 ]
+            }
+        }
+
+        if(input.from_date.substr(0,10) === input.to_date.substr(0,10)){
+            options.where={
+                id:{
+                    [Sequelize.Op.in] : Sequelize.literal("(select id from ticketpayment where Date(createdDate) = Date('"+input.from_date+"'))")
+                }
             }
         }
 

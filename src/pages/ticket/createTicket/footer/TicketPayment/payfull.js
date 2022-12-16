@@ -53,7 +53,7 @@ export default class TicketFullPayment extends React.Component  {
     checkAndPayLoyaltyPoints(){
         var value = Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue)
 
-        this.httpManager('merchant/payment/payByLoyaltyPoints',{ticketDetail:this.props.ticketDetail,customerId: this.props.customerDetail.mCustomerId,value: value, points: this.state.redeempoints, dollarValue: this.state.loyaltyValueSettings.dollarValue}).then(r=>{
+        this.httpManager.postRequest('merchant/payment/payByLoyaltyPoints',{ticketDetail:this.props.data.ticketDetail,customerId: this.props.data.customerDetail.mCustomerId,value: value, points: this.state.redeempoints, dollarValue: this.state.loyaltyValueSettings.dollarValue}).then(r=>{
             this.setState({loyaltyPopup: false, redeempoints: ''}) 
             this.props.data.completePayment()
         }).catch(e=>{ 
@@ -61,7 +61,11 @@ export default class TicketFullPayment extends React.Component  {
     }
 
     checkPointsDisable(){
-        if(Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.props.data.customerDetail.LoyaltyPoints)){
+        var value = Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue)
+
+
+        console.log(Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100))
+        if(value < Number(this.props.data.topayamount) && Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.state.redeempoints) && Number(this.state.redeempoints) > 0){
             return false
         }
         else{

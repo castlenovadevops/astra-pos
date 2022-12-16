@@ -213,6 +213,7 @@ export default class Transactions extends React.Component {
                                 <b>${Number(t.ticketPayment).toFixed(2)}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
+                                {(t.payMode === 'Loyalty Points' || t.payMode === 'GiftCard') && <b>{t.payMode}</b>}
                                 <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash' : t.paymentType}</b>
                             </Grid>
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 

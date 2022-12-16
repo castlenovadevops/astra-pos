@@ -188,8 +188,8 @@ module.exports = class GiftCardController extends baseController{
                             "returnedAmount":  '',
                             "ticketPayment": input.amountToPay,
                             "payMode":'GiftCard',
-                            "cardType":'',
-                            "paymentType":carddetail.cardNumber,
+                            "cardType":carddetail.cardNumber,
+                            "paymentType":'GiftCard',
                             "paymentNotes":'',
                             "createdBy":req.userData.mEmployeeId,
                             "createdDate":this.getDate()
