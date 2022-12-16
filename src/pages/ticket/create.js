@@ -203,6 +203,7 @@ export default class CreateTicketComponent extends React.Component{
             if(this.state.selectedServices.length > 0){
                 console.log("AAAA")
                 var ticketinput = {
+                    customer_detail: this.state.customer_detail,
                     ticketDetail:Object.assign({}, this.state.ticketDetail), 
                     selectedServices: Object.assign([], this.state.selectedServices),
                     ticketdiscounts:Object.assign([], this.state.ticketdiscounts),

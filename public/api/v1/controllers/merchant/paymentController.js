@@ -37,6 +37,13 @@ module.exports = class TicketController extends baseController{
                     method: "updateTips",
                     authorization:'authorizationAuth'
                 },  
+                {
+                    path:this.path+"/payByLoyaltyPoints",
+                    type:"post",
+                    method: "payByLoyaltyPoints",
+                    authorization:'authorizationAuth'
+                },  
+                
             ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
@@ -199,5 +206,63 @@ module.exports = class TicketController extends baseController{
         else{
             this.sendResponse({message: "Ticket tips saved successfully."}, res, 200);
         }
+    }
+
+    payByLoyaltyPoints = async(req, res, next)=>{
+        var input = req.input;
+        var ticket = input.ticketDetail; 
+        let options = {
+            where:{
+                ticketId: ticket.ticketId
+            }
+        }
+        let payinput = {
+            "ticketId": input.ticketDetail.ticketId,
+            "transactionId":Date.now().toString().split('.')[0]	,
+            "customerPaid": '',
+            "returnedAmount":  '',
+            "ticketPayment": input.value,
+            "payMode":'Loyalty Points',
+            "cardType":'',
+            "paymentType":'',
+            "paymentNotes":'',
+            "createdBy":req.userData.mEmployeeId,
+            "createdDate":this.getDate()
+        }
+        this.create('ticketpayment', payinput).then(async (r)=>{
+            var pointsinput =  {
+                customerId:  input.customerId,
+                pointsCount: input.points,
+                status:'Redeemed',
+                dollarValue:'',
+                createdBy: req.userData.mEmployeeId,
+                ticketValue: input.value,
+                createdDate: this.getDate()
+            } 
+            console.log("POINTS INPUT", pointsinput);
+            await this.create(`customerLoyaltyPoints`, pointsinput)
+            this.readOne({where:options.where, attributes:[
+                [
+                    sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+input.ticketDetail.ticketId+"')"),
+                    "Paidamount"
+                ]
+            ]},'ticketpayment').then(paidrec=>{  
+                var paidamount = paidrec === null ? 0 : (paidrec.Paidamount || paidrec.dataValues.Paidamount)
+                if(paidamount === undefined || paidamount === null){
+                    paidamount = 0
+                }
+                var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                console.log(remainAmount, paidamount)
+                if(remainAmount <= 0){
+                    this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
+                        this.sendResponse({message:"Paid successfully"}, res, 200);
+                    })
+                }
+                else{ 
+                    this.sendResponse({message:"Paid successfully"}, res, 200);
+                }
+            });
+        });
+
     }
 }

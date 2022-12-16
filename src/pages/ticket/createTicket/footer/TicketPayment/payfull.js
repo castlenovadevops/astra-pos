@@ -33,7 +33,11 @@ export default class TicketFullPayment extends React.Component  {
             giftCardErrorText:'',
             redeemamount:'',
             validgiftcard: false,
-            giftcard:{}
+            giftcard:{},
+            loyaltyPopup: false,
+            loyaltyPointSettings:{},
+            redeempoints: '',
+            loyaltyValueSettings:{}
         }
         this.handlechangeDesc = this.handlechangeDesc.bind(this)
         this.cashPayment = this.cashPayment.bind(this);
@@ -42,6 +46,27 @@ export default class TicketFullPayment extends React.Component  {
 
         this.checkBalance = this.checkBalance.bind(this);
         this.checkDisable = this.checkDisable.bind(this)
+        this.checkPointsDisable = this.checkPointsDisable.bind(this);
+        this.checkAndPayLoyaltyPoints = this.checkAndPayLoyaltyPoints.bind(this)
+    }
+
+    checkAndPayLoyaltyPoints(){
+        var value = Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue)
+
+        this.httpManager('merchant/payment/payByLoyaltyPoints',{ticketDetail:this.props.ticketDetail,customerId: this.props.customerDetail.mCustomerId,value: value, points: this.state.redeempoints, dollarValue: this.state.loyaltyValueSettings.dollarValue}).then(r=>{
+            this.setState({loyaltyPopup: false, redeempoints: ''}) 
+            this.props.data.completePayment()
+        }).catch(e=>{ 
+        })
+    }
+
+    checkPointsDisable(){
+        if(Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.props.data.customerDetail.LoyaltyPoints)){
+            return false
+        }
+        else{
+            return true;
+        }
     }
 
     checkBalance(){
@@ -61,6 +86,32 @@ export default class TicketFullPayment extends React.Component  {
     }
     componentDidMount(){  
         this.setState({redeemamount:  this.props.data.topayamount})
+        console.log("MOUNT CALLED")
+        this.httpManager.postRequest(`merchant/lpsettings/getActivationSettings`,{data:"FROM TABLE"}).then(response=>{ 
+            // this.openEdit(response.data); 
+            if(response.data){
+                this.setState({loyaltyPointSettings: response.data, isLoading: false }, ()=>{
+                        console.log(this.state.loyaltyPointSettings)
+                });
+            }
+            else{
+                this.setState({isLoading: false})
+            }
+
+            this.httpManager.postRequest(`merchant/lpsettings/getSettings`,{data:"FROM TABLE"}).then(response=>{ 
+                // this.openEdit(response.data); 
+                if(response.data){
+                    this.setState({loyaltyValueSettings: response.data, isLoading: false }, ()=>{
+                            console.log(this.state.loyaltyValueSettings)
+                    });
+                }
+                else{
+                    this.setState({isLoading: false})
+                }
+            })
+
+        })
+        
     }
 
     renderNotes(){
@@ -329,7 +380,7 @@ export default class TicketFullPayment extends React.Component  {
                     </Grid>  
                     <Grid item xs={3} style={{display:'flex'}}> 
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
-                            
+                            this.setState({loyaltyPopup: true})
                         }}>Loyalty Points
                         
                         {this.props.data.customerDetail !== undefined && <Typography  variant="subtitle" >
@@ -522,6 +573,69 @@ export default class TicketFullPayment extends React.Component  {
                                 }/>
                             </Grid>
                             <Grid item xs={4}></Grid>
+                    </Grid>
+                </DialogContent> 
+            </Dialog> 
+
+
+
+            <Dialog
+                open={this.state.loyaltyPopup}
+                onClose={()=>{
+                this.setState({loyaltyPopup: false, redeempoints: ''})
+                }}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                style={{zIndex:'99999'}}
+                className="giftpopup"
+                modal={false}
+                name="giftpopup"
+            >
+                <DialogTitle id="alert-dialog-title"> 
+                    <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0'}}>
+                            <Grid item xs={12} style={{display:'flex'}}> 
+                                <Grid item xs={10}>
+                                    <Typography id="modal-modal-title" variant="subtitle" align="left" style={{"color":'#000', fontWeight:'500'}}>
+                                    Redeem Loyalty Points
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Typography variant="subtitle2" align="right" style={{cursor:'pointer'}} onClick={() => this.setState({loyaltyPopup: false, redeempoints: ''})}> 
+                                        <Close  fontSize="small" style={{"color":'#134163'}}/>
+                                    </Typography>
+                                </Grid>      
+                            </Grid>
+                    </Grid>
+                </DialogTitle>
+                <DialogContent>
+
+                <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0', marginTop:'2rem'}}>  
+                            <div style={{display:'flex', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
+                                Total Loyalty Points : <span style={{color:'green', fontWeight:700}}>{Number(this.props.data.customerDetail.LoyaltyPoints).toFixed(2)}&nbsp;&nbsp;(${Number(this.props.data.customerDetail.LoyaltyPoints)*Number(this.state.loyaltyValueSettings.dollarValue)})</span>
+                            </div> 
+                            {(Number(this.props.data.customerDetail.LoyaltyPoints) < Number(this.state.loyaltyPointSettings.thresholdRedeemPoint)) &&<Grid item xs={12} style={{display:'flex'}}> 
+                            <span style={{color:'red', fontWeight:700}}>Loyalty points should be greater than {Number(this.state.loyaltyPointSettings.thresholdRedeemPoint)}</span>
+                            </Grid> }
+
+
+                            {Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.props.data.customerDetail.LoyaltyPoints) &&<Grid item xs={12} style={{display:'flex'}}> 
+                            <span style={{color:'#aaa', fontWeight:700}}>Customer can claim {Number(this.props.data.customerDetail.LoyaltyPoints)* (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100)} points only.</span>
+                            </Grid> }
+
+                            {(Number(this.props.data.customerDetail.LoyaltyPoints) >= Number(this.state.loyaltyPointSettings.thresholdRedeemPoint)) && <><Grid item xs={12} style={{display:'flex'}}> 
+                                    <FTextField  required={true} fullWidth error={this.state.redeemError} helperText={this.state.redeemErrorText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Points to redeem'} placeholder={'Points to redeem'} name={'redeempoint'} value={this.state.redeempoints }   onChange={e=>{
+                                        this.setState({redeempoints: e.target.value})
+                                    }} />
+                            </Grid> 
+                            <Grid item xs={4}></Grid>
+                            <Grid item xs={4}>
+                                <FButton fullWidth size="large" variant={'contained'} disabled={this.checkPointsDisable()} label={"Redeem"} onClick={()=>{
+                                    this.checkAndPayLoyaltyPoints()
+                                }
+                                }/>
+                            </Grid>
+                            <Grid item xs={4}></Grid>
+                            </>}
                     </Grid>
                 </DialogContent> 
             </Dialog>  
