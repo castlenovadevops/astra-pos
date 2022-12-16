@@ -3,7 +3,7 @@ import Loader from '../../../../components/Loader';
 import Page from '../../../../components/Page';
 import HTTPManager from "../../../../utils/httpRequestManager"; 
 import { toast, ToastContainer } from 'react-toastify'; 
-import {Box, Grid,   Container, Typography, Stack} from '@mui/material';
+import {Box, Grid,   Container, Typography, Stack, InputAdornment} from '@mui/material';
 
 import FTextField from "../../../../components/formComponents/components/textField";
 import FButton from "../../../../components/formComponents/components/button";
@@ -96,30 +96,20 @@ export default class CommissionPayment extends React.Component{
         var fields = [];
         this.state.settings.forEach((elmt, i)=>{
         fields.push(<Grid container className="redeemcontianer">
-                    <Grid item xs={2}>
+
+                    <Grid item xs={5}>
+                        <FTextField tabindex={i+1} InputProps={{
+                            endAdornment: <InputAdornment position="start">/$1</InputAdornment>,
+                        }} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'numberdecimal'} minLength={1} maxLength={4}  label={'Points'} placeholder={'Points'} name={'pointsCount'} value={this.state.settings[i].pointsCount}   onChange={e=>{
+                             this.changeValue(e,i)
+                        }}/>
+                    </Grid><Grid item xs={2}></Grid>   
+                    <Grid item xs={5}>
                         <FTextField tabindex={i+1} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Min. Ticket Value'} placeholder={'Min. Ticket Value'} name={'minimumTicketValue'} value={this.state.settings[i].minimumTicketValue}   onChange={e=>{
                              this.changeValue(e,i)
                         }}/>
-                    </Grid>
-                    <Grid item xs={1}>   </Grid>
-                    <Grid item xs={2}>
-                        <FTextField tabindex={i+1} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Max. Ticket Value'} placeholder={'Max. Ticket Value'} name={'maximumTicketValue'} value={this.state.settings[i].maximumTicketValue}   onChange={e=>{
-                             this.changeValue(e,i)
-                        }}/>
-                    </Grid>
-                    <Grid item xs={1}>   </Grid>
-                    <Grid item xs={2}>
-                        <FTextField tabindex={i+1} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={4}  label={'Points'} placeholder={'Points'} name={'pointsCount'} value={this.state.settings[i].pointsCount}   onChange={e=>{
-                             this.changeValue(e,i)
-                        }}/>
-                    </Grid>
-                    <Grid item xs={1}>   </Grid>
-                    <Grid item xs={2}>   
-                    <FSelect fullWidth required={true}   label={"Type"} data={this.state.settingType} placeholder={"Type"} name={'settingType'} value={this.state.settings[i].settingType} onChange={(e)=>{
-                      this.changeValue(e,i)  
-                    }}/>
-                    </Grid>
-                    <Grid item xs={1}>   
+                    </Grid> 
+                    {/* <Grid item xs={1}>   
                             <FButton size="large" variant={'contained'} disabled={this.state.isDisabled} label={"-"} onClick={()=>{
                                 var settings = Object.assign([], this.state.settings)
                                 if(settings.length>0){
@@ -128,7 +118,7 @@ export default class CommissionPayment extends React.Component{
                                 }
                             }
                             }/>
-                    </Grid>
+                    </Grid> */}
             </Grid>)
         })
 
@@ -163,28 +153,22 @@ export default class CommissionPayment extends React.Component{
             pauseOnHover={false}
             />
             <Container maxWidth="xl">
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                     <Typography variant="h4" gutterBottom>
-                        Loyalty Redeem Point Settings{this.state.settings.length}
+                        Loyalty Redeem Point Settings 
                     </Typography>
                     
                 </Stack>
                 <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
-                     <Grid item xs={12}>
-                        <div style={{display:'flex', justifyContent:'flex-end'}}>
-                            <FButton size="large" variant={'contained'} disabled={this.state.isDisabled} label={"+"} onClick={()=>{
-                                var settings = Object.assign([], this.state.settings)
-                                settings.push({
-                                    minimumTicketValue:'',
-                                    maximumTicketValue:'',
-                                    pointsCount:'',
-                                    settingType:'General'
-                                })
-                                this.setState({settings: settings})
-                            }
-                            }/>
+                    <Grid item xs={12}>
+                        <div style={{display:'flex', flexDirection:'column', color:'#aaa', fontSize:'12px'}}>
+                            <p>% Of Redeem points - This setting restricts the customer using the loyalty points.</p>
+                            <p> Ex: If the setting is 50%, customer can redeem only 505 of their total loyalty points.</p>
                         </div>
+                     </Grid>
+                     <Grid item xs={12}>
+                         
                         <Stack spacing={3}> 
                             {this.renderForm()}
                         </Stack>

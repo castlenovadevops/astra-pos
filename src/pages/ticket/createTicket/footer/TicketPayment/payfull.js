@@ -30,12 +30,28 @@ export default class TicketFullPayment extends React.Component  {
             giftcardPopup: false,
             giftcardnumber: '',
             giftCardError: false,
-            giftCardErrorText:''
+            giftCardErrorText:'',
+            redeemamount:'',
+            validgiftcard: false,
+            giftcard:{}
         }
         this.handlechangeDesc = this.handlechangeDesc.bind(this)
         this.cashPayment = this.cashPayment.bind(this);
         this.handlechange = this.handlechange.bind(this);
         this.verifyAmount = this.verifyAmount.bind(this);
+
+        this.checkBalance = this.checkBalance.bind(this);
+        this.checkDisable = this.checkDisable.bind(this)
+    }
+
+    checkBalance(){
+        this.httpManager.postRequest('merchant/giftcard/checkBalance', {cardNumber: this.state.giftcardnumber.replaceAll('-','')}).then(res=>{
+            this.setState({giftcard: res.data, validgiftcard: true})
+        }).catch(e=>{
+            if(e.message){
+                this.setState({giftCardError: true, giftCardErrorText: e.message})
+            }
+        })
     }
 
 
@@ -44,6 +60,7 @@ export default class TicketFullPayment extends React.Component  {
         this.setState({description: e.target.value})
     }
     componentDidMount(){  
+        this.setState({redeemamount:  this.props.data.topayamount})
     }
 
     renderNotes(){
@@ -307,13 +324,19 @@ export default class TicketFullPayment extends React.Component  {
                 <Grid container spacing={2} >
                     <Grid item xs={3} style={{display:'flex'}}> 
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:  '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
-                            this.setState({giftcardPopup: true})
+                            this.setState({giftcardPopup: true, redeemamount: this.props.data.topayamount})
                         }}>Gift Card</Typography>
                     </Grid>  
                     <Grid item xs={3} style={{display:'flex'}}> 
-                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                             
-                        }}>Loyalty Points</Typography>
+                        }}>Loyalty Points
+                        
+                        {this.props.data.customerDetail !== undefined && <Typography  variant="subtitle" >
+                            ({this.props.data.customerDetail.LoyaltyPoints})
+                        </Typography>}
+                        </Typography>
+                        
                     </Grid>  
                     
                 </Grid>
@@ -411,7 +434,7 @@ export default class TicketFullPayment extends React.Component  {
 
     checkAndPayGiftCard(){
         // console.log(this.state.giftcardnumber.replaceAll("-",""))
-        this.httpManager.postRequest(`merchant/giftcard/checkandpay`,{cardNumber: this.state.giftcardnumber, amountToPay: this.props.data.topayamount, ticketDetail:  this.props.data.ticketDetail}).then(res=>{
+        this.httpManager.postRequest(`merchant/giftcard/checkandpay`,{cardNumber: this.state.giftcardnumber.replaceAll('-',''), amountToPay: (this.state.redeemamount || this.props.data.topayamount), ticketDetail:  this.props.data.ticketDetail}).then(res=>{
             this.setState({giftCardError: false, giftCardErrorText: ''})
             this.setState({giftcardPopup: false, giftcardnumber: ''})
             this.props.data.completePayment()
@@ -420,6 +443,16 @@ export default class TicketFullPayment extends React.Component  {
                 this.setState({giftCardError: true, giftCardErrorText: e.message})
             }
         })
+    }
+
+    checkDisable(){
+        var disable = this.state.giftcardnumber.replaceAll('-','').length < 16 || !this.state.validgiftcard ;
+        if(this.state.redeemamount !== '' && this.state.validgiftcard){
+            console.log("checkin", this.state.redeemamount)
+            disable = (Number(this.state.redeemamount) <= Number(this.state.giftcardPopup.cardBalance)) && (Number(this.state.redeemamount) < Number(this.state.amountToPay))
+        }
+        console.log(disable)
+        return disable;
     }
 
     render(){
@@ -465,12 +498,25 @@ export default class TicketFullPayment extends React.Component  {
                 <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0', marginTop:'2rem'}}>
                             <Grid item xs={12} style={{display:'flex'}}> 
                                     <FMaskTextField  required={true} fullWidth error={this.state.giftCardError} helperText={this.state.giftCardErrorText} type={'text'} format={'number'} minLength={1} maxLength={16}  label={'Enter Card Number'} placeholder={'Enter Card Number'} name={'cardNumber'} value={this.state.giftcardnumber}   onChange={e=>{
-                                        this.setState({giftcardnumber: e.target.value})
+                                        this.setState({giftcardnumber: e.target.value, validgiftcard: false, giftcard:{}})
+                                    }} onBlur={()=>{
+                                        this.checkBalance()
                                     }}/>
                             </Grid>
+                            {this.state.validgiftcard && this.state.giftcard.cardBalance !== undefined && <>
+                                <div style={{display:'flex', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
+                                    Current Gift Card Balance : <span style={{color:'green', fontWeight:700}}>${Number(this.state.giftcard.cardBalance).toFixed(2)}</span>
+                                </div>
+
+                                <Grid item xs={12} style={{display:'flex'}}> 
+                                        <FTextField  required={true} fullWidth error={this.state.redeemError} helperText={this.state.redeemErrorText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Amount to redeem'} placeholder={'Amount to redeem'} name={'cardNumber'} value={this.state.redeemamount }   onChange={e=>{
+                                            this.setState({redeemamount: e.target.value})
+                                        }} />
+                                </Grid>
+                            </>}
                             <Grid item xs={4}></Grid>
                             <Grid item xs={4}>
-                                <FButton fullWidth size="large" variant={'contained'} disabled={this.state.giftcardnumber.replaceAll('-','').length < 16} label={"Redeem"} onClick={()=>{
+                                <FButton fullWidth size="large" variant={'contained'} disabled={this.checkDisable()} label={"Redeem"} onClick={()=>{
                                     this.checkAndPayGiftCard()
                                 }
                                 }/>

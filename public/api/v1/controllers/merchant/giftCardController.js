@@ -45,6 +45,12 @@ module.exports = class GiftCardController extends baseController{
                     type:"post",
                     method: "checkAndPay",
                     authorization:'authorizationAuth'
+                },       
+                {
+                    path:this.path+"/checkBalance",
+                    type:"post",
+                    method: "checkBalance",
+                    authorization:'authorizationAuth'
                 },  
             ]     
 
@@ -65,6 +71,7 @@ module.exports = class GiftCardController extends baseController{
         input["createdDate"] = this.getDate();
         input["updatedBy"] = req.userData.mEmployeeId;
         input["updatedDate"] = this.getDate();
+        input["status"] ='Active';
         console.log(input)
         input["validFrom"] = input.validFrom.replace("T"," ").replace("Z","");
         input["validTo"] = input.validTo.replace("T"," ").replace("Z","");
@@ -154,73 +161,117 @@ module.exports = class GiftCardController extends baseController{
         var cardnumber = input.cardNumber;
         this.readAll({where:{
             cardNumber: cardnumber,
-            status:'Active',
-            id:{
-                [Sequelize.Op.in]: sequelize.literal("(select id from giftCards where strftime('%Y-%m-%d', '"+date+"') BETWEEN  strftime('%Y-%m-%d', validFrom) and strftime('%Y-%m-%d', validTo))")
-            }
-        }}, 'giftCards').then(cards=>{
-            if(cards.length > 0){
-                var carddetail = cards[0].dataValues || cards[0];
-                console.log("GIFTCARD PAYMENT::::", carddetail.cardBalance, input.amountToPay)
-                if(Number(carddetail.cardBalance) >= Number(input.amountToPay)){
-                    var ticket = input.ticketDetail;
-                    let options = {
-                        where:{
-                            ticketId: ticket.ticketId
+            status:'Active'
+        }}, 'giftCards').then(allcards=>{
+            if(allcards.length > 0){
+                this.readAll({where:{
+                    cardNumber: cardnumber,
+                    status:'Active',
+                    id:{
+                        [Sequelize.Op.in]: sequelize.literal("(select id from giftCards where strftime('%Y-%m-%d', '"+date+"') BETWEEN  strftime('%Y-%m-%d', validFrom) and strftime('%Y-%m-%d', validTo))")
+                    }
+                }}, 'giftCards').then(cards=>{
+                    if(cards.length > 0){ 
+                        var carddetail = cards[0].dataValues || cards[0];
+                        console.log("GIFTCARD PAYMENT::::", carddetail.cardBalance, input.amountToPay)
+                        if(Number(carddetail.cardBalance) >= Number(input.amountToPay)){
+                            var ticket = input.ticketDetail;
+                            let options = {
+                                where:{
+                                    ticketId: ticket.ticketId
+                                }
+                            }
+                        let payinput = {
+                            "ticketId": input.ticketDetail.ticketId,
+                            "transactionId":Date.now().toString().split('.')[0]	,
+                            "customerPaid": '',
+                            "returnedAmount":  '',
+                            "ticketPayment": input.amountToPay,
+                            "payMode":'GiftCard',
+                            "cardType":'',
+                            "paymentType":carddetail.cardNumber,
+                            "paymentNotes":'',
+                            "createdBy":req.userData.mEmployeeId,
+                            "createdDate":this.getDate()
+                        }
+                        this.create('ticketpayment', payinput).then(r=>{
+                                var cardinput = {
+                                    cardBalance : Number(carddetail.cardBalance) - Number(input.amountToPay),
+                                    updatedDate: this.getDate(),
+                                    id: carddetail.id
+                                }
+                                this.update('giftCards', cardinput, {where:{id: carddetail.id}}).then(re=>{
+                                    this.readOne({where:options.where, attributes:[
+                                    [
+                                        sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+ticket.ticketId+"')"),
+                                        "Paidamount"
+                                    ]
+                                    ]},'ticketpayment').then(paidrec=>{  
+                                        var paidamount = paidrec === null ? 0 : (paidrec.Paidamount || paidrec.dataValues.Paidamount)
+                                        if(paidamount === undefined || paidamount === null){
+                                            paidamount = 0
+                                        }
+                                        console.log("remainAmount", ticket.ticketTotalAmount, paidamount)
+                                        var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                                        console.log("remainAmount", remainAmount, paidamount)
+                                        if(remainAmount <= 0){
+                                            this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
+                                                this.sendResponse({message:"Paid successfully"}, res, 200);
+                                            })
+                                        }
+                                        else{ 
+                                            this.sendResponse({message:"Paid successfully"}, res, 200);
+                                        }
+                                    });
+                                })
+                                
+                        })
+                        }
+                        else{
+                            this.sendResponse({message:"Insufficient balance."}, res, 400)
                         }
                     }
-                   let payinput = {
-                       "ticketId": input.ticketDetail.ticketId,
-                       "transactionId":Date.now().toString().split('.')[0]	,
-                       "customerPaid": '',
-                       "returnedAmount":  '',
-                       "ticketPayment": input.amountToPay,
-                       "payMode":'GiftCard',
-                       "cardType":'',
-                       "paymentType":carddetail.cardNumber,
-                       "paymentNotes":'',
-                       "createdBy":req.userData.mEmployeeId,
-                       "createdDate":this.getDate()
-                   }
-                   this.create('ticketpayment', payinput).then(r=>{
-                        var cardinput = {
-                            cardBalance : Number(carddetail.cardBalance) - Number(input.amountToPay),
-                            updatedDate: this.getDate(),
-                            id: carddetail.id
-                        }
-                        this.update('giftCards', cardinput, {where:{id: carddetail.id}}).then(re=>{
-                            this.readOne({where:options.where, attributes:[
-                            [
-                                sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+ticket.ticketId+"')"),
-                                "Paidamount"
-                            ]
-                            ]},'ticketpayment').then(paidrec=>{  
-                                var paidamount = paidrec === null ? 0 : (paidrec.Paidamount || paidrec.dataValues.Paidamount)
-                                if(paidamount === undefined || paidamount === null){
-                                    paidamount = 0
-                                }
-                                console.log("remainAmount", ticket.ticketTotalAmount, paidamount)
-                                var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
-                                console.log("remainAmount", remainAmount, paidamount)
-                                if(remainAmount <= 0){
-                                    this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
-                                        this.sendResponse({message:"Paid successfully"}, res, 200);
-                                    })
-                                }
-                                else{ 
-                                    this.sendResponse({message:"Paid successfully"}, res, 200);
-                                }
-                            });
-                        })
-                        
-                   })
-                }
-                else{
-                    this.sendResponse({message:"This card doesnt have sufficient balance."}, res, 400)
-                }
+                    else{
+                        this.sendResponse({message:"Gift card expired."}, res, 400)
+                    }
+                })
             }
             else{
-                this.sendResponse({message:"This card number is not exists."}, res, 400)
+                this.sendResponse({message:"Not a valid gift card."}, res, 400)
+            }
+        })
+
+    }
+
+
+
+    checkBalance = async(req, res, next)=>{
+        var input = req.input;
+        var date = this.getDate();
+        var cardnumber = input.cardNumber;
+        this.readAll({where:{
+            cardNumber: cardnumber,
+            status:'Active'
+        }}, 'giftCards').then(allcards=>{
+            if(allcards.length > 0){
+                this.readAll({where:{
+                    cardNumber: cardnumber,
+                    status:'Active',
+                    id:{
+                        [Sequelize.Op.in]: sequelize.literal("(select id from giftCards where strftime('%Y-%m-%d', '"+date+"') BETWEEN  strftime('%Y-%m-%d', validFrom) and strftime('%Y-%m-%d', validTo))")
+                    }
+                }}, 'giftCards').then(cards=>{
+                    if(cards.length > 0){ 
+                        var carddetail = cards[0].dataValues || cards[0]; 
+                        this.sendResponse({data:carddetail}, res, 200)
+                    }
+                    else{
+                        this.sendResponse({message:"Gift card expired."}, res, 400)
+                    }
+                })
+            }
+            else{
+                this.sendResponse({message:"Not a valid gift card."}, res, 400)
             }
         })
 

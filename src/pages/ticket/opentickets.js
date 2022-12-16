@@ -7,6 +7,8 @@ import * as Moment from 'moment';
 import HTTPManager from "../../utils/httpRequestManager";
 import Loader from "../../components/Loader";
 import PaymentModal from "./createTicket/footer/TicketPayment";
+import PrintModal from "./createTicket/footer/TicketPrint";
+
 export default class OpenTicketsComponent extends React.Component{
     httpManager = new HTTPManager();
     constructor(props){
@@ -15,6 +17,7 @@ export default class OpenTicketsComponent extends React.Component{
             openPayment: false,
             price:{},
             ticketDetail:{},
+            openPrint: false,
             columns: [
 
                 {
@@ -78,7 +81,7 @@ export default class OpenTicketsComponent extends React.Component{
                     renderCell: (params) => (
                     
                     <div style={{"float":"right", display:'flex', alignItems:'center', justifyContent:'center'}}>
-                        {/* {(params.row.paymentStatus !== 'Paid')&&
+                        {(params.row.paymentStatus !== 'Paid')&&
                         <Button
                             variant="contained"
                             color="primary"
@@ -86,13 +89,19 @@ export default class OpenTicketsComponent extends React.Component{
                             className='bgbtn'
                             style={{ marginLeft: 16 }}
                             onClick={(event) => { 
-                                this.handleTicketPayment(params.row) 
+                                this.handleTicketPayment(params.row);
+                                event.preventDefault();
+                                event.stopPropagation();
                             }}
                         >
                             Pay
                         </Button>}
-                        {(params.row.paymentStatus === 'paid') && <b style={{textTransform:'capitalize'}}>{params.row.pay_mode}</b>} */}
-                        {/* <Print style={{marginLeft:'1rem'}} onClick={()=>this.handleTicketPrint(params.row)}/> */}
+                        {/* {(params.row.paymentStatus === 'paid') && <b style={{textTransform:'capitalize'}}>{params.row.pay_mode}</b>} */}
+                        <Print style={{marginLeft:'1rem'}} onClick={(event)=>{
+                            this.handleTicketPrint(params.row);
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }}/>
                     </div>
                     )
                 },
@@ -104,32 +113,57 @@ export default class OpenTicketsComponent extends React.Component{
 
         this.handleTicketPrint = this.handleTicketPrint.bind(this)
         this.handleTicketPayment = this.handleTicketPayment.bind(this)
-    }
-
-
-
+    } 
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if(nextProps.refreshData !== prevState.refreshData){
             return {refreshData: nextProps.refreshData}
         }
         return null;
-      }
+    }
 
-    handleTicketPayment(){
-
+    handleTicketPayment(row){ 
+        
+        var total = 0;
+        var values = row.ticketdiscounts.map(r=>r.mDiscountAmount)
+        var price = { 
+            ticketSubTotal:row.serviceAmount,
+            ticketDiscount:total,
+            taxAmount:row.taxAmount,
+            tipsAmount:row.tipsAmount,
+            grandTotal:row.ticketTotalAmount
+        }
+        this.setState({price:price, ticketDetail: row}, ()=>{
+            console.log(this.state.price)
+            this.setState({openPayment: true})
+        })
+        values.forEach(e=>{
+            total = Number(total)+Number(e);
+            price.ticketDiscount = total;
+            this.setState({price: price})
+        })
     }
 
     handleTicketPrint(row){
-        var price = {
-            retailPrice:0,
-            servicePrice:0,
-            ticketSubTotal:0,
-            ticketDiscount:0,
-            taxAmount:0,
-            tipsAmount:0,
-            grandTotal:0
+        var total = 0;
+        var values = row.ticketdiscounts.map(r=>r.mDiscountAmount)
+        var price = { 
+            ticketSubTotal:row.serviceAmount,
+            ticketDiscount:total,
+            taxAmount:row.taxAmount,
+            tipsAmount:row.tipsAmount,
+            grandTotal:row.ticketTotalAmount
         }
+        this.setState({price:price, ticketDetail: row}, ()=>{
+            console.log(this.state.price)
+            this.setState({openPrint: true})
+        })
+        values.forEach(e=>{
+            total = Number(total)+Number(e);
+            price.ticketDiscount = total;
+            this.setState({price: price})
+        })
+
     }
 
     componentDidMount(){
@@ -153,8 +187,16 @@ export default class OpenTicketsComponent extends React.Component{
                 this.props.data.editTicket(params.row)
             }}/>
 
-            {this.state.openPayment && <PaymentModal  
-                handleClosePayment={(msg)=>this.handleClosePayment(msg)} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
+
+{this.state.openPrint && <PrintModal customer_detail={this.state.ticketDetail.mCustomer=== null ? {}: this.state.ticketDetail.mCustomer} handleClosePayment={(msg)=>{
+    this.setState({openPrint: false})
+}} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
+            </PrintModal>}
+
+            {this.state.openPayment && <PaymentModal pageFrom={"Dashboard"}  customer_detail={this.state.ticketDetail.mCustomer=== null ? {}: this.state.ticketDetail.mCustomer} 
+                handleClosePayment={(msg)=>{
+                    this.setState({openPayment: false})
+                }} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
             </PaymentModal>}
         </>
     }

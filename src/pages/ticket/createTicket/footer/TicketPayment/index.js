@@ -27,8 +27,9 @@ export default function PaymentModal(
     </DialogTitle>
     <DialogContent>
     <TicketPayment afterSubmit={()=>{
+      console.log("AFTER SUBMIT CALLED")
       handleClosePayment('reload')
-    }} selectCustomerDetail={selectCustomerDetail} customerDetail={customer_detail} ticketDetail={ticketDetail} price={price}></TicketPayment>
+    }} handleClosePayment={handleClosePayment} selectCustomerDetail={selectCustomerDetail} customerDetail={customer_detail} ticketDetail={ticketDetail} price={price}></TicketPayment>
     </DialogContent> 
 </Dialog>  
 

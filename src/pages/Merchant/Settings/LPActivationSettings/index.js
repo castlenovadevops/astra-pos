@@ -40,7 +40,7 @@ export default class CommissionPayment extends React.Component{
             });
         }
         this.setState({isLoading: true, addForm: false},()=>{
-            this.httpManager.postRequest(`merchant/lpsettings/getActivationSettings`).then(response=>{ 
+            this.httpManager.postRequest(`merchant/lpsettings/getActivationSettings`,{data:"FOMR PAGE"}).then(response=>{ 
                 // this.openEdit(response.data); 
                 if(response.data!== null){
                     this.setState({selectedSettings: response.data }, ()=>{
@@ -98,7 +98,7 @@ export default class CommissionPayment extends React.Component{
             pauseOnHover={false}
             />
             <Container maxWidth="xl">
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                     <Typography variant="h4" gutterBottom>
                         Loyalty Activation Settings
                     </Typography>
@@ -106,6 +106,12 @@ export default class CommissionPayment extends React.Component{
                 </Stack>
                 <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
+                     <Grid item xs={12}>
+                        <div style={{display:'flex', flexDirection:'column', color:'#aaa', fontSize:'12px'}}>
+                            <p>Threshold - Customer can redeem their loyalty points only the meet the threshold.</p>
+                            <p>Ex: If threshold is set to 100 points, customers can redeem the loyalty points when they reach 100 points.</p>
+                        </div>
+                     </Grid>
                      <Grid item xs={12}>
 
                         <Stack spacing={3}> 

@@ -4,6 +4,7 @@ const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
 const { Sequelize } = require('sequelize');
+const sequelize =  require('../../models').sequelize
 
 module.exports = class TicketController extends baseController{
     path = "/merchant/ticket";
@@ -152,7 +153,15 @@ module.exports = class TicketController extends baseController{
             include:[
                 {
                     model: this.models.mCustomers,
-                    required: false
+                    required: false,
+                    attributes:{
+                        include:[  
+                            [
+                                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                "LoyaltyPoints"
+                            ]
+                        ]
+                    }
                 },
                 {
                     model: this.models.merchantEmployees,
@@ -195,7 +204,15 @@ module.exports = class TicketController extends baseController{
             include:[
                 {
                     model: this.models.mCustomers,
-                    required: false
+                    required: false,
+                    attributes:{
+                        include:[  
+                            [
+                                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                "LoyaltyPoints"
+                            ]
+                        ]
+                    }
                 },
                 {
                     model: this.models.merchantEmployees,
@@ -241,7 +258,15 @@ module.exports = class TicketController extends baseController{
             include:[
                 {
                     model: this.models.mCustomers,
-                    required: false
+                    required: false,
+                    attributes:{
+                        include:[  
+                            [
+                                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                "LoyaltyPoints"
+                            ]
+                        ]
+                    }
                 },
                 {
                     model: this.models.merchantEmployees,

@@ -1,7 +1,9 @@
 import React from "react";
 import Loader from '../../../components/Loader';
 import Page from '../../../components/Page';
-import HTTPManager from "../../../utils/httpRequestManager";   
+import HTTPManager from '../../../utils/httpRequestManager'; 
+import FButton from '../../../components/formComponents/components/button';
+import FMaskTextField from '../../../components/formComponents/components/masktextfield';
 import FormManager from "../../../components/formComponents/FormManager";
 import schema from './schema.js';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material'; 
@@ -29,10 +31,28 @@ export default class GiftCards extends React.Component{
                 tipsAmount:0,
                 grandTotal:0
             },
+            giftcard:{},
+            validgiftcard:false,
+            giftCardError: false,
+            giftCardErrorText:'',
+            giftcardnumber:''
         }
         this.handleCloseform = this.handleCloseform.bind(this);  
         this.onStateChange = this.onStateChange.bind(this);
-    }  
+        this.checkBalance = this.checkBalance.bind(this); 
+    }
+
+    checkBalance(){
+        this.setState({giftCardError: false, giftCardErrorText: ''})
+        this.httpManager.postRequest('merchant/giftcard/checkBalance', {cardNumber: this.state.giftcardnumber.replaceAll('-','')}).then(res=>{
+            this.setState({giftcard: res.data, validgiftcard: true})
+        }).catch(e=>{
+            console.log(e)
+            if(e.message){
+                this.setState({giftCardError: true, giftCardErrorText: e.message})
+            }
+        })
+    }
 
 
     onStateChange(values){ 
@@ -202,8 +222,8 @@ export default class GiftCards extends React.Component{
                                 }} alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer', marginBottom:'1rem'}} >
                                     <Typography variant="h6" textAlign={'center'} p={4} gutterBottom>Sell Card</Typography>
                                 </Card> 
-                                <Card  alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer'}}>
-                                    <Typography variant="h6" textAlign={'center'}  p={4} gutterBottom>Check Balance</Typography>
+                                <Card  alignItems="center" style={{border:0, boxShadow:'none', width:'250px', cursor:'pointer'}}>
+                                    {/* <Typography variant="h6" textAlign={'center'}  p={4} gutterBottom>Check Balance</Typography> */}
                                 </Card>  
                                 <Card  onClick={()=>{
                                     this.setState({isSellCard: false}, ()=>{
@@ -229,6 +249,35 @@ export default class GiftCards extends React.Component{
                 </Grid>
             </Box>}
 
+            <Container maxWidth="sm"> 
+                <Card style={{padding:'1rem', border:'1px solid #d0d0d0'}}>
+                    <Typography variant="h6" gutterBottom>
+                            Check Balance
+                    </Typography>
+                    <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0',  marginTop:'0.5rem'}}>
+                            <Grid item xs={12} style={{display:'flex'}}> 
+                                    <FMaskTextField  required={true} fullWidth error={this.state.giftCardError} helperText={this.state.giftCardErrorText} type={'text'} format={'number'} minLength={1} maxLength={16}  label={'Enter Card Number'} placeholder={'Enter Card Number'} name={'cardNumber'} value={this.state.giftcardnumber}   onChange={e=>{
+                                        this.setState({giftcardnumber: e.target.value, validgiftcard: false, giftcard:{}})
+                                    }}/>
+                            </Grid>
+                            <Grid item xs={12}>
+                            {this.state.validgiftcard && this.state.giftcard.cardBalance !== undefined && <>
+                                <div style={{display:'flex', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
+                                    Current Gift Card Balance : <span style={{color:'green', fontWeight:700}}>${Number(this.state.giftcard.cardBalance).toFixed(2)}</span>
+                                </div> 
+                            </>}
+                            </Grid>
+                            <Grid item xs={4}></Grid>
+                            <Grid item xs={4}>
+                                <FButton fullWidth size="large" variant={'contained'} disabled={this.state.giftcardnumber.replaceAll("-","").length<16} label={"Check Balance"} onClick={()=>{
+                                    this.checkBalance()
+                                }
+                                }/>
+                            </Grid>
+                            <Grid item xs={4}></Grid>
+                    </Grid>
+                </Card>
+            </Container>
 
             {this.state.showPayment && <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 

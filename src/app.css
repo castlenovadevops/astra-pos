@@ -455,9 +455,9 @@
 
 .giftpopup .MuiDialog-paper{
     width:500px;
-    height:300px;
+    height:400px;
     max-width:500px;
-    max-height:300px;
+    max-height:400px;
     margin:0;
 }
 
@@ -514,4 +514,18 @@ overflow-x: hidden !important;
 .MuiDialogContent-root .MuiButton-outlined:not(:disabled),.MuiDialogActions-root  .MuiButton-outlined:not(:disabled){
     color: #134163 !important;
     border:1px solid #134163;
+}
+
+.MuiFormHelperText-root{
+    color:#FF4842;
+    margin-left: 0;
+}
+
+.simplebar-content .MuiList-root{ 
+    display: flex;
+    flex-direction: column;
+}
+
+.MuiAppBar-root circle, .MuiAppBar-root rect{
+    fill:#000;
 }

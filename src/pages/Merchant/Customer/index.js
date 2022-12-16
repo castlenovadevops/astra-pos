@@ -127,6 +127,22 @@ export default class Customer extends React.Component{
         var properties = Object.assign([], this.state.schema.properties);
         var props=[];
         properties.forEach((field,i)=>{
+            if(field.name === 'mCustomerLoyaltyPoints'){
+                // field.type="hidden";
+                // props.push( {
+                //     "component":"div", 
+                //     "name":"hiddendiv"
+                //     "type": "text",
+                //     "format":"string",
+                //     "grid":6,
+                //     "text" : "",
+                //     "style":{"font-size":"20px", "margin-top":"1rem"}
+                // })
+                field.disabled = true;
+            }
+            else if(field.name === 'mCustomerDOB'){
+                field.disabled = true;
+            }
             field.value = data[field.name];
             props.push(field);
             if(i === properties.length-1){
@@ -178,6 +194,12 @@ export default class Customer extends React.Component{
             var props=[];
             properties.forEach((field,i)=>{
                 delete field["value"];
+                if(field.name === 'mCustomerLoyaltyPoints'){ 
+                    field.disabled = false;
+                }
+                else if(field.name === 'mCustomerDOB'){
+                    field.disabled = false;
+                }
                 props.push(field);
                 if(i === properties.length-1){
                     schemaobj.properties = props;

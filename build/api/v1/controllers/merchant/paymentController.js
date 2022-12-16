@@ -93,11 +93,36 @@ module.exports = class TicketController extends baseController{
             "payMode":input.paymode,
             "cardType":input.cardtype,
             "paymentType":input.creditordebit,
-            "paymentNotes":input.ticketpayment,
+            "paymentNotes":input.paymentnotes,
             "createdBy":req.userData.mEmployeeId,
             "createdDate":this.getDate()
         }
-        this.create('ticketpayment', payinput).then(r=>{
+        let detail = await this.readOne({where:{ticketId: input.ticketDetail.ticketId}}, 'tickets');
+        var ticketDetail = detail.dataValues || detail;
+        let loyaltypoints = await this.readOne({where:{status:1}}, 'LPRedeemSettings')
+
+        this.create('ticketpayment', payinput).then(async (r)=>{
+
+            console.log("SAVE PAYMENT POINTS CALLED", req.input)
+            if( ticketDetail.customerId !== undefined &&  ticketDetail.customerId !== ''){
+                
+        console.log("SAVE PAYMENT POINTS CALLED", req.input)
+        if(loyaltypoints.id !== undefined){
+                    if(Number(loyaltypoints.minimumTicketValue) <= Number(input.ticketpayment)){
+                        var pointsinput =  {
+                            customerId:  ticketDetail.customerId,
+                            pointsCount: Number(input.ticketpayment) * Number(loyaltypoints.pointsCount),
+                            status:'Earned',
+                            dollarValue:'',
+                            createdBy: req.userData.mEmployeeId,
+                            ticketValue: input.ticketpayment,
+                            createdDate: this.getDate()
+                        } 
+                        console.log("POINTS INPUT", pointsinput);
+                        await this.create(`customerLoyaltyPoints`, pointsinput)
+                    }
+                }
+            }
             this.readOne({where:options.where, attributes:[
                 [
                     sequelize.literal("(select sum(ticketPayment) from ticketpayment where ticketId='"+input.ticketDetail.ticketId+"')"),

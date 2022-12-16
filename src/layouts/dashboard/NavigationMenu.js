@@ -117,14 +117,14 @@ export default class NavigationMenu extends React.Component{
                           title: 'Loyalty Points Setting',
                           path: '/app/loyaltypointsettings'   
                         },
-                        {
-                          title: 'Loyalty Redeem Point Settings',
-                          path: '/app/loyaltyredeemsettings'   
-                        }  ,
-                        {
-                          title: 'Loyalty Program',
-                          path: '/app/loyaltyactivatesettings'   
-                        }  
+                        // {
+                        //   title: 'Loyalty Redeem Point Settings',
+                        //   path: '/app/loyaltyredeemsettings'   
+                        // }  ,
+                        // {
+                        //   title: 'Loyalty Program',
+                        //   path: '/app/loyaltyactivatesettings'   
+                        // }  
                       
                     ]
                 },

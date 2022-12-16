@@ -68,7 +68,19 @@ module.exports = class CustomerController extends baseController{
             })
         }
         else{
-            this.create('mCustomers', input).then(resp=>{
+            this.create('mCustomers', input).then(async (resp)=>{
+                if(input.mCustomerLoyaltyPoints !== undefined){
+                    var pointsinput ={
+                        customerId: resp.mCustomerId,
+                        pointsCount: input.mCustomerLoyaltyPoints,
+                        status:'Earned',
+                        dollarValue:'',
+                        createdBy: req.userData.mEmployeeId,
+                        createdDate: this.getDate()
+                    } 
+
+                    await this.create('customerLoyaltyPoints', pointsinput);
+                }
                 this.sendResponse({message:"Saved sucessfully"}, res, 200)
             })
         }
@@ -79,9 +91,14 @@ module.exports = class CustomerController extends baseController{
             ['createdDate','ASC']
         ],
         attributes:{include: [ [
-            Sequelize.col('mCustomerId'),
-            `id`
-        ], ]},
+                Sequelize.col('mCustomerId'),
+                `id`
+            ], 
+            [
+                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomers`.`mCustomerId`)"),
+                "LoyaltyPoints"
+            ] 
+        ]},
         where:{
             merchantId:req.deviceDetails.merchantId,
             mCustomerStatus:1
@@ -94,9 +111,14 @@ module.exports = class CustomerController extends baseController{
             ['createdDate','ASC']
         ],
         attributes:{include: [ [
-            Sequelize.col('mCustomerId'),
-            `id`
-        ], ]},
+                    Sequelize.col('mCustomerId'),
+                    `id`
+                ], 
+                [
+                    sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomers`.`mCustomerId`)"),
+                    "LoyaltyPoints"
+                ]
+            ]},
         where:{
             merchantId:req.deviceDetails.merchantId
         }

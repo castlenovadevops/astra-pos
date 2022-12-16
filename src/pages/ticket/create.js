@@ -223,6 +223,7 @@ export default class CreateTicketComponent extends React.Component{
         if(this.state.selectedServices.length > 0){
             console.log("AAAA", this.state.ticketDetail)
             var ticketinput = {
+                customer_detail: this.state.customer_detail,
                 ticketDetail:Object.assign({}, this.state.ticketDetail), 
                 selectedServices: Object.assign([], this.state.selectedServices),
                 ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
@@ -772,6 +773,17 @@ export default class CreateTicketComponent extends React.Component{
         this.httpManager.postRequest("/merchant/ticket/getTicketDetail",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
             this.setState({ticketDetail: r.data}, ()=>{
                 // this.reloadTicket(r.data)
+                if(this.state.ticketDetail.paymentStatus === 'Paid'){
+                    // this.getTicketPayments()
+                    this.setState({isPaidOnOpen: true, isDisabled: true})
+                }
+                this.setState({ ticketdiscounts: this.state.ticketDetail.ticketdiscounts}, ()=>{ 
+                    this.setState({selectedTech: this.state.ticketDetail.merchantEmployee, customer_detail: this.state.ticketDetail.mCustomer !== null ? this.state.ticketDetail.mCustomer : {}},()=>{
+                       
+                        // this.getTicketServices();
+                    })
+                    
+                });
             })
         }) 
     }
@@ -784,7 +796,7 @@ export default class CreateTicketComponent extends React.Component{
             }
             this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
                 this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
-                    console.log(this.state.selectedTech)
+                   
                     this.getTicketServices();
                 })
                 

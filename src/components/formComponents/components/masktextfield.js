@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TextField, FormControl, InputLabel, Input  } from '@mui/material';
+import { FormHelperText, FormControl, InputLabel, Input  } from '@mui/material';
 import PropTypes from 'prop-types';
 import { IMaskInput } from 'react-imask';
 /* eslint-disable no-useless-escape */
@@ -49,6 +49,7 @@ export default class FMaskTextField extends React.Component{
         return {value: nextProps.value}
     }
     if (nextProps.error !== prevState.error && !prevState.errorCustom ) {
+      console.log("ERROR:::: ", nextProps.error, nextProps.helperText)
       return { error: nextProps.error, helperText: nextProps.helperText };
     }
     return null;
@@ -77,7 +78,14 @@ export default class FMaskTextField extends React.Component{
             style={this.props.style}
             placeholder={this.props.label}
             tabindex={this.props.tabindex}
+            aria-describedby="my-helper-text"  
+            onBlur={()=>{ 
+                if(this.props.onBlur){ 
+                    this.props.onBlur(this.props)
+                } 
+            }}
           />
+            <FormHelperText id="my-helper-text">{this.state.helperText}</FormHelperText>
         </FormControl>
         // return <TextField
         //     label={this.props.label}

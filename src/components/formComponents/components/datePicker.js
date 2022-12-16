@@ -49,6 +49,7 @@ export default class FDatepicker extends React.Component{
             onChange={this.props.onChange}
             style={this.props.style}
             placeholder={this.props.label}
+            disabled={this.props.disabled}
             renderInput={(params) => {params.error=false; return <TextField fullWidth={this.props.fullWidth} {...params} />}}
           /> 
           </LocalizationProvider></> 

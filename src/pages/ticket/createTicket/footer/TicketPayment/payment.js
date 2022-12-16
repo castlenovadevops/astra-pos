@@ -48,7 +48,7 @@ export default class TicketPayment extends React.Component  {
     }
 
     
-    componentDidMount(){  
+    componentDidMount(){   
         this.loadData()
     } 
 
@@ -151,6 +151,7 @@ export default class TicketPayment extends React.Component  {
                     {this.state.activeTab==='full' && <TicketFullPayment data={{
                         ticketDetail:this.props.ticketDetail,
                         topayamount: this.state.topayamount,
+                        customerDetail:this.props.customerDetail,
                         completePayment:()=>{
                             this.props.afterSubmit();
                             this.getTicketPayments();
@@ -171,6 +172,7 @@ export default class TicketPayment extends React.Component  {
                 {this.state.paymentSplitted && <><TicketFullPayment data={{
                         ticketDetail:this.props.ticketDetail,
                         topayamount: this.state.splittedAmount,
+                        customerDetail:this.props.customerDetail,
                         completePayment:()=>{
                             this.setState({splittedAmount: 0, paymentSplitted: false})
                             this.props.afterSubmit();
@@ -243,15 +245,16 @@ export default class TicketPayment extends React.Component  {
                     <Grid item xs={2} style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'flex-end'}}>
                         {this.props.ticketDetail.ticketType !== 'GiftCard' && <div style={{marginRight:'10px', display:'flex', flexDirection:'row', alignItems:'center', cursor:'pointer', justifyContent:'flex-end'}} 
                                 onClick={()=>{ 
+                                    if(this.props.pageFrom === 'Ticket'){
                                             this.setState({selectCustomerPopup: true})
-                                        
+                                    }
                                 }}>
                             <AccountCircle fontSize="large" className={"accnticon"}  /> 
                                  {this.props.customerDetail.mCustomerName !== undefined && <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center', fontWeight:'500'}}>
                                     {this.props.customerDetail.mCustomerName}
                                  </Typography> }
                         </div>}
-                        <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center'}} onClick={() => this.props.afterSubmit()}> 
+                        <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center'}} onClick={() => this.props.handleClosePayment()}> 
                             <CloseIcon fontSize="small" style={{"color":'#134163'}}/>
                         </Typography>
                     </Grid>      

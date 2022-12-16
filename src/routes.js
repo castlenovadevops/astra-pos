@@ -33,6 +33,7 @@ import PayoutComponent from './pages/Payout';
 import ReportComponent from './pages/reports';
 // import AppointmentComponent from './pages/Appointments';
 
+import LoyaltyPoints from './pages/Merchant/Settings/LoyaltyPoints';
 
 import LPSettings from './pages/Merchant/Settings/LPSettings';
 import LPActivationSettings from './pages/Merchant/Settings/LPActivationSettings';
@@ -80,7 +81,7 @@ export default function Router() {
         // { path: 'appointments', element: <AppointmentComponent/>},
         { path: 'printers', element: <Printers/>},
 
-        { path:'loyaltypointsettings', element: <LPSettings/>},
+        { path:'loyaltypointsettings', element: <LoyaltyPoints/>},
         { path:'loyaltyactivatesettings', element: <LPActivationSettings/>},
         { path:'giftcards', element: <GiftCards/>},
         { path: 'loyaltyredeemsettings', element: <LoyaltyRedeemSettings/>}
