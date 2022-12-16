@@ -33,8 +33,7 @@
             "type": "text", 
             "minLength": 1,
             "maxLength": 50,
-            "grid":6,
-            "rows":3,
+            "grid":6, 
             "name":"Title",
             "label":"Title",
             "placeholder":"Title"
@@ -64,6 +63,7 @@
             "maxLength": 50,
             "grid":6,
             "rows":3,
+            "multiline":true,
             "name":"headerText",
             "label":"Header Text",
             "placeholder":"Header Text"
@@ -75,6 +75,7 @@
             "maxLength": 50,
             "grid":6,
             "rows":3,
+            "multiline":true,
             "name":"footerText",
             "label":"Footer Text",
             "placeholder":"Footer Text"

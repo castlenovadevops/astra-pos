@@ -43,8 +43,8 @@ export default class FTextField extends React.Component{
             disabled={this.props.disabled}
             required={this.props.required}
             fullWidth={this.props.fullWidth}
-            rows={this.props.rows}
-            multiline={this.props.multiline || this.props.rows!== undefined }
+            rows={this.props.rows} 
+            multiline={this.props.multiline} 
             InputProps={{
                 autoComplete: 'off',
                 ...this.props.InputProps

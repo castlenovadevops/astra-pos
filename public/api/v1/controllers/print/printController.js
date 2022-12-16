@@ -4,7 +4,8 @@ const MsgController = require('../common/msgController');
 const express = require('express'); 
 const APIManager = require('../../utils/apiManager'); 
 const  Sequelize  = require('sequelize');
-const fontList = require('font-list')
+const fontList = require('font-list');
+const { sequelize } = require('../../models');
 
 module.exports = class SyncTaxController extends baseController{
     path = "/pos/print";
@@ -92,6 +93,20 @@ module.exports = class SyncTaxController extends baseController{
 
     updatePrinter = async(req, res, next)=>{
         var input = Object.assign({},  req.input);   
+        if(input.BillPrint !== undefined){
+            await this.update('printers',{BillPrint:0}, {where:{
+                id:{
+                    [Sequelize.Op.in] : sequelize.literal("select id from printers")
+                }
+            }})
+        }
+        if(input.ReportPrint !== undefined){
+            await this.update('printers',{ReportPrint:0}, {where:{
+                id:{
+                    [Sequelize.Op.in] : sequelize.literal("select id from printers")
+                }
+            }})
+        }
         this.update('printers', input, {where:{id: input.id}}).then(r=>{
             this.sendResponse({data:"Saved successfully"}, res, 200)
         })
@@ -165,7 +180,19 @@ module.exports = class SyncTaxController extends baseController{
 
         this.readOne(options, 'tickets').then(async (results)=>{
             var billprinters = await this.readOne({where:{BillPrint: 1}}, 'printers')
-            this.sendResponse({htmlMsg: JSON.stringify(results), printers: billprinters}, res, 200);
+            var printer = billprinters != null ? billprinters.dataValues : {} 
+            var merchantdetail = req.deviceDetails;
+            console.log(printer)
+            var html = `<div style="max-width:100%; border:1px solid #000;font-family:'`+printer.fontFamily+`'; font-size:'`+printer.fontSize+`'">`;
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><h5 style='font-size:18px;font-weight:bold;'>`+printer.Title+`</h5></div>`
+            html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
+            html += `<div>`+merchantdetail.merchantAddress1+`</div>`
+            html += `<div>`+merchantdetail.merchantAddress2+`</div>`
+            html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipCode+`</div>`
+            html+=`</div>`
+
+            html+=`</div>`;
+            this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
         })
     }
 }

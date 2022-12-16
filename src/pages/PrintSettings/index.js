@@ -41,13 +41,13 @@ export default class Customer extends React.Component{
                     renderCell: (params) => (
                        <div>
 
-           <Button variant="contained" onClick={()=>{
+           {/* <Button variant="contained" onClick={()=>{
                 window.api.printData(params.row.printerIdentifier).then(r=>{
                     
                 })
-           }}>Print</Button>
+           }}>Print</Button> */}
 
-                            <Button variant="outlined"  onClick={()=>{
+                            <Button variant={params.row.BillPrint === 0 ? "outlined" : "contained"}  onClick={()=>{
                                 this.setState({isLoading: true},()=>{      
                                     if(params.row.BillPrint === 0){
                                         this.httpManager.postRequest(`pos/print/updatePrinter`,{id: params.row.id, BillPrint:1}).then(r=>{
@@ -60,8 +60,8 @@ export default class Customer extends React.Component{
                                         })
                                     }
                                 })
-                            }}>{params.row.BillPrint === 1 ? "UnAssign" : "Assign"} to Bill</Button>
-                            <Button variant="outlined" onClick={()=>{
+                            }}>Bill Print</Button>
+                            <Button variant={params.row.ReportPrint === 0 ? "outlined" : "contained"} onClick={()=>{
                                 this.setState({isLoading: true},()=>{    
                                     if(params.row.ReportPrint === 0){  
                                         this.httpManager.postRequest(`pos/print/updatePrinter`,{id: params.row.id, ReportPrint:1}).then(r=>{
@@ -74,7 +74,7 @@ export default class Customer extends React.Component{
                                         })
                                     }
                                 })
-                            }}>{params.row.ReportPrint === 1 ? "UnAssign" : "Assign"} to Report</Button>
+                            }}>Report Print</Button>
                        </div>            
                     ),
                 }  
@@ -88,11 +88,13 @@ export default class Customer extends React.Component{
     }
 
     openAdd(){
+        var addedprinters= this.state.printerlist.map(r=>r.printerIdentifier)
         window.api.getPrinters().then(data=>{ 
+            var printers = data.printers.filter(r=>addedprinters.indexOf(r.name) === -1)
             var props = [];
             props = schema.properties.map(field=>{
                 if(field.name === 'printerIdentifier'){
-                    field.data = data.printers;
+                    field.data = printers;
                     field.dataformat = {
                         label:'displayName',
                         value:'name'
@@ -140,7 +142,7 @@ export default class Customer extends React.Component{
 
     reloadData(){ 
         this.httpManager.postRequest(`pos/print/getPrinters`,{data:"FOM PRINTER"}).then(res=>{
-            this.setState({printerlist: res.data, isLoading: false})
+            this.setState({printerlist: res.data, isLoading: false, addForm: false})
         })
     }
     
