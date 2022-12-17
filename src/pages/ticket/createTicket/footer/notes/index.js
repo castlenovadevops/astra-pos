@@ -1,5 +1,5 @@
  import React from 'react'; 
-import { Grid,  Button, TextareaAutosize, Dialog, DialogContent, DialogTitle, DialogActions, DialogContentText } from '@material-ui/core/';  
+import { Grid,  Button, TextareaAutosize, Dialog, DialogContent, DialogTitle, DialogActions, DialogContentText } from '@mui/material';  
 
 export default function NotesModal(
     {

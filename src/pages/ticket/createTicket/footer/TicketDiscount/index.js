@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@material-ui/core/'; 
+import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@mui/material'; 
 import Discounts from './discounts'; 
 
 export default function DiscountTicketModal({ 

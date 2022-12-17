@@ -1,7 +1,7 @@
 import React from 'react'; 
 import VariablePrice from './variablePrice'; 
 
-import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@material-ui/core/'; 
+import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@mui/material'; 
 export default function VariablePriceModal({
    data
    

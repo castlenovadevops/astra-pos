@@ -104,7 +104,15 @@ export default class CommissionPayment extends React.Component{
             draggable={false}
             pauseOnHover={false}
             />
+
+
+
             <Container maxWidth="xl">
+                <Card style={{border:'1px solid #d0d0d0', padding:'1rem'}}>
+                    <LPRedeemSettings />
+                </Card>
+            </Container> 
+            <Container maxWidth="xl" style={{marginTop:'2rem'}}>
                 <Card style={{border:'1px solid #d0d0d0', padding:'1rem'}}>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                         <Typography variant="h4" gutterBottom>
@@ -127,14 +135,6 @@ export default class CommissionPayment extends React.Component{
                     </Box>
                 </Card>
             </Container>
-
-
-
-            <Container maxWidth="xl" style={{marginTop:'2rem'}}>
-                <Card style={{border:'1px solid #d0d0d0', padding:'1rem'}}>
-                    <LPRedeemSettings />
-                </Card>
-            </Container> 
 
             
             <Container maxWidth="xl" style={{marginTop:'2rem'}}>

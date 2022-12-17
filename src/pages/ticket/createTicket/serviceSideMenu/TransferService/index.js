@@ -1,6 +1,6 @@
 import React from 'react';  
 import OpenTicketsComponent from './opentickets';
-import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@material-ui/core/'; 
+import { Grid,Button, Dialog, DialogActions, DialogContent, DialogTitle  } from '@mui/material'; 
 export default function TransferService({
    data
    
