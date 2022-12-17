@@ -58,7 +58,7 @@ module.exports = class SyncCategoryController extends baseController{
             }}, 'LPActivationSettings')
             var data = datares.dataValues
             data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
-            data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
+            // data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
             data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
             console.log(data)
             this.apiManager.postRequest('/pos/sync/saveLPActivationSettings', data , req).then(response=>{

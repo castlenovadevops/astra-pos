@@ -53,7 +53,7 @@ export default class Discount extends React.Component{
                     editable: false,
                     renderCell: (params) => (
                         <div>
-                            {params.row.mDiscountType ===  'amount'? '$' + params.row.mDiscountValue : params.row.mDiscountValue+'%' }
+                            {params.row.mDiscountType ===  'Amount'? '$' + params.row.mDiscountValue : params.row.mDiscountValue+'%' }
                         </div>
                     )
                 },

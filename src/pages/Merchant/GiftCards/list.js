@@ -226,10 +226,7 @@ export default class Discount extends React.Component{
             />
             {!this.state.addForm ? 
                 <Container maxWidth="xl">
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Typography variant="h4" gutterBottom>
-                    Gift Cards
-                    </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}> 
                     {/* <FButton 
                     onClick={()=>this.openAdd()}
                     size="large"

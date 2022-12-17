@@ -195,7 +195,9 @@ ipcMain.handle('printHTML', async(event,args)=>{
   return new Promise((resolve, reject) => { 
   let rand = Math.random();
   let current_time= Date.now();
-  var final_printed_data = html
+  var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+  final_printed_data += "<div style='max-width:270px'>"+html+"</div>";
+  final_printed_data += '</body></html>';
   var print_copies = 1;
 
   let new_file_location = path.join(app.getAppPath(), `../DB/print_${current_time}_${rand}.html`);
