@@ -8,10 +8,10 @@ DialogComponent.propTypes = {
     open: PropTypes.bool,
     actions: PropTypes.node
   };
-export default function DialogComponent({children, title, onClose, open, actions}){
+export default function DialogComponent({children, title, onClose, open, actions, className='lgwidth'}){
     return <Dialog
     style={{zIndex:'99999'}}
-    className="lgwidth"
+    className={className}
     open={open}
     onClose={onClose}
     aria-labelledby="alert-dialog-title"

@@ -151,6 +151,9 @@ export default class Employee extends React.Component{
             console.log("EMP EDIT")
             console.log(data, field.name)
             field.value = data[field.name];
+            if(field.name === 'mEmployeeRole' || field.name === 'mEmployeePasscode'){
+                field.disabled = true;
+            }
             props.push(field);
             if(i === properties.length-1){
                 props.push({
@@ -236,6 +239,7 @@ export default class Employee extends React.Component{
                 var props=[];
                 properties.forEach((field,i)=>{
                     delete field["value"];
+                    field.disabled =false;
                     props.push(field);
                     if(i === properties.length-1){
                         schemaobj.properties = props;

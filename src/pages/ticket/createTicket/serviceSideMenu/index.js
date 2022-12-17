@@ -226,7 +226,7 @@ export default class ServiceSideMenu extends  React.Component{
                                     }
                                 }}>
                                     <div className='serviceLbl'> 
-                                        {service.mProductName}
+                                        <div>{service.mProductName}</div>
                                     </div>
                                 </Grid> }) 
                             }

@@ -66,6 +66,7 @@
     .MuiDataGrid-cell--withRenderer > div{
         text-overflow: ellipsis;
         overflow: hidden;
+        height: 45px;
     }
     
     /* .MuiTablePagination-displayedRows{
@@ -390,6 +391,13 @@
     justify-content: center;
     border:1px solid #dfdfdf; 
     cursor:pointer;
+}
+
+.serviceLbl div{
+    padding: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-height: 75%;
 }
 
 .searchfld input{

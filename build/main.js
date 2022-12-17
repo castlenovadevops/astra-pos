@@ -184,14 +184,18 @@ ipcMain.handle('printData', async(event, printername)=>{
 })
 
 
-ipcMain.handle('printHTML', async(event,data)=>{
-  let {html, printername} = data;
+ipcMain.handle('printHTML', async(event,args)=>{
+  // let {html, printername} = data;
+  // console.log(html, printername)
+  // console.log(args.html, args.printername)
+  // var obj = JSON.parse(args)
+  var html = args.html
+  var printername = args.printername
+  // console.log(obj)
   return new Promise((resolve, reject) => { 
   let rand = Math.random();
   let current_time= Date.now();
-  var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
-  final_printed_data += "<div >"+html+"</div>";
-  final_printed_data += '</body></html>';
+  var final_printed_data = html
   var print_copies = 1;
 
   let new_file_location = path.join(app.getAppPath(), `../DB/print_${current_time}_${rand}.html`);
@@ -206,7 +210,7 @@ ipcMain.handle('printHTML', async(event,data)=>{
           protocol: 'file:',
           slashes: true
       })); 
-      console.log(data, printername)
+      // console.log(data, printername)
             print_window[current_time].webContents.on('did-finish-load', async () => {
             console.log('did-finish-load ' + new Date().toISOString());
           
@@ -218,17 +222,17 @@ ipcMain.handle('printHTML', async(event,data)=>{
                     // console.log('print finish ' + new Date().toISOString());
 
                     const options = {
-                      preview: false,
-                      // margin: "100 100 100 100", 
+                      preview: false,            //  width of content body
+                      margins: 'default',  
                       // copies: 1, 
                       // printerName: printername, 
-                      // silent: true,
+                      silent: true,
                       // pageSize: { height: 301000, width: 71000 } 
-                      margin: '0 0 0 0',
+                      // margin: '0 0 0 0',
                       copies: 1,
                       printerName: printername,
                       timeOutPerLine: 400,
-                      pageSize: '78mm' // page size
+                      pageSize: '80mm' // page size
                       // pageSize: { height: 301000, width: 71000 } 
                   }
                   

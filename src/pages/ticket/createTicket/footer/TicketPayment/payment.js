@@ -56,9 +56,28 @@ export default class TicketPayment extends React.Component  {
     getPrintHTML(billtype){
         this.httpManager.postRequest(`pos/print/getPrintHTML`,{ticketId : this.props.ticketDetail.ticketId}).then(htmlres=>{
             // console.log(JSON.parse(htmlres.htmlMsg))
-            window.api.printHTML(htmlres.htmlMsg, htmlres.printers.printerIdentifier).then(r=>{
-                console.log("Printed Successfully.")
-            })
+            // window.api.printHTML({htmlres.htmlMsg, htmlres.printers.printerIdentifier}).then(r=>{
+            //     console.log("Printed Successfully.")
+            // })
+            if(htmlres.htmlMsg instanceof Array){
+                htmlres.htmlMsg.forEach(html=>{ 
+                    var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+                    final_printed_data += "<div style='max-width:270px'>"+html+"</div>";
+                    final_printed_data += '</body></html>';
+                    // window.api.printHTML({html:html, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                    window.api.printHTML({html:final_printed_data, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                        console.log("Printed Successfully.")
+                    })
+                })
+            }
+            else{ 
+                var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+                final_printed_data += "<div style='max-width:270px'>"+htmlres.htmlMsg+"</div>";
+                final_printed_data += '</body></html>';
+                window.api.printHTML({html:final_printed_data , printername:htmlres.printers.printerIdentifier}).then(r=>{
+                    console.log("Printed Successfully.")
+                })
+            }
         })
     }
 
@@ -209,11 +228,11 @@ export default class TicketPayment extends React.Component  {
                             this.getPrintHTML('bill')
                         }}>Print Bill</Typography>
                     </Grid>  
-                    <Grid item xs={4} style={{display:'flex'}}> 
-                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                     {/* <Grid item xs={4} style={{display:'flex'}}> 
+                       <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                              this.getPrintHTML('receipt')
                         }}>Print Receipt</Typography>
-                    </Grid>  
+                    </Grid>   */}
                     <Grid item xs={4} style={{display:'flex'}}> 
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                             this.getPrintHTML('empreceipt') 
@@ -264,9 +283,7 @@ export default class TicketPayment extends React.Component  {
             {this.state.selectCustomerPopup && 
                      <DialogComponent open={this.state.selectCustomerPopup} title={'Select Customer'}  onClose={()=>{
                         this.setState({selectCustomerPopup: false})
-                     }} >
-                              
-                                <SelectCustomer customerDetail={this.props.customerDetail} handleCloseCustomer={()=>{this.setState({selectCustomerPopup: false})}} onSelectCustomer={(obj, opt)=>this.onSelectCustomer(obj, opt)}/>
+                     }} > <SelectCustomer customerDetail={this.props.customerDetail} handleCloseCustomer={()=>{this.setState({selectCustomerPopup: false})}} onSelectCustomer={(obj, opt)=>this.onSelectCustomer(obj, opt)}/>
                     </DialogComponent>}
 
 

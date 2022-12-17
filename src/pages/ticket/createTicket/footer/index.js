@@ -10,6 +10,8 @@ import AlertModal from '../../../../components/Dialog';
 import TicketDiscount from './TicketDiscount'; 
 import CombineTicket from './CombineTicket';
 
+import PrintModal from "./TicketPrint";
+
 export default class TicketFooterComponent extends React.Component{  
     constructor(props){
         super(props);  
@@ -25,7 +27,8 @@ export default class TicketFooterComponent extends React.Component{
             alertTitle:'',
             isCombine: false,
             discountPopup: false,
-            discountsList : []
+            discountsList : [],
+            openPrint: false
         }
 
         this.voidTicket = this.voidTicket.bind(this);
@@ -196,9 +199,7 @@ export default class TicketFooterComponent extends React.Component{
                             <Grid item xs={12} style={{display:'flex'}} className='nobottomborder'>
                                 <Grid xs={3}>
                                     <Button onClick={()=>{
-                                        if(this.props.data.ticketDetail.paid_status === 'paid')
-                                        {this.props.data.showCloseTicketPrint();} 
-                                        else{this.props.data.printTicket('bill')}
+                                        this.setState({openPrint: true})
                                         }}  disabled={  this.props.data.selectedServices.length === 0} fullWidth variant="outlined">
                                         Print
                                     </Button> 
@@ -282,6 +283,10 @@ export default class TicketFooterComponent extends React.Component{
             }
 
  
+{this.state.openPrint && <PrintModal customer_detail={this.props.data.customer_detail} handleClosePayment={(msg)=>{
+    this.setState({openPrint: false})}} price={this.props.data.price} ticketDetail={this.props.data.ticketDetail}> 
+            </PrintModal>}
+
             {this.state.openPayment && <PaymentModal pageFrom={"Ticket"} customer_detail={this.props.data.customer_detail} selectCustomerDetail={(obj, opt)=>{
                 this.props.data.selectCustomerDetail(obj, opt)
             }}

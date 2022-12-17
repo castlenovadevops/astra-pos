@@ -184,21 +184,67 @@ ipcMain.handle('printData', async(event, printername)=>{
 
 
 ipcMain.handle('printHTML', async(event,args)=>{ 
-console.log(args);
-let {html, printername} = args;
+
+var html = args.html
+var printername = args.printername
   return new Promise((resolve, reject) => { 
   let rand = Math.random();
   let current_time= Date.now();
-  var final_printed_data = '<html><head> <style type="text/css"> *, html {margin:0;padding:0;} @media print { html, body { width: 80mm; height:100%; position:absolute; }} </style> <meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body >';
-  final_printed_data += "<div style='width:270px'>"+html+"</div>";
+  var final_printed_data = `<html><head> <style type='text/css'>
+  @media only print {
+    @page {
+      size: auto;   /* auto is the initial value */
+      margin: 0;  /* this affects the margin in the printer settings */
+      height: auto !important;
+      width: 70mm !important;
+    }
+  
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important; 
+      left: 0;
+      top: 0;
+      background: #eee !important;
+      font-family: 'Tahoma', 'Segoe UI Light', 'Segoe UI', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Verdana, sans-serif !important;
+      visibility: hidden;
+      height: auto !important;
+      width: 70mm !important;
+      overflow: visible !important;
+    }
+  
+    #root {
+      display: none !important;
+      visibility: hidden !important;
+    }
+  
+    #print {
+      display: block; 
+      left: 0;
+      top: 0;
+      visibility: initial !important;
+      padding: 1px !important;
+      background: white;
+      border: none;
+      outline: none;
+      margin-left: 5mm;
+      height: auto !important;
+      width: 70mm !important;
+      overflow: visible !important;
+    }
+  }
+  </style><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body >`;
+  final_printed_data += "<div id='print'>"+html+"</div>";
   final_printed_data += '</body></html>';
   var print_copies = 1;
 
+  console.log(final_printed_data)
   let new_file_location = path.join(app.getAppPath(), `../DB/print_${current_time}_${rand}.html`);
     current_time = current_time+'_'+rand;
     fs.writeFile(new_file_location, final_printed_data, async () => {
-        console.log('file write ' +  new Date().toISOString());
-      print_window[current_time] = new BrowserWindow({ show: !open_printer_dialog }); 
+        console.log('file write '+ new_file_location +  new Date().toISOString());
+      print_window[current_time] = new BrowserWindow({ 
+        show: !open_printer_dialog 
+      }); 
        
       let filePath_order = new_file_location;
       print_window[current_time].loadURL(url.format({

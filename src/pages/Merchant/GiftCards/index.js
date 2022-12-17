@@ -9,6 +9,10 @@ import schema from './schema.js';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material'; 
 import PaymentModal from "../../ticket/createTicket/footer/TicketPayment"; 
 
+import CardList from './list';
+import DialogComponent from "../../../components/Dialog";
+
+
 export default class GiftCards extends React.Component{
     httpManager = new HTTPManager();
 
@@ -35,7 +39,8 @@ export default class GiftCards extends React.Component{
             validgiftcard:false,
             giftCardError: false,
             giftCardErrorText:'',
-            giftcardnumber:''
+            giftcardnumber:'',
+            checkbal: false
         }
         this.handleCloseform = this.handleCloseform.bind(this);  
         this.onStateChange = this.onStateChange.bind(this);
@@ -222,8 +227,10 @@ export default class GiftCards extends React.Component{
                                 }} alignItems="center" style={{border:'1px solid #d0d0d0', width:'250px', cursor:'pointer', marginBottom:'1rem'}} >
                                     <Typography variant="h6" textAlign={'center'} p={4} gutterBottom>Sell Card</Typography>
                                 </Card> 
-                                <Card  alignItems="center" style={{border:0, boxShadow:'none', width:'250px', cursor:'pointer'}}>
-                                    {/* <Typography variant="h6" textAlign={'center'}  p={4} gutterBottom>Check Balance</Typography> */}
+                                <Card  onClick={()=>{
+                                    this.setState({checkbal: true})
+                                }}  alignItems="center" style={{border:'1px solid #d0d0d0', boxShadow:'none', width:'250px', cursor:'pointer'}}>
+                                    <Typography variant="h6" textAlign={'center'}  p={4} gutterBottom>Check Balance</Typography>
                                 </Card>  
                                 <Card  onClick={()=>{
                                     this.setState({isSellCard: false}, ()=>{
@@ -249,8 +256,9 @@ export default class GiftCards extends React.Component{
                 </Grid>
             </Box>}
 
+            {this.state.checkbal && <DialogComponent className="mdWidth" open={this.state.checkbal} onClose={()=>{this.setState({checkbal:false})}}>
             <Container maxWidth="sm"> 
-                <Card style={{padding:'1rem', border:'1px solid #d0d0d0'}}>
+                <Card style={{padding:'1rem', border:'0'}}>
                     <Typography variant="h6" gutterBottom>
                             Check Balance
                     </Typography>
@@ -278,6 +286,11 @@ export default class GiftCards extends React.Component{
                     </Grid>
                 </Card>
             </Container>
+            </DialogComponent>}
+
+            {!this.state.addForm && <>
+
+            <CardList/> </>}
 
             {this.state.showPayment && <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 

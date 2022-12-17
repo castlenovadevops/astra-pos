@@ -5,6 +5,7 @@ import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers';
 import Page from '../../components/Page';
 import * as Moment from 'moment';
 import Close from '@mui/icons-material/Close';
+import { Print } from "@mui/icons-material";
 import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
 // material
 import { Button,Grid,IconButton,Chip, Select, FormControl,InputLabel, Input, MenuItem,Checkbox, DialogContentText,RadioGroup, FormLabel,FormControlLabel,Radio, DialogActions, Card, Stack, Container,TextField, Typography,Dialog,DialogTitle,DialogContent } from '@mui/material';  
@@ -12,6 +13,7 @@ import LoaderContent from '../../components/Loader';
  import HTTPManager from '../../utils/httpRequestManager';
  import NumberPad from '../../components/numberpad';
  import './tabs.css';
+import { instanceOf } from 'prop-types';
 
  const ITEM_HEIGHT = 48;
  const ITEM_PADDING_TOP = 8;
@@ -44,6 +46,7 @@ export default class ReportComponent extends React.Component{
             payments:[],
             employees:[], profit:'',
             OwnerDiscount:0,
+            printhtml:''
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
@@ -52,8 +55,308 @@ export default class ReportComponent extends React.Component{
          this.handleChangeCode = this.handleChangeCode.bind(this); 
          this.getEmpDetail = this.getEmpDetail.bind(this);
          this.formatOwnerReport = this.formatOwnerReport.bind(this)
-         this.handleType = this.handleType.bind(this)
+         this.handleType = this.handleType.bind(this);
+         this.handleReportPrint = this.handleReportPrint.bind(this)
+         this.formEmpReportPrint = this.formEmpReportPrint.bind(this)
+         this.formOwnerReportPrint = this.formOwnerReportPrint.bind(this)
+         this.formEmpReportPrint = this.formEmpReportPrint.bind(this)
     } 
+
+    formOwnerReportPrint(){
+
+        this.httpManager.postRequest(`pos/print/getPrinterByType`,{ReportPrint:1}).then(res=>{
+            const printers = res.data
+            console.log(printers)
+            if(printers.length >0){
+                var reportdetail = [];
+                var html = [];
+                var mstr = window.localStorage.getItem('merchantdetail'); 
+                var merchantdetail = mstr !== undefined && mstr !== '' ? JSON.parse(mstr) : {} 
+
+                html.push(`<div style="display:flex, alignItems:center, justifyContent:center, flexDirection:column;"><p>`+merchantdetail.merchantName+`</p><p>`+merchantdetail.merchantName+`</p>
+                <p style="text-transform:capitalize">Owner Report</p></div><div style="display:flex, alignItems:center, justifyContent:center, flexDirection:column;">
+                    <p>`+merchantdetail.merchantName+`</p>
+                    <p style="text-transform:capitalize">Owner Report</p>
+                    <p style="text-transform:capitalize; fontWeight:400">`+Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")+`</Typography>
+                </div>`)
+                html.push(`<div style="display:flex, alignItems:center, justifyContent:center, flexDirection:column;">
+                    <p>`+merchantdetail.merchantName+`</p>
+                    <p style="text-transform:capitalize">Owner Report</p>
+                    <p style="text-transform:capitalize; fontWeight:400">`+Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")+`</Typography>
+                </div>`)
+                html.push(`<div style="display:flex;width:100%; align-items:flex-start; justifyContent:flex-start; flexDirection:row;"> 
+                        <p style="text-transform:capitalize; font-weight: 400;">Owner : <b>`+this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName+`</b></p>
+                </div>`)
+
+                if(this.state.employee_reportlist.length > 0){
+                        html.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:row; border-bottom:1px solid #000;"> 
+                            <div style="width:20%"><b>`+(this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date')+`</b></div>
+                            <div style="width:30%"> <b>Amount</b></div>
+                            <div style="width:25%">  <b>Tip</b></div>
+                            <div style="width:25%"><b>Discount</b></div> 
+                        </div>`)
+                        var totalServicePrice = 0
+                        var totalTips = 0
+                        var discounttotal = 0
+                        var totalAmount = 0
+
+                        this.state.employee_reportlist.forEach(t=>{ 
+                            totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
+                            totalTips =Number(totalTips)+Number(t.tips);
+                            console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                            totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
+                            discounttotal =Number(discounttotal)+Number(t.discount); 
+
+                            html.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:row; border-bottom:1px solid #000;"> 
+                            <div style="width:20%"><b>`+t.date+`</b></div>
+                            <div style="width:30%"> <b>`+(Number(t.serviceTotal) > 0 ? "$"+Number(t.serviceTotal).toFixed(2) : '-')+`</b></div>
+                            <div style="width:25%">  <b>`+(Number(t.tips) > 0 ? "$"+Number(t.tips).toFixed(2) : '-')+`</b></div>
+                            <div style="width:25%"><b>`+(Number(t.discount) > 0 ? "$"+Number(t.discount).toFixed(2) : '-' )+`</b></div> 
+                        </div>`)
+
+                        })   
+                        html.push(`<div style="display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                        <div style="width:20%"><b>Total</b></div>
+                            <div style="width:30%"><b>$`+Number(totalServicePrice).toFixed(2)+`</b></div>
+                            <div style="width:25%"><b>$`+Number(totalTips).toFixed(2)+`</b></div>
+                            <div style="width:25%"><b>$`+Number(discounttotal).toFixed(2)+`</b></div>  
+                    </div>`)
+
+                    html.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:column; margin-top:2rem">
+
+                            <p style="textTransform:capitalize; font-weight:700;">Discounts</p>
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">#</div>
+                                <div style="width:40%">$`+Number(this.state.OwnerDiscount).toFixed(2)+`</div>
+                            </div>
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">Owner</div>
+                                <div style="width:40%">$`+this.getDiscountAmount('Owner')+`
+                                </div>
+                            </div>
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">Employee</div>
+                                <div style="width:40%">$`+this.getDiscountAmount('Employee')+`
+                                </div>
+                            </div> 
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">Owner & Employee</div>
+                                <div style="width:40%">$`+this.getDiscountAmount('Both')+`
+                                </div>
+                            </div>  
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">Total</div>
+                                <div style="width:40%">$`+this.getTotalDiscounts(this.state.discounts)+`
+                                </div>
+                            </div>   
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">Tax Amount</div>
+                                <div style="width:40%">$`+(this.state.owner.TotalTax!== null ? Number(this.state.owner.TotalTax).toFixed(2) : "0.00")+`
+                                </div>
+                            </div>  
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">Supplies</div>
+                                <div style="width:40%">$`+(this.state.owner.Supplies!== null ? Number(this.state.owner.Supplies).toFixed(2) : "0.00")+`
+                                </div>
+                            </div>   
+
+                            <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;"><b>Payment Methods</b></div>
+                                <div style="width:40%">
+                                </div>
+                            </div>`)
+                            
+                            // eslint-disable-next-line no-lone-blocks
+                            {this.state.payments.forEach(csh=>{
+                                html.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;">`+(csh.paymentType !== '' ? csh.paymentType : 'Cash')+`</div>
+                                <div style="width:40%">$`+Number(csh.paymentAmount).toFixed(2)+`
+                                </div>
+                            </div>`) })}
+
+                            html.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;"><b>Amount Collected</b></div>
+                                <div style="width:40%"><b>$`+this.getTotalAmountcollected()+`</b>
+                                </div>
+                            </div>`)
+
+                            html.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                                <div style="width:60%;text-align:left;"><b>Profit</b></div>
+                                <div style="width:40%"><b>$`+this.getProfitAmount()+`</b>
+                                </div>
+                            </div> </div>`)
+                }
+                else{ 
+                    html.push(`<div style="margin-top:1rem;display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                        <p style="textTransform:capitalize; fontWeight:400">No tickets made during this time period by `+this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName+`</p>
+                    </div>`) 
+                }
+
+                html.push(`<div style="margin-top:1rem;display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                <p style="textTransform:capitalize; fontWeight:400;margin-bottom:1rem;">`+merchantdetail.merchantName+` - Reported:` +Moment().format("MM/DD/YYYY hh:mm a")+`</p>
+            </div>`) 
+        
+                
+                this.setState({printhtml : html.join("")}, ()=>{
+                    this.handleReportPrint(printers[0].printerIdentifier);
+                })  
+            }
+            else{
+                this.setState({showFormError: true, formError:"No Printer selected"})
+            }
+        })
+    }
+
+
+
+    formEmpReportPrint() { 
+
+        var reportdetail = [];
+        var mstr = window.localStorage.getItem('merchantdetail');
+        var merchantdetail = mstr !== undefined && mstr !== '' ? JSON.parse(mstr) : {}
+        
+        this.httpManager.postRequest(`pos/print/getPrinterByType`,{ReportPrint:1}).then(res=>{
+            const printers = res.data
+            if(printers.length >0){ 
+                this.state.employees.forEach(emp=>{
+                    reportdetail.push(`<div style="display:flex; align-items:center; justify-content:center; flex-direction:column">
+                            <p style="font-weight:bold; font-size:14px;">`+merchantdetail["merchantName"]+`</p>
+                            <p style="text-transform:capitalize">Employee Report</p>
+                            <p style="text-transform:capitalize; font-weight:400">`+Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")+`</p>
+                        </div>`);
+
+                    reportdetail.push(`<div style="display:flex;width:100%; align-items:flex-start; justify-content:flex-start; flex-direction:row"> 
+                            <p style="textTransform:capitalize;fontWeight:400">Employee : <b>`+emp.empdetail.mEmployeeFirstName+" "+emp.empdetail.mEmployeeLastName+`</b></p>
+                    </div>`) 
+                    if(emp.data.length > 0){
+                    // if(this.state.empReport.length > 0){
+                        reportdetail.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:row; border-bottom:1px solid #000;"> 
+                            <div style="width:20%"><b>`+(this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date')+`</b></div>
+                            <div style="width:30%"> <b>Amount</b></div>
+                            <div style="width:25%">  <b>Tip</b></div>
+                            <div style="width:25%"><b>Discount</b></div> 
+                        </div>`)
+                        var totalServicePrice = 0
+                        var totalTips = 0
+                        var discounttotal = 0
+                        var totalAmount = 0
+
+                        emp.data.forEach(t=>{ 
+                            totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
+                            totalTips =Number(totalTips)+Number(t.tips);
+                            console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                            totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
+                            discounttotal =Number(discounttotal)+Number(t.discount);
+                            reportdetail.push(`<div style="borderBottom:'1px solid #000';display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                            <div style="width:20%"><b>Total</b></div>
+                            <div style="width:30%"><b>$`+(Number(t.serviceTotal) > 0 ? "$"+Number(t.serviceTotal).toFixed(2) : '-') +`</b></div>
+                            <div style="width:25%"><b>$`+(Number(t.tips) > 0 ? "$"+Number(t.tips).toFixed(2) : '-')+`</b></div>
+                            <div style="width:25%"><b>$`+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : '-' +`</b></div>  
+                    </div>`) 
+                        })   
+
+                        reportdetail.push(`<div style=" display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                        <div style="width:20%"><b>Total</b></div>
+                        <div style="width:30%"><b>$`+(Number(totalServicePrice).toFixed(2)) +`</b></div>
+                        <div style="width:25%"><b>$`+(Number(totalTips).toFixed(2))+`</b></div>
+                        <div style="width:25%"><b>$`+(Number(totalAmount).toFixed(2)) +`</b></div>  
+                </div>`)       
+
+
+                reportdetail.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:column; margin-top:2rem">
+
+                <p style="textTransform:capitalize; font-weight:700;">Discounts</p>
+            
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;">Owner</div>
+                    <div style="width:40%">$`+this.getEmpDiscountAmount(emp,'Owner')+`
+                    </div>
+                </div>
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;">Employee</div>
+                    <div style="width:40%">$`+this.getEmpDiscountAmount(emp,'Employee')+`
+                    </div>
+                </div> 
+
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;">Owner & Employee</div>
+                    <div style="width:40%">$`+this.getEmpDiscountAmount(emp,'Both')+`
+                    </div>
+                </div>  
+
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;">Total</div>
+                    <div style="width:40%">$`+this.getEmpTotalDiscounts(emp.discounts)+`
+                    </div>
+                </div>   
+
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;">Tax Amount</div>
+                    <div style="width:40%">$`+(emp.empdetail.TotalTax!== null ? Number(emp.empdetail.TotalTax).toFixed(2) : "0.00")+`
+                    </div>
+                </div>  
+
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;">Supplies</div>
+                    <div style="width:40%">$`+(emp.empdetail.Supplies!== null ? Number(emp.empdetail.Supplies).toFixed(2) : "0.00")+`
+                    </div>
+                </div>   
+
+                <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;"><b>Payment Methods</b></div>
+                    <div style="width:40%">
+                    </div>
+                </div>`) 
+
+                reportdetail.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;"><b>Net</b></div>
+                    <div style="width:40%"><b>$`+(emp.nettAmount!== null ? Number(emp.nettAmount).toFixed(2) : "0.00")+`</b>
+                    </div>
+                </div> </div>`)
+
+
+                reportdetail.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                    <div style="width:60%;text-align:left;"><b>Net Total</b></div>
+                    <div style="width:40%"><b>$`+(emp.nettTotal!== null ? Number(emp.nettTotal).toFixed(2) : "0.00")+`</b>
+                    </div>
+                </div> </div> 
+            
+            
+                            </div>`)
+                    }
+                    else{ 
+                        reportdetail.push(`<div style="margin-top:1rem;display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                        <p style="textTransform:capitalize; fontWeight:400">No tickets made during this time period by `+this.state.userDetail.mEmployeeFirstName+` `+this.state.userDetail.mEmployeeLastName+`</p>
+                        </div>`) 
+                    }
+
+                    reportdetail.push(`<div style="margin-top:1rem;display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                    <p style="textTransform:capitalize; fontWeight:400;margin-bottom:1rem;">`+merchantdetail.merchantName+` - Reported:` +Moment().format("MM/DD/YYYY hh:mm a")+`</p>
+                </div>` ) 
+                });
+
+                this.setState({printhtml: reportdetail.join("")}, ()=>{
+                    this.handleReportPrint(printers[0].printerIdentifier)
+                })
+            }
+            else{
+                this.setState({showFormError: true, formError:"No Printer selected"})
+            }
+        })
+    }
+
+    handleReportPrint(printername){ 
+        var final_printed_data = this.state.printhtml; 
+        window.api.printHTML({html:final_printed_data, printername:printername}).then(r=>{
+            console.log("Printed Successfully.")
+        })
+    }
 
     handleType(e){
         this.setState({reportPeriod:e.target.value});
@@ -129,12 +432,14 @@ export default class ReportComponent extends React.Component{
     getEmpTotalDiscounts(data){
         console.log(data)
         var total = 0
-        data.forEach(e=>{
-            if(e.mDiscountDivisionType === 'Both')
-                total = Number(total)+(Number(e.discountAmount) * Number(e.mEmployeeDivision)/100)
-            else
-                total = Number(total)+Number(e.discountAmount)
-        })
+        if(data instanceof Array){
+            data.forEach(e=>{
+                if(e.mDiscountDivisionType === 'Both')
+                    total = Number(total)+(Number(e.discountAmount) * Number(e.mEmployeeDivision)/100)
+                else
+                    total = Number(total)+Number(e.discountAmount)
+            })
+        }
 
         return total.toFixed(2)
     }
@@ -311,8 +616,11 @@ export default class ReportComponent extends React.Component{
 
     renderOwnerReport(){ 
         var reportdetail = [];
+        var html = [];
         var mstr = window.localStorage.getItem('merchantdetail');
+        var dstr = window.localStorage.getItem('userdetail');
         var merchantdetail = mstr !== undefined && mstr !== '' ? JSON.parse(mstr) : {}
+        var userDetail = mstr !== undefined && dstr !== '' ? JSON.parse(dstr) : {}
 
         reportdetail.push(<div style={{display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
                 <Typography variant="h4">{merchantdetail.merchantName}</Typography>
@@ -322,7 +630,7 @@ export default class ReportComponent extends React.Component{
 
         reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
                 <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Owner : <b>{this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}</b></Typography>
-        </div>) 
+        </div>)  
         if(this.state.employee_reportlist.length > 0){
         // if(this.state.empReport.length > 0){
             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000'}}> 
@@ -336,6 +644,8 @@ export default class ReportComponent extends React.Component{
                     <Grid item xs={2}><b>Total</b></Grid>
                 </Grid>
             </div>)
+
+
             var totalServicePrice = 0
             var totalTips = 0
             var discounttotal = 0
@@ -357,7 +667,8 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={1}>{Number(t.discount) > 0 ? "$"+Number(t.discount).toFixed(2) : '-' }</Grid>
                         <Grid item xs={2}>{(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : '-' }</Grid>
                     </Grid>
-                </div>)
+                </div>) 
+
             })   
             reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
                 <Grid container>
@@ -746,7 +1057,11 @@ export default class ReportComponent extends React.Component{
                                             </Grid>
                                             <Grid item xs={12} md={4}>
                                                 <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end'}}>
- 
+                                                <Print style={{marginLeft:'1rem'}} onClick={(event)=>{
+                                                    this.formOwnerReportPrint()
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+                                                }}/>
                                                     <IconButton onClick={()=>{
                                                         this.setState({showDatePopup: true})
                                                     }}><CalendarMonthIcon/></IconButton>
@@ -754,11 +1069,11 @@ export default class ReportComponent extends React.Component{
                                             </Grid>
                                     </Grid> 
 
-                                    <Grid container  style={{marginTop:'1rem'}}>
+                                    <Grid container id="printdiv"  style={{marginTop:'1rem'}}>
                                             <Grid item xs={12} md={12}>
                                                 <div style={{display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', padding:'2rem 5rem'}}>  
-                                                 {this.state.employee_reportlist.length > 0 && this.renderOwnerReport()} 
-                                                {this.state.employee_reportlist.length === 0 && !this.state.isLoading  && <div><Typography variant="subtitle2">No records found.</Typography></div>} 
+                                                  { this.renderOwnerReport()}
+                                                {/* {this.state.employee_reportlist.length === 0 && !this.state.isLoading  && <div><Typography variant="subtitle2">No records found.</Typography></div>}  */}
                                                 </div>
                                             </Grid>
                                     </Grid>
@@ -799,6 +1114,12 @@ export default class ReportComponent extends React.Component{
                                                 </Grid>
                                                 <Grid item xs={12} md={4}>
                                                     <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end'}}> 
+                                                    <Print style={{marginLeft:'1rem'}} onClick={(event)=>{
+                                                        this.formEmpReportPrint()
+                                                        event.preventDefault();
+                                                        event.stopPropagation();
+                                                    }}/>
+
                                                         <IconButton onClick={()=>{
                                                             this.setState({showDatePopup: true})
                                                         }}><CalendarMonthIcon/></IconButton>
@@ -806,7 +1127,7 @@ export default class ReportComponent extends React.Component{
                                                 </Grid> 
                                         </Grid>
 
-                                    <Grid container  style={{marginTop:'1rem'}}>
+                                    <Grid container id="printdiv" style={{marginTop:'1rem'}}>
                                             <Grid item xs={12} md={12}>
                                                 <div style={{display:'flex', alignItems:'center', justifyContent:'center', padding:'2rem 5rem'}}> 
                                                     {this.state.employees.length > 0 && this.renderEmployeeReport()}
@@ -902,7 +1223,10 @@ export default class ReportComponent extends React.Component{
                     <h3 style={{textAlign:'center'}}>Enter the passcode to access the reports</h3>
                     <NumberPad codeLength='4' textLabel='Enter code' handleChangeCode={this.handleChangeCode} onSubmit={this.getEmpDetail}  clearPasscode={clearPasscode => { this.clearPasscode = clearPasscode;
                     }}/>
-                    <Dialog
+
+                </Card> }
+
+                <Dialog
                     open={this.state.showFormError}
                     onClose={()=>{
                         this.setState({showFormError:false, formError: ''})
@@ -924,8 +1248,6 @@ export default class ReportComponent extends React.Component{
                         }}>OK </Button> 
                     </DialogActions>
                 </Dialog>
-
-                </Card> }
             </Page>
         )
     }
