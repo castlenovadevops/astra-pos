@@ -114,7 +114,7 @@ module.exports = class TicketController extends baseController{
             if( ticketDetail.customerId !== undefined &&  ticketDetail.customerId !== ''){
                 
         console.log("SAVE PAYMENT POINTS CALLED", req.input)
-        if(loyaltypoints.id !== undefined){
+        if(loyaltypoints!== null && loyaltypoints.id !== undefined){
                     if(Number(loyaltypoints.minimumTicketValue) <= Number(input.ticketpayment)){
                         var pointsinput =  {
                             customerId:  ticketDetail.customerId,

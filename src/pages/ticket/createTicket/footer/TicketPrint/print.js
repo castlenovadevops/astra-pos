@@ -58,19 +58,29 @@ export default class TicketPayment extends React.Component  {
                     var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
                     final_printed_data += "<div style='max-width:270px'>"+html+"</div>";
                     final_printed_data += '</body></html>';
+                    if(htmlres.printers.printerIdentifier !== undefined){
                     // window.api.printHTML({html:html, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
-                    window.api.printHTML({html:final_printed_data, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
-                        console.log("Printed Successfully.")
-                    })
+                        window.api.printHTML({html:final_printed_data, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                            console.log("Printed Successfully.")
+                        })
+                    }
+                    else{
+                        this.setState({printerror: true})
+                    }
                 })
             }
             else{ 
                 var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
                 final_printed_data += "<div style='max-width:270px'>"+htmlres.htmlMsg+"</div>";
                 final_printed_data += '</body></html>';
-                window.api.printHTML({html:final_printed_data , printername:htmlres.printers.printerIdentifier}).then(r=>{
-                    console.log("Printed Successfully.")
-                })
+                if(htmlres.printers.printerIdentifier !== undefined){
+                    window.api.printHTML({html:final_printed_data , printername:htmlres.printers.printerIdentifier}).then(r=>{
+                        console.log("Printed Successfully.")
+                    })
+                }
+                else{
+                    this.setState({printerror: true})
+                }
             }
         })
     }
@@ -263,9 +273,9 @@ export default class TicketPayment extends React.Component  {
                                 }}>Print Bill</Typography>
                             </Grid>  
                             <Grid item xs={4} style={{display:'flex'}}> 
-                                {/* <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                                <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                                     this.getPrintHTML('receipt')
-                                }}>Print Receipt</Typography> */}
+                                }}>Print Receipt</Typography>
                             </Grid>  
                             <Grid item xs={4} style={{display:'flex'}}> 
                                 <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
@@ -277,6 +287,13 @@ export default class TicketPayment extends React.Component  {
                     </div> 
                 </Grid>
             </Grid>
+
+            {this.state.printerror && 
+                     <DialogComponent className='xsWidth' open={this.state.printerror} title={'Error'}  onClose={()=>{
+                        this.setState({selectCustomerPopup: false})
+                     }} > 
+                       <p>No Printer selected</p> 
+                    </DialogComponent>}
         </Box>
     }
 

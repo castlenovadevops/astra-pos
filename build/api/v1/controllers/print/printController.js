@@ -229,7 +229,7 @@ module.exports = class SyncTaxController extends baseController{
                 
             console.log("BITLL TYE ", billtype)
             if(billtype === 'bill' || billtype === 'receipt'){
-                html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+                html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+(printer.Title)+`</p></div>`
                 html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
                 html += `<div>`+merchantdetail.merchantAddress1+`</div>`
                 html += `<div>`+merchantdetail.merchantAddress2+`</div>`
@@ -279,16 +279,36 @@ module.exports = class SyncTaxController extends baseController{
                             html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
                             <p style='margin-top:0'>`+printer.footerText+`</p>
                             </div>`
+
+                            html+=`</div>` // div2
+                            html+=`</div>`;// div1
+                            this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
                         }
                         else if (billtype === 'receipt'){ 
 
-                        }
+                            var payments = ticketdetail.ticketpayments.map(t=>{
+                                var paymentHTML = ''
+                                paymentHTML+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:250px'>`; 
+                                paymentHTML +=`<div style='max-width:calc(100% - 150px);text-transform:capitalize; '>`+t.payMode+`&nbsp;&nbsp;`+(t.payMode !== 'Cash' ? "("+t.paymentType+")" : "")+`</div>`
+                
+                                paymentHTML +=`<div style='max-width:150px;'>($`+Number(t.ticketPayment).toFixed(2)+`)</div>`
+                                paymentHTML +=`</div>`
+                                return paymentHTML
+                            })
 
-                        html+=`</div>` // div2
-                        html+=`</div>`;// div1
-                        this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
+                            html+= payments.join("")
+                            html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
+                            <p style='margin-top:0'>`+printer.footerText+`</p>
+                            </div>`
+
+                            html+=`</div>` // div2
+                            html+=`</div>`;// div1
+                            this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
+                        }
                     }
                 })
+
+                
             }
             else {
                 var employees = []
