@@ -50,12 +50,21 @@ export default class TicketPayment extends React.Component  {
     } 
 
 
-    getPrintHTML(billtype){
-        this.httpManager.postRequest(`pos/print/getPrintHTML`,{ticketId : this.props.ticketDetail.ticketId}).then(htmlres=>{
-            // console.log(JSON.parse(htmlres.htmlMsg))
-            window.api.printHTML(htmlres.htmlMsg, htmlres.printers.printerIdentifier).then(r=>{
-                console.log("Printed Successfully.")
-            })
+    getPrintHTML(billtype){ 
+        this.httpManager.postRequest(`pos/print/getPrintHTML`,{ticketId : this.props.ticketDetail.ticketId, billtype: billtype}).then(htmlres=>{
+            
+            if(htmlres.htmlMsg instanceof Array){
+                htmlres.htmlMsg.forEach(html=>{
+                    window.api.printHTML({html:html, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                        console.log("Printed Successfully.")
+                    })
+                })
+            }
+            else{
+                window.api.printHTML({html: htmlres.htmlMsg, printername:htmlres.printers.printerIdentifier}).then(r=>{
+                    console.log("Printed Successfully.")
+                })
+            }
         })
     }
 

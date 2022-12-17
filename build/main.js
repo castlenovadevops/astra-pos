@@ -3,6 +3,7 @@ const isDev = require('electron-is-dev');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const {PosPrinter} = require("electron-pos-printer"); 
 // const sqlite3 = require('sqlite3');   
 let mainWindow;  
 // eslint-disable-next-line no-unused-vars
@@ -183,12 +184,13 @@ ipcMain.handle('printData', async(event, printername)=>{
 })
 
 
-ipcMain.handle('printHTML', async(event,html, printername)=>{
+ipcMain.handle('printHTML', async(event,data)=>{
+  let {html, printername} = data;
   return new Promise((resolve, reject) => { 
   let rand = Math.random();
   let current_time= Date.now();
   var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
-  final_printed_data += "<div style='width:300px'>"+html+"</div>";
+  final_printed_data += "<div >"+html+"</div>";
   final_printed_data += '</body></html>';
   var print_copies = 1;
 
@@ -204,7 +206,7 @@ ipcMain.handle('printHTML', async(event,html, printername)=>{
           protocol: 'file:',
           slashes: true
       })); 
-
+      console.log(data, printername)
             print_window[current_time].webContents.on('did-finish-load', async () => {
             console.log('did-finish-load ' + new Date().toISOString());
           
@@ -212,8 +214,37 @@ ipcMain.handle('printHTML', async(event,html, printername)=>{
             for(let i = 0 ; i < print_copies ; i++ ) { // loop based on copies 
                 try {
                     // result = await print_webcontents (print_window[current_time] , "EPSON_TM_T82X_S_A"); 
-                    result = await print_webcontents (print_window[current_time] , printername); 
-                    console.log('print finish ' + new Date().toISOString());
+                    // result = await print_webcontents (print_window[current_time] , printername); 
+                    // console.log('print finish ' + new Date().toISOString());
+
+                    const options = {
+                      preview: false,
+                      // margin: "100 100 100 100", 
+                      // copies: 1, 
+                      // printerName: printername, 
+                      // silent: true,
+                      // pageSize: { height: 301000, width: 71000 } 
+                      margin: '0 0 0 0',
+                      copies: 1,
+                      printerName: printername,
+                      timeOutPerLine: 400,
+                      pageSize: '78mm' // page size
+                      // pageSize: { height: 301000, width: 71000 } 
+                  }
+                  
+                  const data = [ {
+                          type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
+                          value: html,
+                          style: {fontWeight: "300", textAlign: 'center', fontSize: "10px"}
+                      } 
+                  ]
+                  
+                  PosPrinter.print(data, options)
+                   .then(console.log)
+                   .catch((error) => {
+                      console.error(error);
+                    });
+
                 } catch (ex) {
                     console.log(ex);
                 }
