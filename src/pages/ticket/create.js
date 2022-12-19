@@ -211,8 +211,8 @@ export default class CreateTicketComponent extends React.Component{
     saveTicketPromise = async(req, res, next)=>{
         return new Promise(async (resolve) => { 
             if(this.state.selectedServices.length > 0){
-                console.log("AAAA")
-                console.log("AAAA", this.state.ticketDetail)
+                // console.log("AAAA")
+                // console.log("AAAA", this.state.ticketDetail)
                 var ticketobj = Object.assign({}, this.state.ticketDetail)
                 ticketobj.customerId = this.state.customer_detail.mCustomerId !== undefined ?  this.state.customer_detail.mCustomerId :'';
                 this.setState({ticketDetail: ticketobj}, ()=>{

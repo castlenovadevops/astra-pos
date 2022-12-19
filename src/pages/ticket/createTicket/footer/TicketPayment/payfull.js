@@ -93,12 +93,28 @@ export default class TicketFullPayment extends React.Component  {
         this.httpManager.postRequest(`merchant/lpsettings/getActivationSettings`,{data:"FROM TABLE"}).then(response=>{ 
             // this.openEdit(response.data); 
             if(response.data){
-                this.setState({loyaltyPointSettings: response.data, isLoading: false }, ()=>{
+                if(response.data.id !== undefined){
+                    this.setState({loyaltyPointSettings: response.data, isLoading: false }, ()=>{
+                            console.log(this.state.loyaltyPointSettings)
+                    });
+                }
+                else{
+                    this.setState({loyaltyPointSettings: {
+                        thresholdRedeemPoint: 0,
+                        maxRedeemPoint: 100
+                    }, isLoading: false }, ()=>{
                         console.log(this.state.loyaltyPointSettings)
-                });
+                    });
+                }
             }
-            else{
-                this.setState({isLoading: false})
+            else{ 
+
+                this.setState({loyaltyPointSettings: {
+                    thresholdRedeemPoint: 0,
+                    maxRedeemPoint: 100
+                }, isLoading: false }, ()=>{
+                    console.log(this.state.loyaltyPointSettings)
+                });
             }
 
             this.httpManager.postRequest(`merchant/lpsettings/getSettings`,{data:"FROM TABLE"}).then(response=>{ 
@@ -617,9 +633,9 @@ export default class TicketFullPayment extends React.Component  {
                 </DialogTitle>
                 <DialogContent>
 
-                <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0', marginTop:'2rem'}}>  
+                {this.state.loyaltyValueSettings !== null && <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0', marginTop:'2rem'}}>  
                             <div style={{display:'flex', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
-                                Total Loyalty Points : <span style={{color:'green', fontWeight:700}}>{Number(this.props.data.customerDetail.LoyaltyPoints).toFixed(2)}&nbsp;&nbsp;(${Number(this.props.data.customerDetail.LoyaltyPoints)*Number(this.state.loyaltyValueSettings.dollarValue)})</span>
+                                Total Loyalty Points : <span style={{color:'green', fontWeight:700}}>{Number(this.props.data.customerDetail.LoyaltyPoints).toFixed(2)}&nbsp;&nbsp;{Number(this.state.loyaltyValueSettings.dollarValue) > 0&& <span>(${Number(this.props.data.customerDetail.LoyaltyPoints)*Number(this.state.loyaltyValueSettings.dollarValue)})</span>}</span>
                             </div> 
                             {Number(this.state.redeempoints) > 0 && <div style={{display:'flex',width:'100%', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
                                  <span style={{color:'green', fontWeight:700}}>{this.state.redeempoints} points = ${ Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue) }</span>
@@ -632,8 +648,9 @@ export default class TicketFullPayment extends React.Component  {
 
                             {Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.props.data.customerDetail.LoyaltyPoints) &&<Grid item xs={12} style={{display:'flex'}}> 
                             <span style={{color:'#aaa', fontWeight:700}}>Customer can claim {Number(this.props.data.customerDetail.LoyaltyPoints)* (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100)} points only.</span>
-                            </Grid> }
+                            </Grid> } 
 
+                            
                             {(Number(this.props.data.customerDetail.LoyaltyPoints) >= Number(this.state.loyaltyPointSettings.thresholdRedeemPoint)) && <><Grid item xs={12} style={{display:'flex'}}> 
                                     <FTextField  required={true} fullWidth error={this.state.redeemError} helperText={this.state.redeemErrorText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Points to redeem'} placeholder={'Points to redeem'} name={'redeempoint'} value={this.state.redeempoints }   onChange={e=>{
                                         this.setState({redeempoints: e.target.value})
@@ -648,7 +665,16 @@ export default class TicketFullPayment extends React.Component  {
                             </Grid>
                             <Grid item xs={4}></Grid>
                             </>}
-                    </Grid>
+                    </Grid>}
+
+
+
+                {Number(this.state.loyaltyValueSettings.dollarValue) <= 0  && <Grid container spacing={2} style={{borderBottom:'1px solid #f0f0f0', marginTop:'2rem'}}>  
+                            <Grid item xs={12} style={{display:'flex'}}> 
+                                <span style={{color:'red', fontWeight:700}}>Couldnt redeem points. Please check Loyalty point redeem settings.</span>
+                            </Grid> 
+ 
+                    </Grid>}
                 </DialogContent> 
             </Dialog>  
 

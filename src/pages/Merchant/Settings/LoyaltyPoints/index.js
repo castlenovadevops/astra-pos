@@ -116,7 +116,7 @@ export default class CommissionPayment extends React.Component{
                 <Card style={{border:'1px solid #d0d0d0', padding:'1rem'}}>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                         <Typography variant="h4" gutterBottom>
-                            Loyalty Point Settings
+                            Loyalty Point Redeem Settings
                         </Typography>
                         
                     </Stack>
