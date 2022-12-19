@@ -157,7 +157,8 @@ module.exports = class TicketController extends baseController{
                     attributes:{
                         include:[  
                             [
-                                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                sequelize.literal("(select   SUM(Earned)-SUM(Redeemed) FROM ( select pointsCount as Earned, 0 as Redeemed From customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId` union all select 0 as Earned, pointsCount as Redeemed From customerLoyaltyPoints where status='Redeemed' and customerId=`mCustomer`.`mCustomerId` ) )"),
+                                // sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
                                 "LoyaltyPoints"
                             ]
                         ]
@@ -208,7 +209,8 @@ module.exports = class TicketController extends baseController{
                     attributes:{
                         include:[  
                             [
-                                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                sequelize.literal("(select SUM(Earned)-SUM(Redeemed) FROM ( select pointsCount as Earned, 0 as Redeemed From customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId` union all select 0 as Earned, pointsCount as Redeemed From customerLoyaltyPoints where status='Redeemed' and customerId=`mCustomer`.`mCustomerId` ) )"),
+                //  sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
                                 "LoyaltyPoints"
                             ]
                         ]
@@ -262,7 +264,8 @@ module.exports = class TicketController extends baseController{
                     attributes:{
                         include:[  
                             [
-                                sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                sequelize.literal("(select  SUM(Earned)-SUM(Redeemed) FROM ( select pointsCount as Earned, 0 as Redeemed From customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId` union all select 0 as Earned, pointsCount as Redeemed From customerLoyaltyPoints where status='Redeemed' and customerId=`mCustomer`.`mCustomerId` ) )"),
+                                // sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
                                 "LoyaltyPoints"
                             ]
                         ]

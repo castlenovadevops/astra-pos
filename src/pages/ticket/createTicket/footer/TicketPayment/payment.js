@@ -86,7 +86,7 @@ export default class TicketPayment extends React.Component  {
                     })
                 }
                 else{
-
+                    this.setState({printerror: true})
                 }
             }
         })

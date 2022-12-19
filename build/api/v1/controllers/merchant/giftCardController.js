@@ -78,13 +78,13 @@ module.exports = class GiftCardController extends baseController{
         input["merchantId"] =  req.deviceDetails.merchantId;
         delete input["id"]; 
         if(input.cardType === 'Digital'){
-            var cardnumber = this.generaterandomNumber(12);
-            var existrecords = await this.readAll({where:{cardNumber: cardnumber, merchantId:input.merchantId}},'giftCards');
+            var cardnumber = this.generaterandomNumber(16);
+            var existrecords = await this.readAll({where:{cardNumber: cardnumber.trim(), merchantId:input.merchantId}},'giftCards');
             if(existrecords.length> 0){
                 this.saveCard(req,res,next);
             }
             else{
-                input["cardNumber"]=cardnumber;
+                input["cardNumber"]=cardnumber.trim();
                 input["cardBalance"]=input.cardValue;
                 this.create('giftCards', input).then(card=>{
                     if(input.cardSold === 1){
@@ -249,6 +249,7 @@ module.exports = class GiftCardController extends baseController{
         var input = req.input;
         var date = this.getDate();
         var cardnumber = input.cardNumber;
+        console.log(cardnumber)
         this.readAll({where:{
             cardNumber: cardnumber,
             status:'Active'

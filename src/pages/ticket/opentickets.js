@@ -195,7 +195,8 @@ export default class OpenTicketsComponent extends React.Component{
 
             {this.state.openPayment && <PaymentModal pageFrom={"Dashboard"}  customer_detail={this.state.ticketDetail.mCustomer=== null ? {}: this.state.ticketDetail.mCustomer} 
                 handleClosePayment={(msg)=>{
-                    this.setState({openPayment: false})
+                    this.setState({openPayment: false })
+                    this.loadData();
                 }} price={this.state.price} ticketDetail={this.state.ticketDetail}> 
             </PaymentModal>}
         </>

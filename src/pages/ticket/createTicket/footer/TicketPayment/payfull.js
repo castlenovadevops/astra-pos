@@ -64,8 +64,8 @@ export default class TicketFullPayment extends React.Component  {
         var value = Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue)
 
 
-        console.log(Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100))
-        if(value < Number(this.props.data.topayamount) && Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.state.redeempoints) && Number(this.state.redeempoints) > 0){
+        // console.log( Number(this.state.redeempoints) > 0, Number(value) >= Number(this.props.data.topayamount), Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100))
+        if(Number(value) >= Number(this.props.data.topayamount) && Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.state.redeempoints) && Number(this.state.redeempoints) > 0){
             return false
         }
         else{

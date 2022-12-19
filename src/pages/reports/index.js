@@ -175,7 +175,7 @@ export default class ReportComponent extends React.Component{
                             // eslint-disable-next-line no-lone-blocks
                             {this.state.payments.forEach(csh=>{
                                 html.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
-                                <div style="width:60%;text-align:left;">`+(csh.paymentType !== '' ? csh.paymentType : 'Cash')+`</div>
+                                <div style="width:60%;text-align:left;">`+(csh.paymentType !== '' ? csh.paymentType :(csh.payMode ==='Loyalty Points' ? csh.payMode : 'Cash'))+`</div>
                                 <div style="width:40%">$`+Number(csh.paymentAmount).toFixed(2)+`
                                 </div>
                             </div>`) })}
@@ -738,7 +738,7 @@ export default class ReportComponent extends React.Component{
                     
                     {this.state.payments.map(csh=>{
                     return <Grid container style={{textTransform:'capitalize', fontWeight:'400', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',}}>
-                        <Grid item xs={8}>{csh.paymentType !== '' ? csh.paymentType : 'Cash'}</Grid>
+                        <Grid item xs={8}>{csh.paymentType !== '' ? csh.paymentType : (csh.payMode ==='Loyalty Points' ? csh.payMode : 'Cash')}</Grid>
                         <Grid item xs={4}>${Number(csh.paymentAmount).toFixed(2)}</Grid>
                     </Grid> })}
 
