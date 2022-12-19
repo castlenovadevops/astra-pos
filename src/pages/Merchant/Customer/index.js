@@ -59,7 +59,19 @@ export default class Customer extends React.Component{
                           {params.row.mCustomerMobile === '' ? '--' : params.row.mCustomerMobile}
                         </div>
                     )
-                }, 
+                },  
+                {
+                    field: 'mCustomerLoyaltyPoints',
+                    headerName: 'Loyalty Points',
+                    minWidth:150,
+                    flex:1,
+                    editable: false,
+                    renderCell: (params) => (
+                        <div>
+                          {params.row.mCustomerLoyaltyPoints ? params.row.mCustomerLoyaltyPoints : '--'}
+                        </div>
+                    )
+                },
                 {
                     field: 'Action',
                     headerName:'Actions',

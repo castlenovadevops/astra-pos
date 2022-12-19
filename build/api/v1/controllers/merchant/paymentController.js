@@ -118,7 +118,7 @@ module.exports = class TicketController extends baseController{
                     if(Number(loyaltypoints.minimumTicketValue) <= Number(input.ticketpayment)){
                         var pointsinput =  {
                             customerId:  ticketDetail.customerId,
-                            pointsCount: Number(input.ticketpayment) * Number(loyaltypoints.pointsCount),
+                            pointsCount: (Math.floor((Number(input.ticketpayment)/ Number(loyaltypoints.dollarSpent))) * Number(loyaltypoints.pointsCount)),
                             status:'Earned',
                             dollarValue:'',
                             createdBy: req.userData.mEmployeeId,

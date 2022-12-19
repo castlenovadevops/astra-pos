@@ -20,7 +20,7 @@ export default class CommissionPayment extends React.Component{
             settings:[
                 {
                     minimumTicketValue:'',
-                    maximumTicketValue:'',
+                    dollarSpent:'',
                     pointsCount:'',
                     settingType:'General'
                 }
@@ -97,14 +97,23 @@ export default class CommissionPayment extends React.Component{
         this.state.settings.forEach((elmt, i)=>{
         fields.push(<Grid container className="redeemcontianer">
 
-                    <Grid item xs={5}>
+                    <Grid item xs={3}>
                         <FTextField tabindex={i+1} InputProps={{
-                            endAdornment: <InputAdornment position="start">/$1</InputAdornment>,
-                        }} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'numberdecimal'} minLength={1} maxLength={4}  label={'Points'} placeholder={'Points'} name={'pointsCount'} value={this.state.settings[i].pointsCount}   onChange={e=>{
+                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        }} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={4}  label={'Every Dollar Spent'} placeholder={'Every Dollar Spent'} name={'dollarSpent'} value={this.state.settings[i].dollarSpent}   onChange={e=>{
                              this.changeValue(e,i)
+                        }}/> 
+                    </Grid>
+                    <Grid item xs={1}></Grid>   
+                    <Grid item xs={3}>
+                        <FTextField tabindex={i+1}  required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={4}  label={'Points'} placeholder={'Points'} name={'pointsCount'} value={this.state.settings[i].pointsCount}   onChange={e=>{
+                            if(Number(e.target.value) <= 100){
+                                this.changeValue(e,i)
+                            }
                         }}/>
-                    </Grid><Grid item xs={2}></Grid>   
-                    <Grid item xs={5}>
+                    </Grid>
+                    <Grid item xs={1}></Grid>   
+                    <Grid item xs={3}>
                         <FTextField tabindex={i+1} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Min. Ticket Value'} placeholder={'Min. Ticket Value'} name={'minimumTicketValue'} value={this.state.settings[i].minimumTicketValue}   onChange={e=>{
                              this.changeValue(e,i)
                         }}/>
@@ -128,14 +137,14 @@ export default class CommissionPayment extends React.Component{
     }
 
     renderButtons(){
-        return <>
-        <Grid item xs={2}>
-                <FButton fullWidth size="large" variant={'contained'} disabled={this.state.isDisabled} label={"Submit"} onClick={()=>{
-                    this.submitForm()
-                }
-                }/>
-            </Grid> 
-            </>
+        return <Grid container spacing={3}  alignItems="center" sx={{mt:2}}  justifyContent="center"> 
+       <Grid item xs={2}>
+           <FButton fullWidth size="large" variant={'contained'} disabled={this.state.isDisabled} label={"Save"} onClick={()=>{
+               this.submitForm()
+           }
+           }/>
+       </Grid>  
+       </Grid>
     }
 
     render(){
@@ -155,18 +164,17 @@ export default class CommissionPayment extends React.Component{
             <Container maxWidth="xl">
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                     <Typography variant="h4" gutterBottom>
-                        Loyalty Redeem Point Settings 
+                        Loyalty Point Settings 
                     </Typography>
                     
                 </Stack>
                 <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <div style={{display:'flex', flexDirection:'column', color:'#aaa', fontSize:'12px'}}>
-                            <p>% Of Redeem points - This setting restricts the customer using the loyalty points.</p>
-                            <p> Ex: If the setting is 50%, customer can redeem only 505 of their total loyalty points.</p>
+                             <p> Ex: If the setting is $10 for every dollar spent, customer will get the number of points specified in points field..</p>
                         </div>
-                     </Grid>
+                     </Grid> */}
                      <Grid item xs={12}>
                          
                         <Stack spacing={3}> 

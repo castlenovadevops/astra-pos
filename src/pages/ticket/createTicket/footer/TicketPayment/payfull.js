@@ -61,11 +61,10 @@ export default class TicketFullPayment extends React.Component  {
     }
 
     checkPointsDisable(){
-        var value = Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue)
-
-
-        // console.log( Number(this.state.redeempoints) > 0, Number(value) >= Number(this.props.data.topayamount), Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100))
-        if(Number(value) >= Number(this.props.data.topayamount) && Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.state.redeempoints) && Number(this.state.redeempoints) > 0){
+        var value = Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue) 
+        // console.log(value, this.props.data.topayamount)
+        // console.log( Number(this.state.redeempoints) > 0, Number(value) <= Number(this.props.data.topayamount), Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100))
+        if(Number(value) <= Number(this.props.data.topayamount) && Number(this.props.data.customerDetail.LoyaltyPoints) * (Number(this.state.loyaltyPointSettings.maxRedeemPoint)/100) >= Number(this.state.redeempoints) && Number(this.state.redeempoints) > 0){
             return false
         }
         else{
@@ -378,17 +377,22 @@ export default class TicketFullPayment extends React.Component  {
             <div style={{display:'flex', width:'100%', flexDirection:'row'}}>
                 <Grid container spacing={2} >
                     <Grid item xs={3} style={{display:'flex'}}> 
-                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:  '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:  '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                             this.setState({giftcardPopup: true, redeemamount: this.props.data.topayamount})
-                        }}>Gift Card</Typography>
+                        }}>Gift Card 
+                        </Typography>
                     </Grid>  
-                    <Grid item xs={3} style={{display:'flex'}}> 
+                    <Grid item xs={3} style={{display:'flex', position:'relative'}}> 
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
-                            this.setState({loyaltyPopup: true})
-                        }}>Loyalty Points
-                        
-                        {this.props.data.customerDetail !== undefined && <Typography  variant="subtitle" >
-                            ({this.props.data.customerDetail.LoyaltyPoints})
+                            if(this.props.data.customerDetail !== undefined){
+                                if(this.props.data.customerDetail.LoyaltyPoints){
+                                    this.setState({loyaltyPopup: true})
+                                }
+                            }
+                        }}>
+                            Loyalty Points 
+                        {this.props.data.customerDetail !== undefined && <Typography style={{position:'absolute',textAlign:'center', bottom:'20px', fontSize:'13px', color:"#666", left:0, right:0}} variant="subtitle" >
+                            {this.props.data.customerDetail.LoyaltyPoints && <p>({this.props.data.customerDetail.LoyaltyPoints})</p>}
                         </Typography>}
                         </Typography>
                         
@@ -617,6 +621,10 @@ export default class TicketFullPayment extends React.Component  {
                             <div style={{display:'flex', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
                                 Total Loyalty Points : <span style={{color:'green', fontWeight:700}}>{Number(this.props.data.customerDetail.LoyaltyPoints).toFixed(2)}&nbsp;&nbsp;(${Number(this.props.data.customerDetail.LoyaltyPoints)*Number(this.state.loyaltyValueSettings.dollarValue)})</span>
                             </div> 
+                            {Number(this.state.redeempoints) > 0 && <div style={{display:'flex',width:'100%', flexDirection:'row', color:"#999", fontWeight:'500', padding:'10px'}}>
+                                 <span style={{color:'green', fontWeight:700}}>{this.state.redeempoints} points = ${ Number(this.state.redeempoints) * Number(this.state.loyaltyValueSettings.dollarValue) }</span>
+                            </div> }
+
                             {(Number(this.props.data.customerDetail.LoyaltyPoints) < Number(this.state.loyaltyPointSettings.thresholdRedeemPoint)) &&<Grid item xs={12} style={{display:'flex'}}> 
                             <span style={{color:'red', fontWeight:700}}>Loyalty points should be greater than {Number(this.state.loyaltyPointSettings.thresholdRedeemPoint)}</span>
                             </Grid> }

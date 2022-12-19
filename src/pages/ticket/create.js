@@ -97,22 +97,32 @@ export default class CreateTicketComponent extends React.Component{
     selectCustomerDetail(customer){ 
         console.log(customer)
         if(this.state.customer_detail === undefined || customer === undefined){
-            this.setState({customer_detail: customer})
+            this.setState({customer_detail: customer}, ()=>{
+                this.saveTicket()
+            })
         }
         else if(this.state.customer_detail.mCustomerId !== customer.mCustomerId){
-            this.setState({customer_detail: customer})
+            this.setState({customer_detail: customer}, ()=>{
+                this.saveTicket()
+            })
         }
         else{
-            this.setState({customer_detail:{}})
+            this.setState({customer_detail:{}}, ()=>{
+                this.saveTicket()
+            })
         }
     }
 
     onSelectCustomer(customer){
         if(this.state.customer_detail.mCustomerId === undefined || (this.state.customer_detail.mCustomerId !== customer.mCustomerId)){
-            this.setState({customer_detail: customer})
+            this.setState({customer_detail: customer}, ()=>{
+                this.saveTicket()
+            })
         }
         else{
-            this.setState({customer_detail:{}})
+            this.setState({customer_detail:{}}, ()=>{
+                this.saveTicket()
+            })
         }
     }
 
@@ -202,17 +212,22 @@ export default class CreateTicketComponent extends React.Component{
         return new Promise(async (resolve) => { 
             if(this.state.selectedServices.length > 0){
                 console.log("AAAA")
-                var ticketinput = {
-                    customer_detail: this.state.customer_detail,
-                    ticketDetail:Object.assign({}, this.state.ticketDetail), 
-                    selectedServices: Object.assign([], this.state.selectedServices),
-                    ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
-                    ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
-                }
-                console.log(ticketinput)
-                this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
-                    resolve("success")
-                })
+                console.log("AAAA", this.state.ticketDetail)
+                var ticketobj = Object.assign({}, this.state.ticketDetail)
+                ticketobj.customerId = this.state.customer_detail.mCustomerId !== undefined ?  this.state.customer_detail.mCustomerId :'';
+                this.setState({ticketDetail: ticketobj}, ()=>{
+                    var ticketinput = {
+                        customer_detail: this.state.customer_detail,
+                        ticketDetail:Object.assign({}, this.state.ticketDetail), 
+                        selectedServices: Object.assign([], this.state.selectedServices),
+                        ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+                        ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+                    }
+                    console.log(ticketinput)
+                    this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+                        resolve("success")
+                    })
+                });
             }
             else{
                 resolve("Success")
@@ -223,18 +238,22 @@ export default class CreateTicketComponent extends React.Component{
     saveTicket(option){
         if(this.state.selectedServices.length > 0){
             console.log("AAAA", this.state.ticketDetail)
-            var ticketinput = {
-                customer_detail: this.state.customer_detail,
-                ticketDetail:Object.assign({}, this.state.ticketDetail), 
-                selectedServices: Object.assign([], this.state.selectedServices),
-                ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
-                ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
-            }
-            console.log(ticketinput)
-            this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+            var ticketobj = Object.assign({}, this.state.ticketDetail)
+            ticketobj.customerId = this.state.customer_detail.mCustomerId !== undefined ?  this.state.customer_detail.mCustomerId :'';
+            this.setState({ticketDetail: ticketobj}, ()=>{
+                var ticketinput = {
+                    customer_detail: this.state.customer_detail,
+                    ticketDetail:Object.assign({}, this.state.ticketDetail), 
+                    selectedServices: Object.assign([], this.state.selectedServices),
+                    ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+                    ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+                }
                 console.log(ticketinput)
-                if(option === 'close')
-                    this.props.data.closeCreateTicket();
+                this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+                    console.log(ticketinput)
+                    if(option === 'close')
+                        this.props.data.closeCreateTicket();
+                })
             })
         }
     }

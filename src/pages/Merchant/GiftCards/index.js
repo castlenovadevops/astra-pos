@@ -258,7 +258,7 @@ export default class GiftCards extends React.Component{
 
             {this.state.checkbal && <DialogComponent className="mdWidth" open={this.state.checkbal} onClose={()=>{this.setState({checkbal:false})}}>
             <Container maxWidth="sm"> 
-                <Card style={{padding:'1rem', border:'0'}}>
+                <Card style={{padding:'1rem', border:'0', boxShadow:'none'}}>
                     <Typography variant="h6" gutterBottom>
                             Check Balance
                     </Typography>

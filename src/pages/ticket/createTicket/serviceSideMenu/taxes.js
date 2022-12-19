@@ -27,7 +27,7 @@ export class TaxListComponent extends React.Component{
     }
 
     render(){
-        return <Grid item xs={12} style={{display:'flex', flexWrap:'wrap',padding: 0}}>  
+        return <Grid item xs={12} style={{display:'flex', flexWrap:'wrap',padding: 0}}>   
             {this.state.taxlist.map ((tax,index)=>(
                 <Grid item xs={6}   alignItems='center'
                 justify="center" justifyContent="center" onClick={(e) => this.props.data.selectTax(tax)}  

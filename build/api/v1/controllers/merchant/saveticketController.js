@@ -33,7 +33,7 @@ module.exports = class TicketController extends baseController{
         console.log("OWNER TECH::: ", ticketDetail);
         var ticketinput = {  
             "ownerTechnician" : ticketDetail.ownerTechnician,
-            "customerId" : ticketDetail.customerId || input.customer_detail.mCustomerId,
+            "customerId" : input.customer_detail.mCustomerId || ticketDetail.customerId,
             "taxApplied": ticketDetail.taxApplied,
             "serviceDiscountApplied": ticketDetail.serviceDiscountApplied,
             "ticketDiscountApplied"	: ticketDetail.ticketDiscountApplied,

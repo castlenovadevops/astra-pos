@@ -25,15 +25,15 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false 
         }, 
-        maximumTicketValue: {
-             field: 'maximumTicketValue', 
+        dollarSpent: {
+             field: 'dollarSpent', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false 
         },
         pointsCount: {
              field: 'pointsCount', 
-             type: DataTypes.INTEGER, 
+             type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false 
         },

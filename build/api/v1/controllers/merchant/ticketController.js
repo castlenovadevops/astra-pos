@@ -111,7 +111,7 @@ module.exports = class TicketController extends baseController{
         }
 
         this.create('tickets', input).then(ticket=>{
-            // console.log(ticket)
+            console.log(ticket)
             this.sendResponse({data: ticket.dataValues}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);

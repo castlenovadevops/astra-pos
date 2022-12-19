@@ -21,10 +21,10 @@ import {
   Resources,
   DragDropProvider
 } from "@devexpress/dx-react-scheduler-material-ui";
-import WbSunny from "@material-ui/icons/WbSunny";
-import FilterDrama from "@material-ui/icons/FilterDrama";
-import Opacity from "@material-ui/icons/Opacity";
-import ColorLens from "@material-ui/icons/ColorLens";
+import WbSunny from "@mui/icons-material/WbSunny";
+import FilterDrama from "@mui/icons-material/FilterDrama";
+import Opacity from "@mui/icons-material/Opacity";
+import ColorLens from "@mui/icons-material/ColorLens";
 import { withStyles } from "@material-ui/core/styles";
 import { owners } from "./tasks";
 

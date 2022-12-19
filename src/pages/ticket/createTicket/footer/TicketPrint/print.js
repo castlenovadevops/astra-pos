@@ -290,7 +290,7 @@ export default class TicketPayment extends React.Component  {
 
             {this.state.printerror && 
                      <DialogComponent className='xsWidth' open={this.state.printerror} title={'Error'}  onClose={()=>{
-                        this.setState({selectCustomerPopup: false})
+                        this.setState({printerror: false})
                      }} > 
                        <p>No Printer selected</p> 
                     </DialogComponent>}

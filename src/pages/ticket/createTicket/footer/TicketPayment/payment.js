@@ -259,6 +259,7 @@ export default class TicketPayment extends React.Component  {
 
     onSelectCustomer(obj, opt){
         this.props.selectCustomerDetail(obj, opt)
+        this.setState({selectCustomerPopup: false})
     }
 
     render(){
