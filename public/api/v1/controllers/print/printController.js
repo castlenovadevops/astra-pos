@@ -6,9 +6,9 @@ const APIManager = require('../../utils/apiManager');
 const  Sequelize  = require('sequelize');
 const fontList = require('font-list');
 const { sequelize } = require('../../models');
-const moment = require('moment');
-const { number } = require('prop-types');
+const moment = require('moment'); 
 
+const find = require('local-devices');
 module.exports = class SyncTaxController extends baseController{
     path = "/pos/print";
     router = express.Router();
@@ -56,6 +56,12 @@ module.exports = class SyncTaxController extends baseController{
                     path:this.path+"/getPrintHTML",
                     type:"post",
                     method: "getPrintHTML",
+                    authorization:'accessAuth'
+                },
+                {
+                    path:this.path+"/getDevices",
+                    type:"post",
+                    method: "getDevices",
                     authorization:'accessAuth'
                 }
                 
@@ -380,5 +386,23 @@ module.exports = class SyncTaxController extends baseController{
                 })
             }
         })
+    }
+
+
+    getDevices = async(req, res, next)=>{
+        var thisobj = this;
+        find().then(devices => {
+            console.log(devices)
+            thisobj.sendResponse({data: devices}, res, 200) /*
+            [
+              { name: '?', ip: '192.168.0.10', mac: '...' },
+              { name: '...', ip: '192.168.0.17', mac: '...' },
+              { name: '...', ip: '192.168.0.21', mac: '...' },
+              { name: '...', ip: '192.168.0.22', mac: '...' }
+            ]
+            */
+          }).catch(e=>{
+            thisobj.sendResponse({message:"Error"}, res, 400)
+          })
     }
 }

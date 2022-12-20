@@ -37,6 +37,7 @@ const TicketInfoController = require('../controllers/merchant/ticketinfoControll
 const CombineController = require('../controllers/merchant/combineController');
 
 const PrintController = require('../controllers/print/printController');
+const CheckInController = require('../controllers/checkins/checkInController');
 
 
 const express = require('express');
@@ -91,7 +92,8 @@ const corsOptions ={
         new SyncLPRedeemSettings(),
         new SyncGiftCardsSettings(),
 
-        new PrintController()
+        new PrintController(),
+        new CheckInController()
     ] 
     function initialize(){ 
             initializeControllers(0); 

@@ -84,6 +84,7 @@
     "html-react-parser": "^3.0.4",
     "imask": "^6.4.3",
     "jsonwebtoken": "^8.5.1",
+    "local-devices": "^4.0.0",
     "lodash": "^4.17.21",
     "macaddress": "^0.5.3",
     "material-ui-phone-number": "^3.0.0",
