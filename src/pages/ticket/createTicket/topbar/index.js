@@ -87,12 +87,12 @@ export default class TicketTopBar extends React.Component{
                                     }}>
                                         {(this.props.data.selectedTech !== undefined || this.props.data.selectedTech !== null) ? this.props.data.selectedTech.mEmployeeFirstName+" "+this.props.data.selectedTech.mEmployeeLastName: ""}
                                 </div>  
-                                <div className={this.props.data.isDisabled ? "topbtn disabled" : "topbtn" } onClick={()=>{
+                                <div className={this.props.data.ticketDetail.paymentStatus === 'Paid' ? "topbtn disabled" : "topbtn" } onClick={()=>{
                                         if(!this.props.data.isDisabled) {
                                             if(this.props.data.customer_detail === null || this.props.data.customer_detail === undefined || Object.keys(this.props.data.customer_detail).length>0) {
                                                 this.openCustomerDetail()
                                             }
-                                            else {
+                                            else if(this.props.data.ticketDetail.paymentStatus !== 'Paid'){
                                                 console.log("OPEN CUSTOMER")
                                                 this.openselectCustomer()
                                             }
@@ -100,9 +100,9 @@ export default class TicketTopBar extends React.Component{
                                     }}>
                                         {this.props.data.customer_detail=== undefined ||  Object.keys(this.props.data.customer_detail).length===0 ? "Select Customer": this.props.data.customer_detail.mCustomerName}
                                 </div>    
-                                <AccountCircle fontSize="large" className={this.props.isDisabled ? "accnticon disabled" : "accnticon"}  
+                                <AccountCircle fontSize="large" className={this.props.data.ticketDetail.paymentStatus === 'Paid' ? "accnticon disabled" : "accnticon"}  
                                 onClick={()=>{
-                                        if(!this.props.data.isDisabled) {
+                                        if(this.props.data.ticketDetail.paymentStatus !== 'Paid') {
                                             this.openselectCustomer()
                                         }
                                         

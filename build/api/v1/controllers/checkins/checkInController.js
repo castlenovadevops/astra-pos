@@ -57,6 +57,7 @@ module.exports = class CheckInController extends baseController{
 
 
     checkPOS = async(req, res, next)=>{  
+        console.log("CHECKIN CALLED")
         this.sendResponse({message:"Connection established"}, res, 200)
     }
 

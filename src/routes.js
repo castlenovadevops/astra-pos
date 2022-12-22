@@ -97,8 +97,8 @@ export default function Router() {
     }, 
     {
       path: 'syncBusiness',
-      // element: isDeviceRegistered() ?<Navigate to="/login"/>: <SyncCodeComponent />  
-      element:<DevicesComponent/>
+      element: isDeviceRegistered() ?<Navigate to="/login"/>: <SyncCodeComponent />  
+      // element:<DevicesComponent/>
     }, 
     {
       path: 'syncData',

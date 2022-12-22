@@ -42,7 +42,7 @@ export default class Discount extends React.Component{
                     editable: false,
                     renderCell: (params) => (
                         <div>
-                            {params.row.cardNumber}
+                            {this.formatCardNumber(params.row.cardNumber)}
                         </div>
                     )
                 },
@@ -69,15 +69,15 @@ export default class Discount extends React.Component{
                         </div>
                     )
                 },
-                // {
-                //     field: '',
-                //     headerName:'Actions',
-                //     flex:1,
-                //     minWidth:100,
-                //     renderCell: (params) => (
-                //         this.getActions(params)                    
-                //     ),
-                // }
+                {
+                    field: '',
+                    headerName:'Actions',
+                    flex:1,
+                    minWidth:100,
+                    renderCell: (params) => (
+                        this.getActions(params)                    
+                    ),
+                }
 
             ]
         }
@@ -147,19 +147,32 @@ export default class Discount extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>      
-               {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  <FButton
+                <FButton
                 variant="outlined" 
                 size="small" 
-                onClick={()=>{
-                    this.setState({isLoading:true})
-                    this.httpManager.postRequest(`merchant/giftcard/disable`,{status:'Disabled', id: params.row.id}).then(r=>{
-                        this.reloadData();
+                onClick={()=>{ 
+                    this.httpManager.postRequest(`pos/print/getGiftcardPrintHTML`,{cardNumber: params.row.cardNumber}).then(htmlres=>{
+                        var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+                        final_printed_data += "<div style='max-width:270px'>"+htmlres.htmlMsg+"</div>";
+                        final_printed_data += '</body></html>';
+                        if(htmlres.printers.printerIdentifier !== undefined){
+                            window.api.printHTML({html:final_printed_data , printername:htmlres.printers.printerIdentifier}).then(r=>{
+                                console.log("Printed Successfully.")
+                            })
+                        }
+                        else{
+                            this.setState({printerror: true})
+                        }
                     })
                 }} 
-                label="Disable"/>} 
+                label="Print"/>
             </div>
         }
     } 
+    formatCardNumber(cardnumber){
+        return cardnumber.substring(0,4)+"-"+cardnumber.substring(3,7)+"-"+cardnumber.substring(7,11)+"-"+cardnumber.substring(11,15)
+    }
+
     reloadData(msg=''){
         if(msg !== ''){ 
             toast.dismiss();

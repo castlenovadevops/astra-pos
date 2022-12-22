@@ -63,7 +63,14 @@ module.exports = class SyncTaxController extends baseController{
                     type:"post",
                     method: "getDevices",
                     authorization:'accessAuth'
-                }
+                },
+                {
+                    path:this.path+"/getGiftcardPrintHTML",
+                    type:"post",
+                    method: "getGiftcardPrintHTML",
+                    authorization:'accessAuth'
+                },
+                
                 
             ]
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -385,6 +392,44 @@ module.exports = class SyncTaxController extends baseController{
                     }
                 })
             }
+        })
+    }
+
+
+    formatCardNumber(cardnumber){
+        return cardnumber.substring(0,4)+"-"+cardnumber.substring(3,7)+"-"+cardnumber.substring(7,11)+"-"+cardnumber.substring(11,15)
+    }
+
+    getGiftcardPrintHTML = async(req, res, next)=>{
+        var input = req.input 
+        var cardnumber = input.cardNumber  
+
+        this.readOne({where:{'cardNumber': cardnumber}}, 'giftCards').then(async (results)=>{
+            var billprinters = await this.readOne({where:{BillPrint: 1}}, 'printers')
+            var printer = billprinters != null ? billprinters.dataValues : {} 
+            var merchantdetail = req.deviceDetails;
+             //console.log("ticketdetail")
+            //console.log(ticketdetail)
+            var html = `<div style="max-width:270px;display:inline; padding:50px;" >`; // div1
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            
+            html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
+            html += `<div>`+merchantdetail.merchantAddress1+`</div>`
+            html += `<div>`+merchantdetail.merchantAddress2+`</div>`
+            html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+            html+=`</div>`
+            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>Gift Card</p></div>`
+            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:14px;font-weight:bold;'>`+this.formatCardNumber(cardnumber)+`</p></div>`
+            
+            
+            html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
+            <p style='margin-top:0'>`+printer.footerText+`</p>
+            </div>`
+
+            html+=`</div>` // div2
+            html+=`</div>`;// div1
+            this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
+        
         })
     }
 
