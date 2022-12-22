@@ -40,15 +40,29 @@ module.exports = class CustomerController extends baseController{
                     type:"post",
                     method: "updateCustomer",
                     authorization:'authorizationAuth'
+                }, 
+                {
+                    path:this.path+"/searchByMobile",
+                    type:"post",
+                    method: "searchByMobile",
+                    authorization:'authorizationAuth'
                 }
-            ]
-            // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
-            // this.router.post(this.path+"/save", authenticate.authorizationAuth, this.saveCustomer); 
-            // this.router.get(this.path+"/getCustomer", authenticate.authorizationAuth, this.getCustomer); 
-            // this.router.post(this.path+"/updateCustomer", authenticate.authorizationAuth, this.updateCustomer); 
+            ] 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     } 
+
+    searchByMobile = async(req, res, next) =>{
+        var input = req.input;
+        this.readAll({where:{mCustomerMobile: input.value}}, 'mCustomers').then(r=>{
+            if(r.length > 0){
+                this.sendResponse({data: r[0]}, res, 200)
+            }
+            else{
+                this.sendResponse({message:"This mobile number not exists."}, res, 200)
+            }
+        })
+    }
 
     saveCustomer = async(req,res,next)=>{
         var input = req.input;

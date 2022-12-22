@@ -5,7 +5,7 @@ import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 // 
 import SyncCodeComponent from './pages/syncCode'; 
 
-import DevicesComponent from './pages/Devices';
+// import DevicesComponent from './pages/Devices';
 
 import NotFound from './pages/Page404';
 import { isDeviceRegistered, isLogin } from './utils/protector';
@@ -33,11 +33,11 @@ import CreateTicket from './pages/ticket/create';
 import Transactions from './pages/Transactions';
 import PayoutComponent from './pages/Payout';
 import ReportComponent from './pages/reports';
-// import AppointmentComponent from './pages/Appointments';
+import AppointmentComponent from './pages/Appointments';
 
 import LoyaltyPoints from './pages/Merchant/Settings/LoyaltyPoints';
 
-import LPSettings from './pages/Merchant/Settings/LPSettings';
+// import LPSettings from './pages/Merchant/Settings/LPSettings';
 import LPActivationSettings from './pages/Merchant/Settings/LPActivationSettings';
 import GiftCards from './pages/Merchant/GiftCards';
 import LoyaltyRedeemSettings from './pages/Merchant/Settings/LPRedeemSettings';
@@ -80,7 +80,7 @@ export default function Router() {
         { path: 'transactions', element: <Transactions/>},
         { path: 'payout', element: <PayoutComponent/>},
         { path: 'report', element: <ReportComponent/>},
-        // { path: 'appointments', element: <AppointmentComponent/>},
+        { path: 'appointments', element: <AppointmentComponent/>},
         { path: 'printers', element: <Printers/>},
 
         { path:'loyaltypointsettings', element: <LoyaltyPoints/>},
