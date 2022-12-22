@@ -121,23 +121,23 @@ export default class MerchantDashboard extends React.Component{
 
             <Grid container>
                 <Grid item xs={12} className="dashboardFooter">
-                    <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
+                    <Grid item xs={3} className={'dashboardFooterDivider active'} onClick={()=>{
                         this.setState({showClockIn: true})
                     }}>
                         Clock-In / Clock-Out
                     </Grid>
-                    <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
+                    <Grid item xs={3} className={'dashboardFooterDivider active'} onClick={()=>{
                         this.setState({showCreateTicket: true})
                     }}>
                         Create Ticket
                     </Grid>
-                    <Grid item xs={2} className={'dashboardFooterDivider '}>
+                    {/* <Grid item xs={2} className={'dashboardFooterDivider '}>
                         Check-In
-                    </Grid>
-                    <Grid item xs={2} className={'dashboardFooterDivider '}>
+                    </Grid> */}
+                    <Grid item xs={2} className={'dashboardFooterDivider active'}>
                         Waiting List
                     </Grid> 
-                    <Grid item xs={2} className={'dashboardFooterDivider '} onClick={()=>{
+                    <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
                         this.redirectToPage('appointments')
                     }}>
                         Appointments

@@ -201,6 +201,9 @@ module.exports = class TicketController extends baseController{
     }
 
     getPaidTickets = async(req, res)=>{
+        var fromdate = req.input.fromDate || this.getDate()
+        var todate = req.input.toDate || this.getDate()
+
         let options = {
             include:[
                 {
@@ -237,6 +240,9 @@ module.exports = class TicketController extends baseController{
                 paymentStatus:'Paid',
                 ticketType:{
                     [Sequelize.Op.ne]:'GiftCard'
+                },
+                createdAt:{
+                    [Sequelize.Op.between]:[fromdate.substring(0, 10)+" 00:00:00", todate.substring(0, 10)+" 23:59:59" ]
                 }
             },
             attributes:{

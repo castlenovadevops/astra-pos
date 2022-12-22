@@ -16,6 +16,13 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false 
         },
+        batchId: {
+             field: 'batchId', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: true,
+             defaultValue:''
+        },
         ticketCode: {
              field: 'ticketCode', 
              type: DataTypes.STRING(255), 

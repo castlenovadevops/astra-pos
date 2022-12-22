@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 // material
 import MuiPhoneNumber from 'material-ui-phone-number';
+import { gridFilterActiveItemsLookupSelector } from '@mui/x-data-grid';
 
 export default class FPhoneNumber extends React.Component {
     constructor(props) {
@@ -9,6 +10,7 @@ export default class FPhoneNumber extends React.Component {
         this.state = {
           helperText: '',
           error: false,
+          errorCustom: gridFilterActiveItemsLookupSelector
         }
     }
 
@@ -16,12 +18,17 @@ export default class FPhoneNumber extends React.Component {
         this.setState({helperText: '', error: false });
         // MobileNumber 
         if (e.target.value.length < 15 && e.target.value !== '') {
-            this.setState({helperText: 'Please enter valid phone number.', error: true});
+            this.setState({helperText: 'Please enter valid phone number.', error: true,errorCustom: true});
         } else {
-            this.setState({helperText: '', error: false});
+            this.setState({helperText: '', error: false, errorCustom:false});
         } 
     }
-
+    static getDerivedStateFromProps(nextProps, prevState) {
+      if (nextProps.error !== prevState.error  || nextProps.helperText !== prevState.helperText) {
+        return { error: nextProps.error, helperText: nextProps.helperText };
+      }
+      return null;
+    }
     render() {
         return(
             <MuiPhoneNumber

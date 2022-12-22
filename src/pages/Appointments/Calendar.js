@@ -12,7 +12,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import DialogComponent from '../../components/Dialog';
-
+import Services from './views/services';
 import CustomerForm from './views/customer';
 
 // Some config for convenience
@@ -299,7 +299,7 @@ const Grid = ({ date, events, setViewingEvent, setShowingEventForm, actualDate }
   const [showingCustomerForm, setShowingCustomerForm] = useState({ visible: false })
   const [isLoading, setIsLoading] = useState(false)
   const [feedback, setFeedback] = useState()
-
+  const [servicesList, setServicesList] = useState({})
   const parsedEvents = parseEvents(preloadedEvents)
   const [events, setEvents] = useState(parsedEvents)
   
@@ -409,11 +409,42 @@ const Grid = ({ date, events, setViewingEvent, setShowingEventForm, actualDate }
         />
       }
 
-      {showingCustomerForm && showingCustomerForm.visible &&
+      {showingCustomerForm && showingCustomerForm.visible && (!showingCustomerForm.completeselectedGuest || showingCustomerForm.completeselectedGuest === undefined) &&
         <CustomerForm 
           ShowingCustomerForm = {showingCustomerForm}
           setShowingCustomerForm = {setShowingCustomerForm} 
         />}
+
+        {showingCustomerForm && showingCustomerForm.completeselectedGuest &&
+        <Services  data={{
+          showingCustomerForm: showingCustomerForm,
+          selectedServices: servicesList,
+          clearServices:()=>{
+            setServicesList({})
+          },
+          onSelectService: (service, user)=>{ 
+                  var services = servicesList[user]
+                  if(services !== undefined){
+                    services.push(service)
+                    var obj = Object.assign({}, servicesList) 
+                    obj[user] = services 
+                    setServicesList(obj)
+                  }
+                  else{
+                    services = []
+                    services.push(service)
+                    var obj1 = Object.assign({}, servicesList) 
+                    obj1[user] = services 
+                    setServicesList(obj1)
+                  } 
+          },
+          closeAppointment:()=>{
+            setShowingCustomerForm({visible: false})
+            setShowingEventForm({visible: false})
+          }
+        }}
+        />}
+
     </div>
   )
 }

@@ -461,6 +461,16 @@
     margin:0;
 }
 
+.servicepopup .MuiDialog-paper{
+    width:80%;
+    height:80%;
+    max-width:80%;
+}
+
+.servicepopup .MuiDialogContentText-root{
+    height:100%
+}
+
 .giftpopup .MuiDialog-paper{
     width:500px;
     height:400px;
