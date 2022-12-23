@@ -174,6 +174,8 @@ export default class FormManager extends React.Component{
                         required
                         disabled={disabled}
                         value={value}
+                        error={error}
+                        helperText={helperText}
                         onChange={(e) => { 
                             var stateVariable = Object.assign({}, this.state);
                             stateVariable[name]=e
@@ -612,7 +614,7 @@ export default class FormManager extends React.Component{
                         this.props.reloadPayment(response);
                     }
                     else{
-                        this.props.reloadData(response.message);
+                        this.props.reloadData(response.message, response.data );
                     }
                     break;
                 default:

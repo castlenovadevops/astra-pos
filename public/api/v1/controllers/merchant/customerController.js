@@ -82,20 +82,27 @@ module.exports = class CustomerController extends baseController{
             })
         }
         else{
-            this.create('mCustomers', input).then(async (resp)=>{
-                if(input.mCustomerLoyaltyPoints !== undefined){
-                    var pointsinput ={
-                        customerId: resp.mCustomerId,
-                        pointsCount: input.mCustomerLoyaltyPoints,
-                        status:'Earned',
-                        dollarValue:'',
-                        createdBy: req.userData.mEmployeeId,
-                        createdDate: this.getDate()
-                    } 
-
-                    await this.create('customerLoyaltyPoints', pointsinput);
+            this.readAll({where:{mCustomerMobile: input.mCustomerMobile}}, 'mCustomers').then(exist=>{
+                if(exist.length === 0){ 
+                    this.create('mCustomers', input).then(async (resp)=>{
+                        if(input.mCustomerLoyaltyPoints !== undefined){
+                            var pointsinput ={
+                                customerId: resp.mCustomerId,
+                                pointsCount: input.mCustomerLoyaltyPoints,
+                                status:'Earned',
+                                dollarValue:'',
+                                createdBy: req.userData.mEmployeeId,
+                                createdDate: this.getDate()
+                            } 
+        
+                            await this.create('customerLoyaltyPoints', pointsinput);
+                        }
+                        this.sendResponse({message:"Saved sucessfully", data:resp}, res, 200)
+                    })
                 }
-                this.sendResponse({message:"Saved sucessfully"}, res, 200)
+                else{
+                    this.sendResponse({message:"This mobile number already exist.", field:'mCustomerMobile'}, res, 400)
+                }
             })
         }
     }

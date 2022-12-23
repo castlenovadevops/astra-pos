@@ -422,6 +422,12 @@ const Grid = ({ date, events, setViewingEvent, setShowingEventForm, actualDate }
           clearServices:()=>{
             setServicesList({})
           },
+          addGuest:()=>{
+            var qty = Number(showingCustomerForm.selectedGuestCount) > 0 ? Number(showingCustomerForm.selectedGuestCount)+1 : 1; 
+            var customer = Object.assign({}, showingCustomerForm)
+            customer.selectedGuestCount = qty;
+            setShowingCustomerForm(customer)
+          },
           onSelectService: (service, user)=>{ 
                   var services = servicesList[user]
                   if(services !== undefined){

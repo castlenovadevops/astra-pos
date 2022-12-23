@@ -1,8 +1,10 @@
 import DialogComponent from '../../../components/Dialog';
 import { useState } from 'react';
-import { TextField, Button, FormControl } from '@mui/material';
+import { TextField, Button, FormControl, Box, Grid, Stack } from '@mui/material';
+import FormManager from '../../../components/formComponents/FormManager';
 import HTTPManager from '../../../utils/httpRequestManager';
 import FPhoneNumber from '../../../components/formComponents/components/phonenumber';
+import schemaObj from '../../Merchant/Customer/schema.json'
 
 import Iconify from '../../../components/Iconify';
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
@@ -12,14 +14,20 @@ const CustomerForm = ({ShowingCustomerForm, setShowingCustomerForm})=>{
     const [searched, setSearched] = useState('')
     const [error, setError] = useState(false)
     const [errorText, setErrorText] = useState('')
-    
+    const [addForm, setAddForm] = useState(false)
     const httpManager = new HTTPManager();
+    const [schema, setSchema] = useState(schemaObj)
+
+    const reloadData = (msg, data)=>{
+        setShowingCustomerForm({visible:true, customerDetail: data, selectedGuestCount: 0})
+        setAddForm(false)
+    }
 
     return (<>
         {ShowingCustomerForm.customerDetail === undefined  && <> <DialogComponent open={ShowingCustomerForm.visible} title={'Select Customer'}  onClose={()=>{
             setShowingCustomerForm({visible:false})
          }} >
-           <div style={{display:'flex',position:'relative', flexDirection:'column',alignItems:'center', borderBottom:'1px solid #f0f0f0'}}>
+           {!addForm && <><div style={{display:'flex',position:'relative', flexDirection:'column',alignItems:'center', borderBottom:'1px solid #f0f0f0'}}>
                <br/><br/> {/* <TextField 
                 fullWidth
                 label="Search By Mobile"
@@ -67,9 +75,39 @@ const CustomerForm = ({ShowingCustomerForm, setShowingCustomerForm})=>{
             </div>
             <div style={{display:'flex', flexDirection:'column',alignItems:'center', }}>
                 <Button variant={"contained"} style={{marginTop:'2rem'}} onClick={()=>{
+                    var schemaobj = Object.assign({}, schemaObj);
 
+                    var properties = Object.assign([], schema);
+                    var props=[];
+                    properties.forEach((field,i)=>{
+                        delete field["value"];
+                        if(field.name === 'mCustomerLoyaltyPoints'){ 
+                            field.disabled = false;
+                        }
+                        else if(field.name === 'mCustomerDOB'){
+                            field.disabled = false;
+                        }
+                        props.push(field);
+                        if(i === properties.length-1){
+                            schemaobj.properties = props;
+                        }
+                    });
+                    setSchema(schemaobj)
+
+                    setAddForm(true)
                 }}>Create New Customer</Button>
             </div>
+            </>}
+
+            {addForm && <Box sx={{ width: '100%' }}> 
+                <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
+                     <Grid item xs={12}> 
+                        <Stack spacing={3}> 
+                            <FormManager formProps={schema}  reloadData={(msg,data)=>reloadData(msg,data)} closeForm={()=>setAddForm(false)}/>
+                        </Stack>
+                    </Grid>
+                </Grid>
+            </Box>}
         </DialogComponent> </>}
 
 

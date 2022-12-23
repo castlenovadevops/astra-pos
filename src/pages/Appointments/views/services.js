@@ -158,6 +158,13 @@ export default class AppointmentServices extends React.Component{
             <Grid container style={{height:'auto', paddingBottom:'100px'}}>
                 <Grid item xs={  12} style={{borderRight:this.state.addservice?'1px solid #f0f0f0':'0', height:'100%'}}>
                     <Grid container>
+                    <Grid item xs={  12}>
+                        <div style={{display:'flex', justifyContent:'flex-end'}}>
+                            <Button variant="contained" onClick={()=>{ 
+                                this.props.data.addGuest()
+                            }}>+ Add Guest</Button>
+                        </div>
+                        </Grid>
                         {this.props.data.showingCustomerForm.customerDetail.mCustomerId !== undefined && <Grid item xs={this.props.data.showingCustomerForm.selectedGuestCount===0 ? 12: 6} style={{ padding:'10px'}}>
                                 <Paper style={{border:'1px solid #f0f0f0', height:'250px'}}>
                                     <div style={{display:'flex', alignItems:'center', flexDirection:'column', width:'100%'}}>

@@ -25,7 +25,7 @@ export default class FTextField extends React.Component{
         //console.log("VALUE", nextProps.value, prevState.value)
         return {value: nextProps.value}
     }
-    if (nextProps.error !== prevState.error && !prevState.errorCustom ) {
+    if ((nextProps.error !== prevState.error  ) &&( !prevState.errorCustom || nextProps.errorUpdate===true || nextProps.helperText !== prevState.helperText) ) {
       return { error: nextProps.error, helperText: nextProps.helperText };
     }
     return null;

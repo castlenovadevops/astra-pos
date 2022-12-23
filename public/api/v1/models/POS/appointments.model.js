@@ -83,6 +83,13 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: true, 
         }, 
+        recordType: {
+             field: 'recordType', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: true, 
+             defaultValue:'Appointment'
+        }, 
     }, {
       freezeTableName: true,
       timestamps: false,

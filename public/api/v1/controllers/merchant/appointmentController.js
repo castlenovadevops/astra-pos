@@ -30,4 +30,8 @@ module.exports = class AppointmentController extends baseController{
         var input = req.input;
         this.sendResponse({data: input}, res, 200)
     }
+
+    saveAppointmentServices = async(i, req, res, next)=>{
+        
+    }
 }

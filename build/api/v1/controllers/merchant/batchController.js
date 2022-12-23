@@ -54,7 +54,7 @@ module.exports = class BatchController extends baseController{
         this.create('batches', input).then(r=>{
             var batchID  = r.dataValues !== undefined ? r.dataValues.batchId : r.batchId
             this.update(`tickets`,{batchId: batchID},{where:{ticketId:{
-                [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+todate.substring(0, 10)+" 23:59:59')")
+                [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+todate.substring(0, 10)+" 23:59:59')")
             }}})
             this.sendResponse({data: input}, res, 200)
         }).catch(e=>{
@@ -75,7 +75,8 @@ module.exports = class BatchController extends baseController{
             attributes:{
                 include:[
                     [
-                        sequelize.literal("(select count(ticketId) from tickets where batchId=`batches`.`batchId`)")
+                        sequelize.literal("(select count(ticketId) from tickets where batchId=`batches`.`batchId`)"),
+                        'ticketCount'
                     ]
                 ]
             }
@@ -90,10 +91,21 @@ module.exports = class BatchController extends baseController{
     getBatchTickets= async(req, res, next)=>{
         var options = {
             where:{
-                batchId: req.input.batchId
-            } 
+                ticketId:{
+                    [Sequelize.Op.in]:sequelize.literal("(select ticketId from tickets where batchId='"+ req.input.batchId+"')")
+                }
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.literal("(select ticketCode from tickets where ticketId=`ticketpayment`.`ticketId`)"),
+                        'ticketCode'
+                    ]
+                ]
+            }
         }
-        this.readAll(options, 'batches').then(r=>{
+
+        this.readAll(options, 'ticketpayment').then(r=>{
             this.sendResponse({data:r}, res, 200)
         }).catch(e=>{
             this.sendResponse({message:"Error occured"}, res, 400)

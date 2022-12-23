@@ -262,7 +262,7 @@ export default class Customer extends React.Component{
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
                      <Grid item xs={12}> 
                         <Stack spacing={3}> 
-                            <FormManager formProps={this.state.schema}  reloadData={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()}/>
+                            <FormManager formProps={this.state.schema}  reloadData={(msg,data)=>this.reloadData(msg,data)} closeForm={()=>this.handleCloseform()}/>
                         </Stack>
                     </Grid>
                 </Grid>

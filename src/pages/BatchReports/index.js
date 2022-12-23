@@ -51,11 +51,7 @@ export default class BatchReports extends React.Component {
         showDetail:false,
         printalert:false
     }
-    
-    this.logout = this.logout.bind(this);
-    this.handleCloseMenu = this.handleCloseMenu.bind(this) 
-    this.handleClick = this.handleClick.bind(this);
-    this.handlePageEvent = this.handlePageEvent.bind(this);  
+      
     this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
     this.handlechangeToDate = this.handlechangeToDate.bind(this);
     this.getBatchReports = this.getBatchReports.bind(this);
@@ -88,7 +84,8 @@ export default class BatchReports extends React.Component {
     getBatchTickets(batch){
         var batchid = batch.sync_id;
         this.httpManager.postRequest(`merchant/batch/getBatchTickets`,{batchId:batchid}).then(tickets=>{
-            this.setState({tickets: tickets, batchDetail: batch })
+            console.log(tickets)
+            this.setState({tickets: tickets.data, batchDetail: batch })
         })
     }
 
@@ -96,7 +93,7 @@ export default class BatchReports extends React.Component {
         this.httpManager.postRequest(`merchant/batch/getBatchTickets`,{batchId:t.batchId}).then(tickets=>{
             var obj = t;
             obj["tickets"] = tickets.data;
-
+            console.log(obj)
             this.setState({batchDetail: obj}, ()=>{
                 console.log(this.state.batchDetail)
                 this.setState({showDetail: true})
@@ -155,9 +152,9 @@ export default class BatchReports extends React.Component {
                                     <b>{t.ticketCount}</b>
                                 </Grid> 
                                 <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
-                                    <Print style={{marginLeft:'1rem'}} onClick={(e)=>{
+                                    {/* <Print style={{marginLeft:'1rem'}} onClick={(e)=>{
                                         e.preventDefault();
-                                    }}/>
+                                    }}/> */}
                                 </Grid>
                             </Grid>
                         })}
@@ -279,7 +276,7 @@ export default class BatchReports extends React.Component {
                         
                                 <Grid container style={{display:'flex', flexDirection:'row'}}>
                                 <Grid item xs={12}>
-                                   {this.state.batchDetail.sync_id !== undefined && <>
+                                   {this.state.batchDetail.batchId !== undefined && <>
                                                     <Grid item xs={12} style={{padding:'10px',display:'flex', flexDirection:'row'}}> 
                                                             <Grid item xs={3} md={3}><b>Batch Id</b></Grid>
                                                             <Grid item xs={6} md={6}>  {this.state.batchDetail.batchId} </Grid> 
@@ -301,10 +298,10 @@ export default class BatchReports extends React.Component {
                                             {this.state.batchDetail.tickets.map(t=>{
                                                 return <>
                                                     <Grid item xs={12} style={{ display:'flex', flexDirection:'row'}}> 
-                                                        <Grid item xs={3} md={3}>{moment(t.paid_at).format('MM/DD/YYYY HH:mm:ss a')} </Grid>
-                                                        <Grid item xs={3} md={3}>{t.ticket_code}</Grid>
-                                                        <Grid item xs={3} md={3}>{t.ticket_amt}</Grid>
-                                                        <Grid item xs={3} md={3} style={{textTransform:'capitalize'}}>{t.card_type+" Card"}</Grid>
+                                                        <Grid item xs={3} md={3}>{moment(t.createdDate).format('MM/DD/YYYY HH:mm:ss a')} </Grid>
+                                                        <Grid item xs={3} md={3}>{t.ticketCode}</Grid>
+                                                        <Grid item xs={3} md={3}>{t.ticketAmount}</Grid>
+                                                        <Grid item xs={3} md={3} style={{textTransform:'capitalize'}}>{t.paymentType+" Card"}{t.cardType !== '' ? ' ('+t.cardType+')' : ''}</Grid>
                                                     </Grid>
                                                 </>
                                             })}</> }

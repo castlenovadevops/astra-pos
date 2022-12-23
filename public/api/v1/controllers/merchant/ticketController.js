@@ -45,6 +45,13 @@ module.exports = class TicketController extends baseController{
                 },
                 
                 {
+                    path:this.path+"/getClosedTicketsToBatch",
+                    type:"post",
+                    method: "getClosedTicketsToBatch",
+                    authorization:'authorizationAuth'
+                },
+                
+                {
                     path:this.path+"/getTicketDetail",
                     type:"post",
                     method: "getTicketDetail",
@@ -200,7 +207,81 @@ module.exports = class TicketController extends baseController{
         })
     }
 
+    getClosedTicketsToBatch = async(req, res)=>{
+        console.log(req.input)
+        var fromdate = req.input.from_date || this.getDate()
+        var todate = req.input.to_date || this.getDate()
+
+        let options = {
+            include:[
+                {
+                    model: this.models.mCustomers,
+                    required: false,
+                    attributes:{
+                        include:[  
+                            [
+                                sequelize.literal("(select SUM(Earned)-SUM(Redeemed) FROM ( select pointsCount as Earned, 0 as Redeemed From customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId` union all select 0 as Earned, pointsCount as Redeemed From customerLoyaltyPoints where status='Redeemed' and customerId=`mCustomer`.`mCustomerId` ) )"),
+                //  sequelize.literal("(select sum(pointsCount) from customerLoyaltyPoints where status='Earned' and customerId=`mCustomer`.`mCustomerId`)"),
+                                "LoyaltyPoints"
+                            ]
+                        ]
+                    }
+                },
+                {
+                    model: this.models.merchantEmployees,
+                    required: false
+                }, 
+                {
+                    model: this.models.ticketdiscount,
+                    required: false,
+                    where:{
+                        status:1
+                    }
+                }, 
+                {
+                    model: this.models.ticketpayment,
+                    required: false, 
+                }, 
+            ],
+            where:{
+                ticketStatus:'Active',
+                paymentStatus:'Paid',
+                [Sequelize.Op.or]:[
+                    { 
+                        batchId:{
+                            [Sequelize.Op.eq]:''
+                        },
+                    },
+                    {
+                        batchId:{
+                            [Sequelize.Op.eq]: null
+                        },
+                    }
+                ],
+                ticketId:{
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where payMode='card')")
+                }
+            },
+            attributes:{
+                include:[
+                    [
+                        Sequelize.col('`tickets`.`ticketId`'),
+                        'id'
+                    ]
+                ]
+            }
+        }
+
+        this.readAll(options, 'tickets').then(results=>{
+            this.sendResponse({data: results}, res, 200);
+        })
+    }
+
     getPaidTickets = async(req, res)=>{
+        console.log(req.input)
+        var fromdate = req.input.from_date || this.getDate()
+        var todate = req.input.to_date || this.getDate()
+
         let options = {
             include:[
                 {
@@ -237,6 +318,9 @@ module.exports = class TicketController extends baseController{
                 paymentStatus:'Paid',
                 ticketType:{
                     [Sequelize.Op.ne]:'GiftCard'
+                },
+                ticketId:{
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+todate.substring(0, 10)+" 23:59:59')")
                 }
             },
             attributes:{

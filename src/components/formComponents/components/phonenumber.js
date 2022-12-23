@@ -24,7 +24,8 @@ export default class FPhoneNumber extends React.Component {
         } 
     }
     static getDerivedStateFromProps(nextProps, prevState) {
-      if (nextProps.error !== prevState.error  || nextProps.helperText !== prevState.helperText) {
+      if (nextProps.error !== prevState.error || nextProps.errorUpdate === true  || nextProps.helperText !== prevState.helperText) {
+        console.log("PHONE, ", { error: nextProps.error, helperText: nextProps.helperText })
         return { error: nextProps.error, helperText: nextProps.helperText };
       }
       return null;
