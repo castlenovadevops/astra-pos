@@ -96,7 +96,7 @@ module.exports = class AppointmentController extends baseController{
                 appointmentId: appointmentid,
                 serviceId: services[j].mProductId,
                 technicianId: services[j].technicianId,
-                serviceDuration: services[j].serviceDuration
+                serviceDuration: services[j].duration
             }
 
             this.create('appointmentServices', input).then(r=>{
@@ -121,6 +121,11 @@ module.exports = class AppointmentController extends baseController{
             group: [
                 ['appointmentDate'] 
             ],
+            where:{
+                parentId:{
+                    [Sequelize.Op.in]:[null, '']
+                }
+            },
             attributes:[
                 [Sequelize.col("`appointmentDate`"), 'appointmentDate'],
                 [Sequelize.col("`appointmentDate`"), 'dateFrom'],

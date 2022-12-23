@@ -14,6 +14,7 @@ import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
 import Page from '../../components/Page';
 import LoaderContent from '../../components/Loader'; 
 
+import TicketContainer from "../ticket";
 // const ITEM_HEIGHT = 48;
 // const ITEM_PADDING_TOP = 8;
 // const MenuProps = {
@@ -34,326 +35,142 @@ import LoaderContent from '../../components/Loader';
 //   width:'25%'
 // };
 import HTTPManager from "../../utils/httpRequestManager";
+import dayjs from "dayjs";
 
+import socketIOClient from "socket.io-client"; 
+
+const ENDPOINT = "http://localhost:1818";
 export default class WaitingList extends React.Component {
     httpManager = new HTTPManager();
+    socket = socketIOClient(ENDPOINT);
     constructor(props) {
         super(props);
     
         this.state={ 
-            businessdetail:{}, 
-            // dataManager: new DataManager(), 
-            from_date:new Date(),
-            to_date:new Date(),
-            showDatePopup: false, 
-            transactions:[],
-            employeelist:[],
-            selectedemps:[],
-            type:'paid',
-            transactiondetail:{},
-            showDetail:false,
+            businessdetail:{},  
+            waitinglist:[], 
             isLoading: false,
-        }
-        // this.handleCloseMenu = this.handleCloseMenu.bind(this) 
-        // this.handleClick = this.handleClick.bind(this);
-        // this.handlePageEvent = this.handlePageEvent.bind(this); 
-        // this.reloadPage = this.reloadPage.bind(this);
-        this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
-        this.handlechangeToDate = this.handlechangeToDate.bind(this);
-        this.getTransactions = this.getTransactions.bind(this);
-        
-    }
-    handlechangeFromDate(e){
-        this.setState({from_date: e});
-    }
-    handlechangeToDate(e){
-        this.setState({to_date: e});
-    }
-    handleClick(){
-        // //console.log(event.target)
-            this.setState({anchorEl:null, openMenu:true, editForm:false, addForm:false});
-    }
-    getTransactions(){  
-        this.setState({isLoading: true})
-        let from_date = Moment(this.state.from_date).format('YYYY-MM-DD');
-        let to_date = Moment(this.state.to_date).format('YYYY-MM-DD');
-        // let url = config.root+"/report/transactions"
-        var input = { 
-            from_date: from_date,
-            to_date: to_date
-        }   
+            showCreateTicket:false,
+            ownerTechnician: {},
+            ticketDetail:{},
+        } 
+        this.getWaitingList = this.getWaitingList.bind(this);
+        this.convertTicket = this.convertTicket.bind(this); 
+        this.setOwnerTech = this.setOwnerTech.bind(this);
+        this.closeCreateTicket = this.closeCreateTicket.bind(this);
+        this.editTicket = this.editTicket.bind(this)
+    }  
 
-        this.httpManager.postRequest(`merchant/ticket/getTransactions`, input).then(res=>{
-            console.log(res.data)
-            this.setState({transactions: res.data, isLoading: false, showDatePopup: false})
-        })
-      }
-    handleClickInvent(opt){
-        if(opt === 'inventory')
-            this.setState({expand_menu_show : !this.state.expand_menu_show});
-        if(opt === 'settings')
-            this.setState({setting_menu_show : !this.state.setting_menu_show});
-    } 
-    componentDidMount(){ 
-
-        let detail = window.localStorage.getItem("userdetail");
-        this.setState({businessdetail: JSON.parse(detail)}, function(){ 
-            var condition = navigator.onLine ?  true: false;
-            this.setState({isOnline: condition}, function() {
-                if(!this.state.isOnline) {
-                    
-                }
-                else { 
-                    this.getTransactions()
-                }
+    convertTicket(t){
+        console.log("CONVETING")
+        this.httpManager.postRequest(`/merchant/WaitingList/convertTicket`,{appointment:t}).then(res=>{
+            this.setState({ticketDetail: res.data}, ()=>{
+                this.editTicket(res.data)
             })
-            
-        });
+            this.getWaitingList();
+        })
+    }
+    getWaitingList(){   
 
-    }
-    getEmpDetails() {
-        var userdetail = window.localStorage.getItem('userdetail');
-        if(userdetail !== undefined && userdetail !== null){
-            this.setState({isLoading: true})
-            axios.get(`${process.env.REACT_APP_APIURL}/employee/`+JSON.parse(userdetail).businessId).then((res)=>{
-                if(res.data.data.length>0) {
-                    // this.getEmp(res.data.data[0])
-                    var data = res.data.data 
-                    var empids = data.map(r=>r.id);
-                    this.setState({isLoading: false,employeelist:data,selectedemps: empids}, function(){
-                        this.getTransactions()
-                    })
-                } 
-                else{
-                    this.getTransactions()
-                }
-            });
-        }
-    }
-    getEmpName(empid){
-        let emp = this.state.employeelist.filter(emp=>{return emp.id === Number(empid) })
-        if(emp.length>0){
-            return emp[0].firstName+" "+emp[0].lastName;
-        }
-        else{
-            return ''
-        }
-    }
-    checkEmp(empid){
-        return this.state.selectedemps.indexOf(empid) > -1 ? true : false;
-    }
+        this.httpManager.postRequest(`merchant/WaitingList/getAppointmentsList`, {currenttime: dayjs(new Date().toISOString()).format('HH:mm')}).then(res=>{
+            console.log(res.data)
+            this.setState({waitinglist: res.data, isLoading: false })
+        })
+      } 
+
+    componentDidMount(){ 
+        this.getWaitingList() 
+    }  
     
+    setOwnerTech(obj){
+        this.setState({ownerTechnician: obj,ticketDetail: {}},()=>{
+            this.setState({showCreateTicket: true})
+        })
+    }
+
+    editTicket(detail){
+        this.setState({ticketDetail: detail},()=>{
+            console.log(this.state.ticketDetail)
+            this.setState({showCreateTicket: true})
+        })
+    }
+    closeCreateTicket(){ 
+            this.socket.emit("refreshTickets", {data:"success"}) 
+            // window.location.href="/"
+        this.setState({showCreateTicket: false, ticketDetail:{}})
+    }
     render(){
         return(
-            <Page title="Transactions | Astra POS">
+            <Page title="Waiting List | Astra POS">
                  {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
+                   
+        {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer ticketDetail={this.state.ticketDetail} 
+        ownerTechnician={this.state.ownerTechnician} functions={{
+            closeCreateTicket:this.closeCreateTicket
+        }} /></div>}
+
                  <Container maxWidth="xl">
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4" gutterBottom>
-                        Transactions
-                        </Typography>
-                        <IconButton onClick={()=>{
-                            this.setState({showDatePopup: true})
-                        }}><CalendarMonthIcon/></IconButton>
+                        Waiting List
+                        </Typography> 
                     </Stack>
                     <Stack>
                         <Paper style={{ background: 'white',height: '90%'}}>
-                            {this.state.type === 'paid' && <div style={{height: "100%"}}>
+                              <div style={{height: "100%"}}>
                             <Grid container spacing={3}  style={{height:'40px', background:'#f0f0f0', width:'100%', margin:'10px 0', padding: 0}}>
                                 <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
                                     Date
                                 </Grid>
-                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Ticket
+                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                    Customer Name
                                 </Grid>
                                 {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
                                     Transaction #
                                 </Grid> */}
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Transaction Type
-                                </Grid>
-                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Total
-                                </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Payment Mode
-                                </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Paid On
-                                </Grid>
+                                <Grid item xs={5} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                    Services
+                                </Grid>  
                                 <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
-                                    Employee 
+                                    Action 
                                 </Grid>
                             </Grid>
                         <div style={{ width: '100%', height:  'calc(100% - 0px)',overflow: 'hidden', background: 'white'}}>
                     
                         <div style={{width: '100%', height: 'calc(100% - 0px)',paddingLeft: 0,paddingTop: 0,paddingBottom: 0,overflowY:'auto', overflowX:'hidden', 
                         boxSizing: 'content-box', background: 'white'}}>
-                        {this.state.transactions.map(t=>{ 
+                        {this.state.waitinglist.map(t=>{ 
                             // console.log("transactions:",t)
-                            return <Grid container spacing={3}  style={{height:'80px', cursor:'pointer', width:'100%', margin:0, padding: '10px 0',borderBottom:'1px solid #f0f0f0'}} onClick={()=>{ 
-                                this.setState({transactiondetail: t}, ()=>{
-                                    this.setState({showDetail: true})
-                                })
-                            }}>
+                            return <Grid container spacing={3}  style={{height:'80px', cursor:'pointer', width:'100%', margin:0, padding: '10px 0',borderBottom:'1px solid #f0f0f0'}} >
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
-                                {Moment.utc(t.ticketDate).local().format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment.utc(t.ticketDate).local().format("MM/DD/YYYY")}</span>
+                                {Moment.utc(t.appointmentDate+" "+t.appointmentTime).local().format("HH:mm:ss a")}<br/>
+                                <span style={{color:'#ccc'}}>{Moment.utc(t.appointmentDate+" "+t.appointmentTime).local().format("MM/DD/YYYY")}</span>
                             </Grid>
-                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                {t.ticket.ticketCode}
-                            </Grid>
-                            {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                
-                            </Grid> */}
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                <b>#{t.transactionId}</b>
-                            </Grid>
-                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
-                                <b>${Number(t.ticketPayment).toFixed(2)}</b>
-                            </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
-                                {(t.payMode === 'Loyalty Points' || t.payMode === 'GiftCard') && <b>{t.payMode}</b>}
-                                <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash' : t.paymentType}</b>
-                            </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
-                                {Moment.utc(t.createdDate).local().format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment.utc(t.createdDate).local().format("MM/DD/YYYY")}</span>
-                            </Grid>
+                            <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                                {t.customerName !== '' && t.customerName !== null && t.customerName !== undefined ? t.customerName :t.guestName+"(Guest)"}
+                            </Grid> 
+                            <Grid item xs={5} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                               {t.appointmentServices.map(a=>{
+                                    return <b>{a.mProduct.mProductName},</b>
+                               })}
+                            </Grid> 
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', textTransform:'capitalize'}}> 
-                                {/* {this.getEmpName(t.technician_id)} */}
-                                {t.mEmployeeFirstName+" "+t.mEmployeeLastName}
+                                 <Button variant={'contained'} onClick={()=>{
+                                    this.convertTicket(t);
+                                 }}>Process To Ticket</Button>
                             </Grid>
                         </Grid>
                         })}
                         </div></div>
                     
                     
-                        {this.state.isLoading === false && this.state.transactions.length === 0 && <div>
-                            <p style={{fontSize:'14px', width:'100%', textAlign:'center'}}>No transactions added yet.</p>
+                        {this.state.isLoading === false && this.state.waitinglist.length === 0 && <div>
+                            <p style={{fontSize:'14px', width:'100%', textAlign:'center'}}>No appointments in waiting queue.</p>
                         </div>}
-                        </div>}
+                        </div> 
                         </Paper> 
                     </Stack>
-                 </Container>
-                 <Dialog
-                    className="custommodal"
-                        open={this.state.showDatePopup}
-                        onClose={()=>{
-                            this.setState({showDatePopup: false, from_date: new Date(), to_date:new Date(), reporttype:'daily'})
-                        }}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                        style={{borderRadius:'10px'}}
-                    >
-                        <DialogTitle id="alert-dialog-title">
-                            Select Date
-                        </DialogTitle>
-                        <DialogTitle title="Select Date" 
-                        onClose={()=>{
-                            this.setState({showDatePopup: false})
-                        }}
-                        />
-                        <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        
-                                <Grid container>
-                                    
-                                    <Grid item xs={12} style={{padding:'20px'}}>
-                                        <form autoComplete="off" noValidate> 
-                                            <Stack direction={'column'}> 
-                                                <div  style={{margin:'10px 0'}}>
-                                                <LocalizationProvider dateAdapter={AdapterDateFns} fullWidth >
-                                                    <DesktopDatePicker
-                                                        label="From"
-                                                        inputFormat="dd/MM/yyyy"
-                                                        maxDate={new Date()}
-                                                        style={{marginRight:'10px'}}
-                                                        value={this.state.from_date}
-                                                        onChange={this.handlechangeFromDate}
-                                                        renderInput={(params) => <TextField {...params} />}
-                                                    />
-                                                </LocalizationProvider>
-                                                </div>
-                                                <div  style={{margin:'10px 0'}}>
-                                                    <LocalizationProvider dateAdapter={AdapterDateFns} fullWidth 
-                                                            style={{marginLeft:'10px'}}>
-                                                        <DesktopDatePicker
-                                                            label="To"
-                                                            inputFormat="dd/MM/yyyy"
-                                                            minDate={this.state.from_date}
-                                                            maxDate={new Date()}
-                                                            value={this.state.to_date} 
-                                                            onChange={this.handlechangeToDate}
-                                                            style={{marginLeft:'10px'}}
-                                                            renderInput={(params) => <TextField {...params} />}
-                                                        />
-                                                    </LocalizationProvider>    
-                                                </div>
-                                            </Stack>
-                                        </form>  
-                                    </Grid> 
-                                </Grid>
-                        
-                        </DialogContentText>
-                            </DialogContent>
-                        <DialogActions style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'1rem'}}>
-                            <Button variant="contained" onClick={()=>{ this.getTransactions()}} >Get Transactions</Button>
-                        </DialogActions>
-            </Dialog>
-            <Dialog
-                    className="custommodal"
-                        open={this.state.showDetail} 
-                        onClose={()=>{
-                            this.setState({showDetail: false, transactiondetail:{}})
-                        }}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                        style={{borderRadius:'10px'}}
-                    >
-                        <DialogTitle id="alert-dialog-title">
-                        {/* <ModalHeader title="" onClose={()=>{
-                            this.setState({showDetail: false, transactiondetail:{}})
-                        }} /> */}
-                        </DialogTitle>
-                        <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        
-                                <Grid container style={{display:'flex', flexDirection:'row'}}>
-                                <Grid item xs={12}>
-                                   {this.state.transactiondetail.id !== undefined && <Grid item xs={12} style={{padding:'20px',display:'flex', flexDirection:'row'}}> 
-                                        <Grid item xs={3} md={3}><b>Payment</b></Grid>
-                                        <Grid item xs={6} md={6}> 
-                                            <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                                {Moment.utc(this.state.transactiondetail.createdDate).local().format("HH:mm:ss a MM/DD/YYYY")} <br/><br/>
-                                               <b>Tender:</b> {this.state.transactiondetail.payMode.toLowerCase() === 'cash' ? this.state.transactiondetail.payMode : this.state.transactiondetail.card_type}<br/>
-                                               <b>Ticket Code:</b> {this.state.transactiondetail.ticket.ticketCode}<br/>
-                                               <b>Employee:</b> {this.state.transactiondetail.mEmployeeFirstName+" "+this.state.transactiondetail.mEmployeeLastName}<br/><br/>
-                                               {this.state.transactiondetail.notes && <> <b>Notes:</b><br/> {this.state.transactiondetail.notes}</> }
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid item xs={3}  md={3}>
-                                            <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
-                                                <b>${Number(this.state.transactiondetail.ticketPayment).toFixed(2)}</b>
-                                            </Grid> 
-                                        </Grid>
-                                    </Grid> }
-                                    </Grid>
-
-                                    <Grid item xs={12} style={{position:'absolute', bottom:0, left:0, right:0, borderTop:'1px solid #f0f0f0',display:'flex', flexDirection:'row', padding:10}}>
-
-                                    <Grid item xs={9} md={9}> <h3>Total</h3></Grid>
-                                    <Grid item xs={3} md={3}> <h3>${Number(this.state.transactiondetail.grand_total).toFixed(2)}</h3></Grid>
-
-                                    </Grid>
-                                </Grid>
-                        
-                        </DialogContentText>
-                            </DialogContent>
-                        <DialogActions style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'1rem'}}> 
-                        </DialogActions>
-            </Dialog>  
+                 </Container>  
 
             </Page>
         )

@@ -59,6 +59,12 @@ function applyExtraSetup(sequelize) {
     models.ticketservices.hasMany(models.ticketTips, {foreignKey: 'ticketServiceId',sourceKey: 'ticketServiceId'});
     models.ticketTips.belongsTo(models.ticketservices, {foreignKey: 'ticketServiceId',targetKey: 'ticketServiceId'}); 
 
+    models.appointments.hasMany(models.appointmentServices, {foreignKey: 'appointmentId',sourceKey: 'appointmentId'});
+    models.appointmentServices.belongsTo(models.appointments, {foreignKey: 'appointmentId', targetKey: 'appointmentId'});
+    
+    models.mProducts.hasMany(models.appointmentServices,  {foreignKey: 'serviceId', targetKey: 'mProductId'});
+    models.appointmentServices.belongsTo(models.mProducts,  {foreignKey: 'serviceId', targetKey: 'mProductId'});
+    
 }
 
 module.exports = { applyExtraSetup };

@@ -40,6 +40,7 @@ const PrintController = require('../controllers/print/printController');
 const CheckInController = require('../controllers/checkins/checkInController');
 const AppointmentController = require('../controllers/merchant/appointmentController')
 const BatchController = require('../controllers/merchant/batchController');
+const WaitinglistController = require('../controllers/merchant/waitinglistController');
 
 
 const express = require('express');
@@ -97,7 +98,8 @@ const corsOptions ={
         new PrintController(),
         new CheckInController(),
         new AppointmentController(),
-        new BatchController()
+        new BatchController(),
+        new WaitinglistController()
     ] 
     function initialize(){ 
             initializeControllers(0); 
