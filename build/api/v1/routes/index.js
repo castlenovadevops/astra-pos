@@ -38,6 +38,8 @@ const CombineController = require('../controllers/merchant/combineController');
 
 const PrintController = require('../controllers/print/printController');
 const CheckInController = require('../controllers/checkins/checkInController');
+const AppointmentController = require('../controllers/merchant/appointmentController')
+const BatchController = require('../controllers/merchant/batchController');
 
 
 const express = require('express');
@@ -93,7 +95,9 @@ const corsOptions ={
         new SyncGiftCardsSettings(),
 
         new PrintController(),
-        new CheckInController()
+        new CheckInController(),
+        new AppointmentController(),
+        new BatchController()
     ] 
     function initialize(){ 
             initializeControllers(0); 

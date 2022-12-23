@@ -1,8 +1,8 @@
 import React from "react";
 import { Paper,IconButton, TextField, Dialog, DialogTitle, DialogContent, Grid, Button} from '@mui/material'; 
 import HTTPManager from "../../../utils/httpRequestManager";
-import Iconify from '../../../components/Iconify';
 import DialogComponent from "../../../components/Dialog";
+import Iconify from '../../../components/Iconify';
 const getIcon = (name) => <Iconify style={{color:'#d0d0d0', marginLeft:'5px'}} icon={name} width={22} height={22} />;
 
 export default class AppointmentServices extends React.Component{

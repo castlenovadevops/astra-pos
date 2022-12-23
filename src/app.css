@@ -547,3 +547,7 @@ overflow-x: hidden !important;
 .MuiAppBar-root circle, .MuiAppBar-root rect{
     fill:#000;
 }
+
+svg.iconify{
+    color:rgb(148,148,148)
+}

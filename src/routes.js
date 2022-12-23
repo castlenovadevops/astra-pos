@@ -43,6 +43,7 @@ import GiftCards from './pages/Merchant/GiftCards';
 import LoyaltyRedeemSettings from './pages/Merchant/Settings/LPRedeemSettings';
 
 import Printers from './pages/PrintSettings';
+import BatchReports from './pages/BatchReports';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -82,7 +83,7 @@ export default function Router() {
         { path: 'report', element: <ReportComponent/>},
         { path: 'appointments', element: <AppointmentComponent/>},
         { path: 'printers', element: <Printers/>},
-
+        { path: 'batchreports', element: <BatchReports />},
         { path:'loyaltypointsettings', element: <LoyaltyPoints/>},
         { path:'loyaltyactivatesettings', element: <LPActivationSettings/>},
         { path:'giftcards', element: <GiftCards/>},
