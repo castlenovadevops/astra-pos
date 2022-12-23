@@ -34,6 +34,7 @@ import Transactions from './pages/Transactions';
 import PayoutComponent from './pages/Payout';
 import ReportComponent from './pages/reports';
 import AppointmentComponent from './pages/Appointments';
+import WaitingList from './pages/WaitingList';
 
 import LoyaltyPoints from './pages/Merchant/Settings/LoyaltyPoints';
 
@@ -84,10 +85,12 @@ export default function Router() {
         { path: 'appointments', element: <AppointmentComponent/>},
         { path: 'printers', element: <Printers/>},
         { path: 'batchreports', element: <BatchReports />},
-        { path:'loyaltypointsettings', element: <LoyaltyPoints/>},
-        { path:'loyaltyactivatesettings', element: <LPActivationSettings/>},
-        { path:'giftcards', element: <GiftCards/>},
-        { path: 'loyaltyredeemsettings', element: <LoyaltyRedeemSettings/>}
+        { path: 'loyaltypointsettings', element: <LoyaltyPoints/>},
+        { path: 'loyaltyactivatesettings', element: <LPActivationSettings/>},
+        { path: 'giftcards', element: <GiftCards/>},
+        { path: 'loyaltyredeemsettings', element: <LoyaltyRedeemSettings/>},
+        { path: 'waitinglist', element: <WaitingList/>},
+        
       ],
     }, {
       path: '/ticket/create', 

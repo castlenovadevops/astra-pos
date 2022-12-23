@@ -49,17 +49,22 @@ export default class NavigationMenu extends React.Component{
                   {
                       title: 'dashboard',
                       path: '/app',
-                      icon: getIcon('eva:pie-chart-2-fill'),
+                      icon: getIcon('mdi:tablet-dashboard'),
                   }, 
                   {
                       title: 'transactions',
                       path: '/app/transactions',
-                      icon: getIcon('eva:pie-chart-2-fill'),
+                      icon: getIcon('mdi:cash-fast'),
                   }, 
                   {
                       title: 'Batch Reports',
                       path: '/app/batchreports',
-                      icon: getIcon('eva:pie-chart-2-fill'),
+                      icon: getIcon('mdi:select-group'),
+                  }, 
+                  {
+                      title: 'Appointments',
+                      path: '/app/appointments',
+                      icon: getIcon('mdi:calendar-edit'),
                   }, 
                   {
                     title: 'Employee',
@@ -137,17 +142,17 @@ export default class NavigationMenu extends React.Component{
                 {
                   title: 'payout',
                   path: '/app/payout',
-                  icon: getIcon('eva:pie-chart-2-fill'),
+                  icon: getIcon('mdi:chart-arc'),
               }, 
               {
                 title: 'report',
                 path: '/app/report',
-                icon: getIcon('eva:pie-chart-2-fill'),
+                icon: getIcon('mdi:file-chart'),
             },  
               {
                 title: 'sync',
                 path: '/syncData/progress',
-                icon: getIcon('eva:pie-chart-2-fill'),
+                icon: getIcon('mdi:sync'),
             },
               ]
               this.setState({sideMenuItems: items}); 

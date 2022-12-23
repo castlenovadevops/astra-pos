@@ -130,11 +130,10 @@ export default class MerchantDashboard extends React.Component{
                         this.setState({showCreateTicket: true})
                     }}>
                         Create Ticket
-                    </Grid>
-                    {/* <Grid item xs={2} className={'dashboardFooterDivider '}>
-                        Check-In
-                    </Grid> */}
-                    <Grid item xs={2} className={'dashboardFooterDivider active'}>
+                    </Grid> 
+                    <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
+                        this.redirectToPage('waitinglist')
+                    }}>
                         Waiting List
                     </Grid> 
                     <Grid item xs={2} className={'dashboardFooterDivider active'} onClick={()=>{
@@ -142,7 +141,9 @@ export default class MerchantDashboard extends React.Component{
                     }}>
                         Appointments
                     </Grid>
-                    <Grid item xs={2} className={'dashboardFooterDivider active'}>
+                    <Grid item xs={2} className={'dashboardFooterDivider active'}  onClick={()=>{
+                        this.redirectToPage('report')
+                    }}>
                         Report
                     </Grid>
                 </Grid>
