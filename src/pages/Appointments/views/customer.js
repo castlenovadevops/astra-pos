@@ -244,7 +244,7 @@ const CustomerForm = ({ShowingCustomerForm, setShowingCustomerForm, setShowingEv
                 }}
                 orientation="landscape"
                 minTime={dayjs(new Date().toISOString().substring(0,10)+'T08:00')}
-                maxTime={dayjs(new Date().toISOString().substring(0,10)+'T19:00')}
+                maxTime={dayjs(new Date().toISOString().substring(0,10)+'T23:00')}
                 /> 
                 
             </Stack>

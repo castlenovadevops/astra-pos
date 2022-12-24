@@ -140,7 +140,7 @@ export default class BatchReports extends React.Component {
                             // console.log("transactions:",t)
                             return <Grid container spacing={3}  style={{height:'80px', cursor:'pointer', width:'100%', margin:0, padding: '10px 0',borderBottom:'1px solid #f0f0f0'}} >
                                 <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}} onClick={()=>{ this.showBatchDetail(t)}}> 
-                                    {Moment(t.created_at).format("MM/DD/YYYY HH:mm:ss a")}
+                                   {Moment(t.createdDate).format("MM/DD/YYYY HH:mm:ss a")}
                                 </Grid>
                                 <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}} onClick={()=>{ this.showBatchDetail(t); }}> 
                                     {t.batchId}
@@ -300,7 +300,7 @@ export default class BatchReports extends React.Component {
                                                     <Grid item xs={12} style={{ display:'flex', flexDirection:'row'}}> 
                                                         <Grid item xs={3} md={3}>{moment(t.createdDate).format('MM/DD/YYYY HH:mm:ss a')} </Grid>
                                                         <Grid item xs={3} md={3}>{t.ticketCode}</Grid>
-                                                        <Grid item xs={3} md={3}>{t.ticketAmount}</Grid>
+                                                        <Grid item xs={3} md={3}>${Number(t.ticketPayment).toFixed(2)}</Grid>
                                                         <Grid item xs={3} md={3} style={{textTransform:'capitalize'}}>{t.paymentType+" Card"}{t.cardType !== '' ? ' ('+t.cardType+')' : ''}</Grid>
                                                     </Grid>
                                                 </>

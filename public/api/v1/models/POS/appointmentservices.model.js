@@ -29,8 +29,8 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: true, 
         },
-        duration: {
-             field: 'duration', 
+        serviceDuration: {
+             field: 'serviceDuration', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: true, 
