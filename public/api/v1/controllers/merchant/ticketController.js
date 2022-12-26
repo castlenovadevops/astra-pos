@@ -138,7 +138,7 @@ module.exports = class TicketController extends baseController{
                 })
             }
             else{
-                this.update('tickets', {ticketStatus:'Voided'},{where: {ticketId: req.input.data}}).then(resp=>{
+                this.update('tickets', {ticketStatus:'Voided',ticketId: req.input.data},{where: {ticketId: req.input.data}}).then(resp=>{
                     this.sendResponse({message:"Voided successfully."}, res, 200);
                 })
             }

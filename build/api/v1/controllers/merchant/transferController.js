@@ -114,6 +114,7 @@ module.exports = class TicketController extends baseController{
 
     transferServiceToExist= async(req, res, next)=>{
         var input = { 
+            ticketId: req.input.ticketDetail.ticketId,
             tipsAmount: Number(req.input.ticketDetail.tipsAmount)+Number(req.input.service.totalTips),
             serviceAmount: Number(req.input.ticketDetail.serviceAmount) + Number(req.input.service.subTotal),
             ticketTotalAmount: Number(req.input.ticketDetail.ticketTotalAmount) + Number(req.input.service.subTotal) + Number(req.input.service.totalTax + Number(req.input.service.totalTips)), 

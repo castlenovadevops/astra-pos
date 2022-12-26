@@ -215,7 +215,7 @@ module.exports = class GiftCardController extends baseController{
                                         var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
                                         console.log("remainAmount", remainAmount, paidamount)
                                         if(remainAmount <= 0){
-                                            this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
+                                            this.update('tickets', {paymentStatus:'Paid',ticketId: ticket.ticketId}, {where:{ticketId: ticket.ticketId}}).then(r=>{
                                                 this.sendResponse({message:"Paid successfully"}, res, 200);
                                             })
                                         }

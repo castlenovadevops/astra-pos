@@ -143,7 +143,7 @@ module.exports = class TicketController extends baseController{
                 var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
                 console.log(remainAmount, paidamount)
                 if(remainAmount <= 0){
-                    this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
+                    this.update('tickets', {paymentStatus:'Paid',ticketId: ticket.ticketId}, {where:{ticketId: ticket.ticketId}}).then(r=>{
                         this.sendResponse({message:"Paid successfully"}, res, 200);
                     })
                 }
@@ -161,7 +161,8 @@ module.exports = class TicketController extends baseController{
     updateTips = async(req, res, next)=>{
         var input = req.input;
         var ticketDetail = input.ticketDetail; 
-        var ticketinput = {   
+        var ticketinput = { 
+            ticketId: ticketDetail.ticketId , 
             "tipsAmount": ticketDetail.tipsAmount, 
             "ticketTotalAmount"	: ticketDetail.ticketTotalAmount, 
             "tipsType": ticketDetail.tipsType, 
@@ -254,7 +255,7 @@ module.exports = class TicketController extends baseController{
                 var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
                 console.log(remainAmount, paidamount)
                 if(remainAmount <= 0){
-                    this.update('tickets', {paymentStatus:'Paid'}, {where:{ticketId: ticket.ticketId}}).then(r=>{
+                    this.update('tickets', {paymentStatus:'Paid',ticketId: ticket.ticketId}, {where:{ticketId: ticket.ticketId}}).then(r=>{
                         this.sendResponse({message:"Paid successfully"}, res, 200);
                     })
                 }

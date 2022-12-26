@@ -33,7 +33,7 @@ module.exports = class TicketController extends baseController{
             combinedFrom:req.input.combinedTicketId,
             ticketId:req.input.ticketDetail.ticketId,
         } 
-        this.update(`tickets`, {ticketStatus:'Voided', ticketType:'Combined'},  {where:{ticketId: input.combinedFrom} }).then(r=>{
+        this.update(`tickets`, {ticketStatus:'Voided',ticketId:input.combinedFrom, ticketType:'Combined'},  {where:{ticketId: input.combinedFrom} }).then(r=>{
             this.update('ticketservices', input, {where:{ticketId:  input.combinedFrom} }).then(R=>{
                 this.sendResponse({message:"Service transferred successfully."}, res, 200) 
             }).catch(e=>{

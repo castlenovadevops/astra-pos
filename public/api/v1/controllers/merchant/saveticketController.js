@@ -30,8 +30,9 @@ module.exports = class TicketController extends baseController{
     saveTicket = async(req, res, next)=>{
         var input = req.input;
         var ticketDetail = input.ticketDetail;
-        console.log("OWNER TECH::: ", ticketDetail);
+        console.log("OWNER TECH::: ", input);
         var ticketinput = {  
+            ticketId: ticketDetail.ticketId,
             "ownerTechnician" : ticketDetail.ownerTechnician,
             "customerId" : input.customer_detail.mCustomerId || ticketDetail.customerId,
             "taxApplied": ticketDetail.taxApplied,
