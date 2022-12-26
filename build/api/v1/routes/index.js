@@ -24,6 +24,7 @@ const SyncLPSettingsController = require('../controllers/pos/syncLPSettingsContr
 const SyncLPActivationSettings = require('../controllers/pos/syncLPActivationSettingsController');
 const SyncLPRedeemSettings = require('../controllers/pos/syncLPRedeemSettingsController');
 const SyncGiftCardsSettings = require('../controllers/pos/syncGiftCardsController');
+const SyncTicketController = require('../controllers/pos/syncTicketController');
 
 const ClockInController = require('../controllers/merchant/clockinController');
 const TicketController = require('../controllers/merchant/ticketController');
@@ -41,7 +42,6 @@ const CheckInController = require('../controllers/checkins/checkInController');
 const AppointmentController = require('../controllers/merchant/appointmentController')
 const BatchController = require('../controllers/merchant/batchController');
 const WaitinglistController = require('../controllers/merchant/waitinglistController');
-
 
 const express = require('express');
 const path = require('path');
@@ -94,6 +94,7 @@ const corsOptions ={
         new SyncLPActivationSettings(),
         new SyncLPRedeemSettings(),
         new SyncGiftCardsSettings(),
+        new SyncTicketController(),
 
         new PrintController(),
         new CheckInController(),
