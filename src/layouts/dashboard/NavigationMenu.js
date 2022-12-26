@@ -12,11 +12,11 @@ import { styled } from '@mui/material/styles';
 //
 // import navConfig from './NavConfig';
 // component
-import Iconify from '../../components/Iconify';
 import HTTPManager from "../../utils/httpRequestManager";
 import Loader from "../../components/Loader";
 // ----------------------------------------------------------------------
 
+import Iconify from '../../components/Iconify';
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 const AccountStyle = styled('div')(({ theme }) => ({

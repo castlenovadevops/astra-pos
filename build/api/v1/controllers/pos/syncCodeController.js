@@ -23,11 +23,29 @@ module.exports = class RegistrationController extends baseController{
                     type:"post",
                     method: "checkSyncCode",
                     authorization:'accessAuth'
+                },
+                {
+                    path:this.path+"/swapdevice",
+                    type:"post",
+                    method: "swapdevice",
+                    authorization:'accessAuth'
                 }
             ]
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
         });
     } 
+
+    swapdevice = async(req, res, next)=>{
+        var input = {
+            fromDevice: req.input.fromDevice, 
+            toDevice: req.input.toDevice, 
+        }
+        this.apiManager.postRequest('/pos/swapdevice', input, req).then(response=>{
+            // console.log(response)
+            this.sendResponse(response.response, res, response.status);
+        })
+    }
+
     
     checkSyncCode = async(req, res, next)=>{// console.log("INPUT")
     // // console.log(req.input)
