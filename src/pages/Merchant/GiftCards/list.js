@@ -144,10 +144,9 @@ export default class Discount extends React.Component{
     }
     getActions(params){
         var detail = window.localStorage.getItem('userdetail')
-        if(detail !== '' && detail !== undefined && detail !=='{}'){
-          var userdetail = JSON.parse(detail);
-        return <div>      
-                <FButton
+        if(detail !== '' && detail !== undefined && detail !=='{}'){ 
+        return <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>      
+               {params.row.cardType === 'Digital' && <FButton
                 variant="outlined" 
                 size="small" 
                 onClick={()=>{ 
@@ -165,7 +164,8 @@ export default class Discount extends React.Component{
                         }
                     })
                 }} 
-                label="Print"/>
+                label="Print"/>}
+                {params.row.cardType !== 'Digital' && <div  style={{margin:'0 8px', display:'flex', alignItems:'center', justifyContent:'center'}}>N/A</div>}
             </div>
         }
     } 

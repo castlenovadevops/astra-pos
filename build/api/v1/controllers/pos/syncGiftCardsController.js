@@ -95,6 +95,7 @@ module.exports = class SyncCategoryController extends baseController{
         if(idx<data.length){ 
             var detail = data[idx];
             let detailexist = await this.readOne({where:{id: data[idx].id}}, 'giftCards')
+            console.log(detail)
             if(detailexist !== null){
                 this.delete('giftCards', {id:  data[idx].id}).then(r=>{
                     this.create('giftCards', data[idx], false).then(async r=>{

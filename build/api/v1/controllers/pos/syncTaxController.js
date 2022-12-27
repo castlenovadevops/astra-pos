@@ -75,7 +75,7 @@ module.exports = class SyncTaxController extends baseController{
         var input = { 
             merchantId: req.deviceDetails.merchantId,
             POSId: req.deviceDetails.device.POSId,
-            // syncAll: true
+            syncAll: true
         }
         this.apiManager.postRequest('/pos/sync/getTax',  input ,req).then(resp=>{ 
             if(resp.response.data.length > 0){
@@ -91,9 +91,11 @@ module.exports = class SyncTaxController extends baseController{
         var model = "mTax"
         if(idx<taxes.length){ 
             var taxdetail = taxes[idx];
-            let taxexist = await this.readOne({where:{mTaxId: taxes[idx].mTaxId, mTaxStatus:1}}, 'mTax')
+            let taxexist = await this.readOne({where:{mTaxId: taxes[idx].mTaxId}}, 'mTax')
+            console.log("TAX INSERT")
+            console.log(taxdetail)
             if(taxexist !== null){
-                this.delete('mTax', {mTaxId:  taxes[idx].mTaxId}).then(r=>{
+                this.delete('mTax', {id:  taxes[idx].id}).then(r=>{
                     this.create('mTax', taxes[idx], false).then(async r=>{
                         var pkfield = pkfields[model]
                         syncedRows.push(taxdetail[pkfield])
