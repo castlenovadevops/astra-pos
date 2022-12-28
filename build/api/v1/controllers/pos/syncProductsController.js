@@ -43,7 +43,9 @@ module.exports = class SyncCategoryController extends baseController{
             this.syncData(0, toBeSynced, req, res, next);
         }
         else{
-            this.pullData(req, res, next)
+            this.deleteAll('mProducts').then(r=>{
+                this.pullData(req, res, next)
+            })
         }
     }
 
@@ -93,7 +95,9 @@ module.exports = class SyncCategoryController extends baseController{
             }
         }
         else{
-            this.pullData(req, res, next)
+            this.deleteAll('mProducts').then(r=>{
+                this.pullData(req, res, next)
+            })
         }
     }
 

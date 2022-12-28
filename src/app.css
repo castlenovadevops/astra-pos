@@ -240,7 +240,7 @@
 
 
 .MuiDataGrid-virtualScroller{
-    height: 400px !important;
+    height: 360px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
 }

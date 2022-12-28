@@ -160,10 +160,10 @@ export default class Transactions extends React.Component {
                         <Paper style={{ background: 'white',height: '90%'}}>
                             {this.state.type === 'paid' && <div style={{height: "100%"}}>
                             <Grid container spacing={3}  style={{height:'40px', background:'#f0f0f0', width:'100%', margin:'10px 0', padding: 0}}>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
                                     Date
                                 </Grid>
-                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
                                     Ticket
                                 </Grid>
                                 {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
@@ -196,11 +196,11 @@ export default class Transactions extends React.Component {
                                     this.setState({showDetail: true})
                                 })
                             }}>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
+                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
                                 {Moment.utc(t.ticketDate).local().format("HH:mm:ss a")}<br/>
                                 <span style={{color:'#ccc'}}>{Moment.utc(t.ticketDate).local().format("MM/DD/YYYY")}</span>
                             </Grid>
-                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
                                 {t.ticket.ticketCode}
                             </Grid>
                             {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 

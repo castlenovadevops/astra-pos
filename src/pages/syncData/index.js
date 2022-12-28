@@ -24,7 +24,7 @@ export default class SyncDataComponent extends React.Component{
     }
 
     render(){
-      return <div>
+      return <div style={{height: 'calc(100% - 150px)'}}>
         {this.state.syncRunning && <SyncProgress/>}
       </div>
     }

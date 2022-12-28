@@ -43,7 +43,9 @@ module.exports = class SyncCustomerController extends baseController{
             this.syncData(0, toBeSynced, req, res, next);
         }
         else{
-            this.pullData(req, res, next)
+            this.deleteAll('mCustomers').then(r=>{
+                this.pullData(req, res, next)
+            })
         }
     }
 
@@ -74,7 +76,9 @@ module.exports = class SyncCustomerController extends baseController{
             }
         }
         else{
-            this.pullData(req, res, next)
+            this.deleteAll('mCustomers').then(r=>{
+                this.pullData(req, res, next)
+            })
         }
     }
 

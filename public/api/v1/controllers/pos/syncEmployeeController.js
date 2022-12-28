@@ -39,7 +39,10 @@ module.exports = class SyncCategoryController extends baseController{
     
     syncEmployees = async(req, res, next)=>{ 
         // console.log("SYNC EMPLOYEE CALLED")
-        this.pullData(req, res, next) 
+        
+        this.deleteAll('merchantEmployees').then(r=>{
+            this.pullData(req, res, next)
+        })
     } 
 
     pullData = async(req, res, next)=>{ 

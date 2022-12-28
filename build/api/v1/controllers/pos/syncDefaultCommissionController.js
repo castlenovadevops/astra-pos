@@ -30,8 +30,10 @@ module.exports = class SyncDefaultDiscountController extends baseController{
         });
     } 
     
-    syncDiscount = async(req, res, next)=>{ 
-            this.pullData(req, res, next) 
+    syncDiscount = async(req, res, next)=>{  
+        this.deleteAll('mDefaultCommission').then(r=>{
+            this.pullData(req, res, next)
+        })
     } 
 
     pullData = async(req, res, next)=>{ 

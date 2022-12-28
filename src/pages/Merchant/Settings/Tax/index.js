@@ -8,7 +8,7 @@ import Iconify from '../../../../components/Iconify';
 import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import parse from 'html-react-parser'
-import {Box, Grid, Card,   Typography, Stack,  Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button} from '@mui/material';
+import {Box, Grid, Card, Container,  Typography, Stack,  Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button} from '@mui/material';
 import FButton from '../../../../components/formComponents/components/button';
 
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
@@ -387,6 +387,7 @@ export default class Tax extends React.Component{
                 draggable={false}
                 pauseOnHover={false}
                 />  
+                <Container maxWidth="xl">
             {!this.state.addForm &&
                  <Box sx={{ width: '100%' }}> 
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -431,7 +432,7 @@ export default class Tax extends React.Component{
                     </Grid>
                 </Grid>
             </Box>}
-
+            </Container>
             <Dialog 
                     open={this.state.showFormActionError}
                     onClose={this.handleCloseDialog}

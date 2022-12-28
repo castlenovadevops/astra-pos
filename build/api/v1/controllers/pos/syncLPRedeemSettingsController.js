@@ -46,7 +46,10 @@ module.exports = class SyncCategoryController extends baseController{
             }) 
         }
         else{
-            this.pullData(req, res, next)
+         
+            this.deleteAll('LPRedeemSettings').then(r=>{
+                this.pullData(req, res, next)
+            })
         }
     }
 
@@ -75,7 +78,10 @@ module.exports = class SyncCategoryController extends baseController{
             }
         }
         else{
-            this.pullData(req, res, next)
+           
+            this.deleteAll('LPRedeemSettings').then(r=>{
+                this.pullData(req, res, next)
+            })
         }
     }
 

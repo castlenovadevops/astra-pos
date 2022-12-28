@@ -106,6 +106,16 @@ module.exports = class baseController extends MsgController{
         })
     }
 
+
+    async deleteAll(model){
+        return new Promise(async (resolve) => {
+            await this.models[model].destroy({
+                truncate: true
+              })
+            resolve('success')
+        })
+    }
+
     async update(model, data, where, updateTobeSync=true){ 
         return new Promise(async (resolve) => {
             let results =  await this.models[model].update(data, where);
