@@ -48,55 +48,55 @@ export default class SyncProgress extends React.Component{
         // console.log("did mount")
         this.setState({mastertables:[
             
-            // {
-            //     name: "merchantEmployees",
-            //     tablename: 'merchantEmployees',
-            //     progressText: "Synchronizing Staff details...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/employees`
-            // } ,
-            // {
-            //     name: "mCustomers",
-            //     tablename: 'mCustomers',
-            //     progressText: "Synchronizing Customers...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/getCustomers`
-            // },
-            // {
-            //     name: "mCategory",
-            //     tablename: 'mCategory',
-            //     progressText: "Synchronizing Categories...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/category`
-            // },
-            // {
-            //     name: "mProducts",
-            //     tablename: 'mProducts',
-            //     progressText: "Synchronizing Products/Services...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/products`
-            // } ,
-            // {
-            //     name: "mDefaultDiscountDivision",
-            //     tablename: 'mDefaultDiscountDivision',
-            //     progressText: "Synchronizing Default Discount Division Settings...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/defaultDiscountDivision`
-            // } ,
-            // {
-            //     name: "mDefaultCommission",
-            //     tablename: 'mDefaultCommission',
-            //     progressText: "Synchronizing Default Commission Settings...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/defaultCommission`
-            // } ,
-            // {
-            //     name: "mDiscounts",
-            //     tablename: 'mDiscounts',
-            //     progressText: "Synchronizing Discounts...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/discounts`
-            // } ,  
+            {
+                name: "merchantEmployees",
+                tablename: 'merchantEmployees',
+                progressText: "Synchronizing Staff details...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/employees`
+            } ,
+            {
+                name: "mCustomers",
+                tablename: 'mCustomers',
+                progressText: "Synchronizing Customers...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/getCustomers`
+            },
+            {
+                name: "mCategory",
+                tablename: 'mCategory',
+                progressText: "Synchronizing Categories...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/category`
+            },
+            {
+                name: "mProducts",
+                tablename: 'mProducts',
+                progressText: "Synchronizing Products/Services...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/products`
+            } ,
+            {
+                name: "mDefaultDiscountDivision",
+                tablename: 'mDefaultDiscountDivision',
+                progressText: "Synchronizing Default Discount Division Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/defaultDiscountDivision`
+            } ,
+            {
+                name: "mDefaultCommission",
+                tablename: 'mDefaultCommission',
+                progressText: "Synchronizing Default Commission Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/defaultCommission`
+            } ,
+            {
+                name: "mDiscounts",
+                tablename: 'mDiscounts',
+                progressText: "Synchronizing Discounts...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/discounts`
+            } ,  
             {
                 name: "mTax",
                 tablename: 'mTax',
@@ -104,42 +104,42 @@ export default class SyncProgress extends React.Component{
                 progresscompletion: 10,
                 url:  `/pos/syncData/tax`
             } ,
-            // {
-            //     name: "LPSettings",
-            //     tablename: 'LPSettings',
-            //     progressText: "Synchronizing Loyalty Point Settings...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/lpsettings`
-            // } ,
-            // {
-            //     name: "LPActivationSettings",
-            //     tablename: 'LPActivationSettings',
-            //     progressText: "Synchronizing Loyalty Point Activation Settings...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/LPActivationSettings`
-            // } ,
-            // {
-            //     name: "LPRedeemSettings",
-            //     tablename: 'LPRedeemSettings',
-            //     progressText: "Synchronizing Loyalty Point Redeem Settings...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/LPRedeemSettings`
-            // } ,
-            // {
-            //     name: "giftCards",
-            //     tablename: 'giftCards',
-            //     progressText: "Synchronizing Giftcards Settings...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/giftCards`
-            // } ,
+            {
+                name: "LPSettings",
+                tablename: 'LPSettings',
+                progressText: "Synchronizing Loyalty Point Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/lpsettings`
+            } ,
+            {
+                name: "LPActivationSettings",
+                tablename: 'LPActivationSettings',
+                progressText: "Synchronizing Loyalty Point Activation Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/LPActivationSettings`
+            } ,
+            {
+                name: "LPRedeemSettings",
+                tablename: 'LPRedeemSettings',
+                progressText: "Synchronizing Loyalty Point Redeem Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/LPRedeemSettings`
+            } ,
+            {
+                name: "giftCards",
+                tablename: 'giftCards',
+                progressText: "Synchronizing Giftcards Settings...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/giftCards`
+            } ,
 
-            // {
-            //     name: "tickets",
-            //     tablename: 'tickets',
-            //     progressText: "Synchronizing Tickets...",
-            //     progresscompletion: 10,
-            //     url:  `/pos/syncData/tickets`
-            // } ,
+            {
+                name: "tickets",
+                tablename: 'tickets',
+                progressText: "Synchronizing Tickets...",
+                progresscompletion: 10,
+                url:  `/pos/syncData/tickets`
+            } ,
         ]}, ()=>{
             
             var condition = navigator.onLine ? 'online' : 'offline';

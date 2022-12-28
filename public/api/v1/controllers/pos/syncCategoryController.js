@@ -56,16 +56,22 @@ module.exports = class SyncCategoryController extends baseController{
             let datares = await this.readOne({where:{
                 id: tobesync.tableRowId
             }}, 'mCategory')
-            var data = datares.dataValues
-            data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
-            data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
-            data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
-            console.log(data)
-            this.apiManager.postRequest('/pos/sync/saveCategory', data , req).then(response=>{
-                this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
-                    this.syncData(idx+1, toBeSynced, req, res, next);
-                })
-            }) 
+            if(datares !== null){
+                var data = datares.dataValues
+                data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
+                data["updatedDate"] = data["updatedDate"].replace("T"," ").replace("Z","");
+                data["addedOn"] = req.deviceDetails.device.POSId || 'POS';
+                console.log(data)
+                this.apiManager.postRequest('/pos/sync/saveCategory', data , req).then(response=>{
+                    this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
+                        this.syncData(idx+1, toBeSynced, req, res, next);
+                    })
+                }) 
+
+            }
+            else{
+                this.syncData(idx+1, toBeSynced, req, res, next); 
+            }
         }
         else{
             this.pullData(req, res, next)

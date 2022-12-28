@@ -235,7 +235,7 @@ export default class TicketFullPayment extends React.Component  {
                 }
                 this.httpManager.postRequest('merchant/payment/savePayment', input).then(res=>{
                     this.setState({notesPopup: false}, ()=>{
-                        this.props.data.completePayment();
+                        // this.props.data.completePayment();
                         this.setState({completionPopup: true})
                     })
                 })

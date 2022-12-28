@@ -85,7 +85,7 @@ module.exports = class SyncCategoryController extends baseController{
             syncAll: true
         }
         this.apiManager.postRequest('/pos/sync/getLPSettings',  input ,req).then(resp=>{ 
-            console.log("CATEGORY LENGTH", resp)
+            console.log("LP LENGTH", resp.response.data.length)
             if(resp.response.data.length > 0){
                 this.saveData(0, resp.response.data, req, res, next, [])
             }
@@ -100,6 +100,8 @@ module.exports = class SyncCategoryController extends baseController{
         if(idx<data.length){ 
             var detail = data[idx];
             let detailexist = await this.readOne({where:{id: data[idx].id}}, 'LPSettings')
+            console.log("SAVENG DATA")
+            console.log(data[idx])
             if(detailexist !== null){
                 this.delete('LPSettings', {id:  data[idx].id}).then(r=>{
                     this.create('LPSettings', data[idx], false).then(async r=>{

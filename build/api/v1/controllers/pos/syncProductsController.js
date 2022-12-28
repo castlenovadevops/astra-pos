@@ -75,16 +75,22 @@ module.exports = class SyncCategoryController extends baseController{
                 ]
                 
             }, 'mProducts')
-            var product = detail || detail.dataValues; 
-            console.log(product)
-            product["createdDate"] = product["createdDate"].replace("T"," ").replace("Z","");
-            product["updatedDate"] = product["updatedDate"].replace("T"," ").replace("Z","");
-            product["addedOn"] = req.deviceDetails.device.POSId || 'POS';
-            this.apiManager.postRequest('/pos/sync/saveProduct',  product, req).then(response=>{
-                this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
-                    this.syncData(idx+1, toBeSynced, req, res, next);
+            if(detail !== null){
+                var product = detail || detail.dataValues; 
+                console.log(product)
+                product["createdDate"] = product["createdDate"].replace("T"," ").replace("Z","");
+                product["updatedDate"] = product["updatedDate"].replace("T"," ").replace("Z","");
+                product["addedOn"] = req.deviceDetails.device.POSId || 'POS';
+                this.apiManager.postRequest('/pos/sync/saveProduct',  product, req).then(response=>{
+                    this.delete('toBeSynced', {tableRowId: toBeSynced[idx].tableRowId, syncTable: toBeSynced[idx].syncTable}).then(r=>{    
+                        this.syncData(idx+1, toBeSynced, req, res, next);
+                    })
                 })
-            })
+
+            }
+            else{
+                this.syncData(idx+1, toBeSynced, req, res, next); 
+            }
         }
         else{
             this.pullData(req, res, next)
