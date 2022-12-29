@@ -170,8 +170,8 @@ export default class Discount extends React.Component{
         }
     } 
     formatCardNumber(cardnumber){
-        return cardnumber.substring(0,4)+"-"+cardnumber.substring(3,7)+"-"+cardnumber.substring(7,11)+"-"+cardnumber.substring(11,15)
-    }
+        return cardnumber.substring(0,4)+"-"+cardnumber.substring(4,8)+"-"+cardnumber.substring(8,12)+"-"+cardnumber.substring(12,16)
+    } 
 
     reloadData(msg=''){
         if(msg !== ''){ 

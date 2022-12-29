@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material"; 
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material"; 
 
 DialogComponent.propTypes = {
     children: PropTypes.node,
@@ -18,7 +18,10 @@ export default function DialogComponent({children, title, onClose, open, actions
     aria-describedby="alert-dialog-description"
 >
     <DialogTitle id="alert-dialog-title">
-        {title}
+        <div style={{display:'flex',width:'100%', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+            <span>{title}</span>
+            <Button variant="contained" onClick={onClose}> Close X</Button>
+        </div>
     </DialogTitle>
     <DialogContent>
     <DialogContentText id="alert-dialog-description">

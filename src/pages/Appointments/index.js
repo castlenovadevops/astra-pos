@@ -1,84 +1,41 @@
-import React from 'react'
-import Calendar from './Calendar'
-import HTTPManager from '../../utils/httpRequestManager'
-import Loader from '../../components/Loader'
-const SAMPLE_META = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." 
-export default class AppointmentsCompoent extends React.Component{
-    httpManager = new HTTPManager()
+import React from "react";
+import {Container, Grid, Button} from '@mui/material';
+import Page from '../../components/Page';
+import LoaderContent from '../../components/Loader';
+import AppointmentBookingComponent from "./appointmentbooking";
+import DialogComponent from '../../components/Dialog';
+
+
+export default class AppointmentComponent extends React.Component{
+
     constructor(props){
-        super(props)
+        super(props);
         this.state = {
-            isLoading: true,
-            appointments:[]
+            showBooking: false
         }
     }
 
-    componentDidMount(){
-        this.httpManager.postRequest(`merchant/appointment/getAppointmentsByDate`,{}).then(apps=>{
-            this.setState({appointments:apps.data},()=>{
-                this.setState({isLoading: false})
-            })
-        })
-    }
     render(){
-        return <>
-        {this.state.isLoading && <Loader />}
-        {!this.state.isLoading && <Calendar 
-                month={12} 
-                year={2022} 
-                preloadedEvents={this.state.appointments} 
-            />}
-        </>
+        return <Page title="Payout | Astro POS">
+                {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
+                <Container maxWidth="xl" style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexDirection:'row'}}>
+                    <Grid Container>
+                        <Grid item xs={9}>
+                            Appointments
+                        </Grid>
+                        <Grid item xs={3} style={{display:'flex', alignItems:'flex-end', justifyContent:'flex-end'}}>
+                            <Button variant="contained" onClick={()=>{
+                                this.setState({showBooking: true})
+                            }}>+ Book Appointment</Button>
+                        </Grid>
+                    </Grid>
+
+                   {this.state.showBooking && <DialogComponent open={this.state.showBooking} title="Book Appointment" className="appointmentpopup" onClose={()=>{
+                    this.setState({showBooking: false})
+                   }}>
+                    <AppointmentBookingComponent />
+                    </DialogComponent>} 
+                </Container>
+        </Page>
     }
 }
-
-// [
-//     {
-//         id: 1,
-//         name: "Holiday",
-//         dateFrom: "2021-09-29T12:00",
-//         dateTo: "2022-12-03T08:45",
-//         meta: SAMPLE_META,
-//         type: "Holiday"
-//     },
-//     {
-//         id: 2,
-//         name: "Meeting",
-//         dateFrom: "2022-12-01T09:45",
-//         dateTo: "2022-12-04T22:00",
-//         meta: SAMPLE_META,
-//         type: "Standard"
-//     },
-//     {
-//         id: 3,
-//         name: "Away",
-//         dateFrom: "2022-12-01T01:00",
-//         dateTo: "2022-12-01T23:59",
-//         meta: SAMPLE_META,
-//         type: "Busy"
-//     },
-//     {
-//         id: 4,
-//         name: "Inspection",
-//         dateFrom: "2022-12-19T07:30",
-//         dateTo: "2022-12-21T23:59",
-//         meta: SAMPLE_META,
-//         type: "Standard"
-//     },
-//     {
-//         id: 5,
-//         name: "Holiday - Greece",
-//         dateFrom: "2022-12-14T08:00",
-//         dateTo: "2022-12-16T23:59",
-//         meta: SAMPLE_META,
-//         type: "Holiday"
-//     },
-//     {
-//         id: 6,
-//         name: "Holiday - Spain",
-//         dateFrom: "2022-12-29T08:00",
-//         dateTo: "2022-12-31T23:59",
-//         meta: SAMPLE_META,
-//         type: "Holiday"
-//     }
-//     ]

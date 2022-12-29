@@ -453,7 +453,7 @@
     max-width:90%;
 }
 
-.paymentpopup .MuiDialog-paper{
+.paymentpopup .MuiDialog-paper, .appointmentpopup .MuiDialog-container, .appointmentpopup .MuiDialogContentText-root{
     width:100%;
     height:100%;
     max-width:100%;
@@ -461,11 +461,20 @@
     margin:0;
 }
 
+
 .appointmentpopup .MuiDialog-paper{
+    width:100%;
+    height: 100%;
+    max-width: 100%;
+    margin: 0;
+    max-height: 100%;
+}
+
+/* .appointmentpopup .MuiDialog-paper{
     width:70%;
     height:70%;
     max-width:70%;
-}
+} */
 
 .servicepopup .MuiDialog-paper{
     width:80%;
@@ -570,3 +579,111 @@ svg.iconify{
     margin:10px;
     cursor: pointer;
 } 
+
+.appt_topbar{
+    width:100%;
+    height: 80px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border:1px solid #d0d0d0;
+    border-bottom: 0;
+    padding: 0 10px;
+}
+
+.appt_timepicker .rc-time-picker-input{
+    height:32px;
+    /* margin:0 10px; */
+    color: #212B36;
+    border-left:0;
+    border-top:0;
+    border-right:0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+    font-size: 16px;
+}
+
+.rc-time-picker{
+    display:flex;
+}
+
+.rc-time-picker svg{
+    margin-left: -25px;
+    z-index: 99999;
+}
+
+.rc-time-picker-panel{ 
+    z-index: 99999;
+    margin-left: 10px;
+}
+
+.appt_topbar .MuiPaper-root{
+    border:1px solid #f0f0f0;
+}
+.appt_content{
+    height:calc(100% - 230px);
+    display: flex;
+    align-items: flex-start;
+    width:100%;
+    border:1px solid #d0d0d0;
+    border-bottom: 0; 
+    border-right: 0;
+    overflow: auto;
+}
+
+.appt_content table{
+    width:100%;
+    height:100%;
+    margin: -2px;
+    border-right: 1px solid #d0d0d0;
+}
+.appt_footer{
+    border:1px solid #d0d0d0;
+    height:150px;
+    display: flex; 
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+    padding: 0 10px;
+}
+
+.appt_footer button{
+    margin:0 1rem;
+    min-width: 150px;
+    min-height: 80px;
+}
+
+.appt_content .servicetbl{
+    width:100%
+}
+.servicetbl tr{
+    display:flex; 
+    border-bottom: 1px solid #d0d0d0;
+}
+.servicetbl th, .servicetbl td{
+    padding:5px;
+}
+
+.servicetbl th:first-child, .servicetbl td:first-child{
+    min-width:50px;
+    border-left:0; 
+}
+.servicetbl th:nth-child(2), .servicetbl td:nth-child(2){
+    min-width:150px;
+    border-left: 1px solid #d0d0d0;
+}
+ 
+.servicetbl th:nth-child(3), .servicetbl td:nth-child(3){
+    min-width:150px;
+    border-left: 1px solid #d0d0d0;
+}
+
+.servicetbl th:nth-child(4), .servicetbl td:nth-child(4){
+    min-width:calc(100% - 350px);
+    border-right:0;
+    border-left: 1px solid #d0d0d0; 
+}
+.servicetbl th:nth-child(5), .servicetbl td:nth-child(5){
+    min-width:50px;
+    border-right:0;
+    border-left: 1px solid #d0d0d0; 
+}

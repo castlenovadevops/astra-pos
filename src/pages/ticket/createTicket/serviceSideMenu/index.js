@@ -115,8 +115,11 @@ export default class ServiceSideMenu extends  React.Component{
     transferTicket(){
         console.log("TRANSFERRING TICKET")
         if(this.state.transferto.ticketId !== undefined){
+            this.props.data.setLoader(true)
             console.log("TICKET TRANSFER") 
             this.httpManager.postRequest(`merchant/transfer/transferService`, {ticketDetail: this.state.transferto, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+                this.setState({confirmtransfer: false})
+                this.props.data.setLoader(false)
                 this.props.data.afterCompleteTransfer()
                 this.props.data.onSelectSideMenu(-1);
                 if(this.props.data.selectedServices.length === 0){
@@ -138,10 +141,13 @@ export default class ServiceSideMenu extends  React.Component{
         }
     }
     transferToNewTicket(){
-        if(this.props.data.selectedServices.length > 1){console.log("TRASFER TO NEW TICKET CALLED")
-            this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
-                this.props.data.afterCompleteTransfer()
-                this.props.data.onSelectSideMenu(-1);
+        if(this.props.data.selectedServices.length > 1){
+            console.log("TRASFER TO NEW TICKET CALLED")
+            this.props.data.saveTicketPromise().then(r=>{ 
+                this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
+                    this.props.data.afterCompleteTransfer()
+                    this.props.data.onSelectSideMenu(-1);
+                })
             })
         }
         else{
@@ -381,14 +387,17 @@ export default class ServiceSideMenu extends  React.Component{
                                  {
                                     onSelectTicket: this.onSelectTicket,
                                     transferToNewTicket: this.transferToNewTicket,
-                                    ticketDetail: this.props.data.ticketDetail
+                                    ticketDetail: this.props.data.ticketDetail,
+                                    closePopup: ()=>{
+                                        this.props.data.onSelectSideMenu(1)
+                                    }
                                 }
                                } />
                         </DialogComponent> 
                         
              <Dialog
     style={{zIndex:'99999'}}
-    className="lgwidth"
+    className="giftcardpopup"
     open={this.state.transferAlert}
     onClose={()=>{this.props.data.onSelectSideMenu(1)}} 
 >
@@ -405,12 +414,10 @@ export default class ServiceSideMenu extends  React.Component{
     </DialogContent> 
 </Dialog>
              
-
-            {this.state.confirmtransfer && <div className="modalbox">
-                <div className='modal_backdrop'>
-                </div>
-                <div className='modal_container ' style={{height:'180px', width:'500px'}}>  
-                <Grid item xs={12} style={{display:'flex',marginTop:10}}>
+{this.state.confirmtransfer && <DialogComponent className="giftcardpopup" open={this.state.confirmtransfer} onClose={()=>{
+                                this.props.data.onSelectSideMenu(1)
+                            }} actions={<></>}>
+                               <Grid item xs={12} style={{display:'flex',marginTop:10}}>
                             <Typography id="modal-modal-title" variant="subtitle2" component="h2" align="left" style={{marginLeft:20}}>Are you sure to transfer this service to this ticket (TID - # {this.state.transferto.ticketCode}) ? </Typography>
                         </Grid>
                         <Grid item xs={12} style={{display:'flex',marginTop:10}}>
@@ -420,8 +427,10 @@ export default class ServiceSideMenu extends  React.Component{
                                 <Button onClick={()=>{this.setState({transferAlert:false});this.props.data.onSelectSideMenu(1)}} color="secondary" variant="outlined">No</Button>
                             </Grid> 
                         </Grid>
-                </div>
-            </div>   }
+                        </DialogComponent> }
+
+
+             
             
 
            {/* {this.state.confirmtransfer && <div className="modalbox">

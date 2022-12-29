@@ -312,6 +312,9 @@ export default class TicketFooterComponent extends React.Component{
                                        this.setState({isCombine:false});
                                     this.props.data.onSelectTicketToCombine(ticket)
                                 },
+                                closePopup:()=>{
+                                    this.setState({isCombine:false});  
+                                },
                                 ticketowner: this.props.data.ticketowner,
                                 ticketDetail: this.props.data.ticketDetail,
                                 price: this.props.data.price,

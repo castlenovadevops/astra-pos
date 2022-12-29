@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-constructor */
 import React from "react";
-import {Typography, Button} from '@material-ui/core'; 
+import {Typography, Button} from '@mui/material'; 
 import TableView from "../../../../../components/table/tableView";
 import * as Moment from 'moment';
 import HTTPManager from "../../../../../utils/httpRequestManager";
@@ -96,28 +96,15 @@ export default class OpenTicketsComponent extends React.Component{
             isLoading: false,
             refreshData: false
         }
-
-        this.handleTicketPrint = this.handleTicketPrint.bind(this)
-        this.handleTicketPayment = this.handleTicketPayment.bind(this)
-    }
-
-
-
+ 
+    }  
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if(nextProps.refreshData !== prevState.refreshData){
             return {refreshData: nextProps.refreshData}
         }
         return null;
-      }
-
-    handleTicketPayment(){
-
-    }
-
-    handleTicketPrint(){
-
-    }
+      } 
 
     componentDidMount(){
         this.loadData();

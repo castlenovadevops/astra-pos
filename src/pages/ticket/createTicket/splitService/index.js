@@ -97,6 +97,7 @@ class SplitService extends React.Component  {
             input = Object.assign({},this.state.service_selected); 
             console.log(this.state.service_selected) 
             input.process = "Splitted";
+            input.technician = 0;
             input.employee_id = 0; 
             var splitted = Object.assign([],this.state.splittedservice);
             splitted.push(input);
@@ -124,6 +125,7 @@ class SplitService extends React.Component  {
     checkForm(){ 
         this.setState({isDisabled:false});
         this.state.splittedservice.forEach((m, i)=>{
+            console.log(m.technician)
             if(m.technician.mEmployeeId === null || m.technician.mEmployeeId === undefined || m.technician.mEmployeeId === 0 || m.technician.mEmployeeId === 'undefined'){ 
                 this.setState({isDisabled:true}, function() {});
             } 
@@ -209,6 +211,10 @@ class SplitService extends React.Component  {
                                             name="userId"
                                             disabled={this.state.isDisabledSelect}
                                             inputProps={{ 'aria-label': 'Without label' }}
+                                            renderValue={(v)=>{
+                                                console.log(v)
+                                                return v !== 0 ? v.mEmployeeFirstName+" "+v.mEmployeeLastName : 'Select Staff'
+                                            }}
                                             onChange={(e)=>{
                                                 var services = this.state.splittedservice;
                                                 //console.log(index);

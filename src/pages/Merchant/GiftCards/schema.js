@@ -98,6 +98,7 @@ module.exports = {
         "grid":4,
         "name":"validTo",
         "label":"Valid To",
+        "minDate":new Date(),
         "placeholder":"Valid To"
     }
 

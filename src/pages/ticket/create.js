@@ -981,7 +981,11 @@ export default class CreateTicketComponent extends React.Component{
                                             selectTax: this.selectTax,
                                             onSaveSplit: this.onSaveSplit,
                                             afterCompleteTransfer: this.afterCompleteTransfer,
-                                            voidTicket: this.voidTicket
+                                            voidTicket: this.voidTicket,
+                                            saveTicketPromise: this.saveTicketPromise,
+                                            setLoader:(boolval)=>{
+                                                this.setState({isLoading: boolval})
+                                            }
                                         }} />
                                 </Grid>
                             </Grid>
