@@ -68,7 +68,9 @@ module.exports = (sequelize) => {
     mProductTax.associate = function(models){
      models.mProducts.hasMany(models.mProductTax, {foreignKey: 'mProductId',sourceKey: 'mProductId'});
      models.mProductTax.belongsTo(models.mProducts, {foreignKey: 'mProductId', targetKey: 'mProductId'});
- 
+     models.mTax.hasMany(models.mProductTax, {foreignKey: 'mTaxId',sourceKey: 'mTaxId'});
+     models.mProductTax.belongsTo(models.mTax, {foreignKey: 'mTaxId', targetKey: 'mTaxId'});
+     
     }
 
     return mProductTax;

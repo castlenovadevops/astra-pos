@@ -18,7 +18,7 @@ const format = 'hh:mm A';
 const format24 = 'HH:mm';
  
 const now = moment().hour(0).minute(0);
-
+const today = moment()
 export default class AppointmentBookingComponent extends React.Component{
     httpManager = new HTTPManager();
     constructor(props){
@@ -28,6 +28,7 @@ export default class AppointmentBookingComponent extends React.Component{
             schema:{},
             appointmentId: '',
             appointmentTime: now,
+            showDeleteAppointment:false,
             totalDuration: 0,
             services:[],
             isLoading: true,
@@ -61,7 +62,45 @@ export default class AppointmentBookingComponent extends React.Component{
         this.saveAppointment = this.saveAppointment.bind(this)
         this.reset = this.reset.bind(this)
         this.deleteAppointment = this.deleteAppointment.bind(this)
+
+        this.checkAppointment = this.checkAppointment.bind(this)
         
+    }
+
+    checkAppointment(i, continueOpt){
+        if(i< this.state.appointments.length){
+            var appt = this.state.appointments[i]
+
+            if(i === 0 && (appt.customer === null || appt.customer.mCustomerId === undefined)){
+                continueOpt = false;  
+            }
+            appt.services.forEach((ser, j)=>{
+                if(ser.service === null || ser.technician === null){
+                    continueOpt = false;
+                } 
+                if(j === appt.services.length-1){
+                    this.checkAppointment(i+1, continueOpt)
+                }
+            })
+        }
+        else{
+            if(continueOpt){ 
+                var selecteddatetime = (moment(new Date(this.state.appointmentDate)).format("YYYY-MM-DD")+" "+this.state.appointmentTime);
+                var input = {
+                    appointmentdate: moment(this.state.appointmentDate).format("YYYY-MM-DD"),
+                    appointmenttime: moment(selecteddatetime).format("HH:mm"),
+                    appointments: this.state.appointments,
+                    appointmentId: this.state.appointmentId
+                }
+                // console.log(input);
+                this.httpManager.postRequest('/merchant/appointment/save', {data:input}).then(res=>{
+                    this.setState({showNewappointment:true})
+                })
+            }
+            else{
+                this.setState({showError:true, errorMsg:'Please fill all the fields.'})
+            } 
+        }
     }
 
     deleteAppointment(){
@@ -72,16 +111,17 @@ export default class AppointmentBookingComponent extends React.Component{
     }
 
     saveAppointment(){
-        var input = {
-            appointmentdate: moment(this.state.appointmentDate).format("YYYY-MM-DD"),
-            appointmenttime: this.state.appointmentTime,
-            appointments: this.state.appointments,
-            appointmentId: this.state.appointmentId
+
+        var selecteddatetime = (moment(new Date(this.state.appointmentDate)).format("YYYY-MM-DD")+" "+this.state.appointmentTime);
+        var isafter = moment(selecteddatetime).isAfter(moment.now());
+    //    console.log(value.format(format24))
+        if(isafter){ 
+            
+            this.checkAppointment(0, true)
         }
-        // console.log(input);
-        this.httpManager.postRequest('/merchant/appointment/save', {data:input}).then(res=>{
-            this.setState({showNewappointment:true})
-        })
+        else{
+            this.setState({showError:true, errorMsg:'Please select time greater than the current time.'})
+        }
     }
 
     reset(){
@@ -140,7 +180,10 @@ export default class AppointmentBookingComponent extends React.Component{
             if(this.props.appointmentdetail !== undefined){
                 console.log("DATA DETAIL")
                 console.log(this.props.appointmentdetail)
-                this.setState({appointmentId: this.props.appointmentdetail.appointmentId, appointmentDate : this.props.appointmentdetail.appointmentDate, appointmentTime: this.props.appointmentdetail.appointmentTime,
+                const appointmenttime = moment().hour(this.props.appointmentdetail.appointmentTime.split(":")[0]).minute(this.props.appointmentdetail.appointmentTime.split(":")[1])
+                console.log(appointmenttime)
+                this.setState({appointmentId: this.props.appointmentdetail.appointmentId, appointmentDate : this.props.appointmentdetail.appointmentDate, 
+                appointmentTime: appointmenttime,
                 appointments: this.props.appointmentdetail.appointments})
             }
             else{
@@ -176,16 +219,16 @@ export default class AppointmentBookingComponent extends React.Component{
     }
 
     onChange(value) {
-        console.log("TIME VALUE")
-        var selecteddatetime = (moment(new Date(this.state.appointmentDate)).format("YYYY-MM-DD")+" "+value.format(format24));
-        var isafter = moment(selecteddatetime).isAfter(moment.now());
-    //    console.log(value.format(format24))
-        if(isafter){
+    //     console.log("TIME VALUE")
+    //     var selecteddatetime = (moment(new Date(this.state.appointmentDate)).format("YYYY-MM-DD")+" "+value.format(format24));
+    //     var isafter = moment(selecteddatetime).isAfter(moment.now());
+    // //    console.log(value.format(format24))
+    //     if(isafter){
             this.setState({appointmentTime: value.format(format24)})
-        }
-        else{
-            this.setState({showError:true, errorMsg:'Please select time greater than the current time.'})
-        }
+        // }
+        // else{
+        //     this.setState({showError:true, errorMsg:'Please select time greater than the current time.'})
+        // }
     }
 
     renderMenuItems(appt, j){
@@ -245,7 +288,7 @@ export default class AppointmentBookingComponent extends React.Component{
                             <Paper style={{marginRight:'5px'}}>Time</Paper>
                             <TimePicker
                                 showSecond={false}
-                                defaultValue={now} 
+                                defaultValue={moment().hour(today.format("HH")).minute(today.format("mm"))} 
                                 className="appt_timepicker"
                                 onChange={this.onChange}
                                 format={format}
@@ -410,7 +453,7 @@ export default class AppointmentBookingComponent extends React.Component{
             </div>
             <div className="appt_footer">
                 <div style={{width:'300px'}}>
-                    <TextField placeholder="Remarks" fullWidth maxRows={4} multiline />
+                    {/* <TextField placeholder="Remarks" fullWidth maxRows={4} multiline /> */}
                 </div>
                 <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
                     <Button variant="contained" onClick={()=>{
@@ -421,7 +464,8 @@ export default class AppointmentBookingComponent extends React.Component{
                     }}>Reset</Button>
     {this.state.appointmentId !== '' && 
                     <Button variant="contained" color="error" onClick={()=>{
-                        this.deleteAppointment()
+                        // this.deleteAppointment()
+                        this.setState({showDeleteAppointment: true})
                     }}>Delete Appointment</Button>}
                 </div>
             </div>
@@ -452,7 +496,7 @@ export default class AppointmentBookingComponent extends React.Component{
     this.setState({showError: false},()=>{
         this.setState({errorMsg:''})
     })
-}} title="Error"><div>{this.state.errorMsg}</div></DialogComponent>}
+}} title=""><div>{this.state.errorMsg}</div></DialogComponent>}
 
 
 {this.state.showNewappointment && <DialogComponent className="notespopup" open={this.state.showNewappointment} onClose={()=>{
@@ -472,6 +516,22 @@ export default class AppointmentBookingComponent extends React.Component{
     }}>OK</Button></div>
     </div></DialogComponent>}
 
+
+
+{this.state.showDeleteAppointment && <DialogComponent className="notespopup" open={this.state.showDeleteAppointment} onClose={()=>{
+    this.setState({showError: false},()=>{
+        this.setState({errorMsg:''})
+    })
+}} title="Confirmation"><div style={{display:'flex', alignItems:'center', flexDirection:'column'}}>
+    Would you like to delete this appointment?
+   <div style={{display:'flex', alignItems:'center', marginTop:'20px', flexDirection:'row'}}>
+    <Button variant="contained" style={{marginRight:'1rem'}} onClick={()=>{
+        this.deleteAppointment()
+    }}>Yes</Button>
+    <Button variant="outlined" onClick={()=>{
+        this.setState({showDeleteAppointment: false})
+    }}>No</Button></div>
+    </div></DialogComponent>} 
         </>
     }
 }

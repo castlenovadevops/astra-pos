@@ -343,7 +343,7 @@ module.exports = class WaitinglistController extends baseController{
         var appointmentServices = await this.readAll({
             where:{
                 appointmentId:{
-                    [Sequelize.Op.in]:sequelize.literal("(select appointmentId from appointments where id='"+req.input.appointment.appointmentId+"' or parentId='"+req.input.appointment.appointmentId+"')")
+                    [Sequelize.Op.in]:sequelize.literal("(select appointmentId from appointments where appointmentId='"+req.input.appointment.appointmentId+"' or parentId='"+req.input.appointment.appointmentId+"')")
                 }
             },
             include:[
@@ -356,23 +356,29 @@ module.exports = class WaitinglistController extends baseController{
                             where:{
                                 status:1
                             },
-                            required:false
+                            required:false,
+                            include:[
+                                {
+                                    model:this.models.mTax,
+                                    required:false,
+                                }
+                            ]
                         }
                     ]
                 }
             ]
         }, 'appointmentServices')
-console.log(appointmentServices.length)
-        // this.create('tickets', input).then(ticket=>{
+console.log("services length ", appointmentServices.length)
+        this.create('tickets', input).then(ticket=>{
 
-        //     this.saveTicketServices(req, res, next,ticket.dataValues, appointmentServices, 0)
-        // })
+            this.saveTicketServices(req, res, next,ticket.dataValues, appointmentServices, 0)
+        })
     }
 
     saveTicketServices = async(req, res, next,ticketDetail, appointmentServices, idx=0)=>{
-        
+        console.log("APPT SERVICE", appointmentServices.length, idx)
         if(idx<appointmentServices.length){
-            var service = appointmentServices[idx]; 
+            var service = appointmentServices[idx].dataValues || appointmentServices[idx]; 
             var serviceinput = {
                 "ticketId" : ticketDetail.ticketId,
                 "serviceId"	: service.mProduct.mProductId,
@@ -432,28 +438,29 @@ console.log(appointmentServices.length)
     }
 
     saveTicketServiceTax= async (req,res,next,ticketServiceId,appointmentServices, idx,tid,ticketDetail)=>{
-        var service = appointmentServices[idx]; 
+        var service = appointmentServices[idx].dataValues || appointmentServices[idx]; 
         if(tid < service.mProduct.mProductTaxes.length){
-            var input = service.mProduct.mProductTaxes[tid];
+            var input = service.mProduct.mProductTaxes[tid].mTax.dataValues || service.mProduct.mProductTaxes[tid].mTax;
+            console.log("SERVICE TAX", input)
             var taxinput = {
                 ticketServiceId: ticketServiceId,
                 mTaxId: input.mTaxId,
                 mTaxName: input.mTaxName,
                 mTaxType: input.mTaxType,
                 mTaxValue: input.mTaxValue,
-                mTaxAmount: input.mTaxAmount,
+                mTaxAmount: 0,//input.mTaxAmount,
                 status:1,
                 createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate(),
             } 
             this.create('ticketservicetax', taxinput, true).then(r=>{ 
-                this.saveTicketServiceTax(req, res, next, ticketServiceId, idx, tid+1,ticketDetail)
+                this.saveTicketServiceTax(req, res, next, ticketServiceId, appointmentServices, idx, tid+1,ticketDetail)
             }).catch(e=>{
                 console.log("ERROR", e)
             })
         }
         else{ 
-            this.saveTicketServices(req,res, next, ticketDetail, idx+1)
+            this.saveTicketServices(req,res, next, ticketDetail, appointmentServices, idx+1)
         }
     }
 }
