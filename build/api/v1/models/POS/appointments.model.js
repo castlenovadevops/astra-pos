@@ -100,12 +100,15 @@ module.exports = (sequelize) => {
 
     appointments.associate = (models)=>{
 
+     models.mCustomers.hasMany(models.appointments, {foreignKey: 'customerId',sourceKey: 'mCustomerId'});
+     models.appointments.belongsTo(models.mCustomers, {foreignKey: 'customerId', targetKey: 'mCustomerId'});
+     
     models.appointments.hasMany(models.appointmentServices, {foreignKey: 'appointmentId',sourceKey: 'appointmentId'});
     models.appointmentServices.belongsTo(models.appointments, {foreignKey: 'appointmentId', targetKey: 'appointmentId'});
     
     models.mProducts.hasMany(models.appointmentServices,  {foreignKey: 'serviceId', targetKey: 'mProductId'});
     models.appointmentServices.belongsTo(models.mProducts,  {foreignKey: 'serviceId', targetKey: 'mProductId'});
-   
+    
     }
 
     return appointments;

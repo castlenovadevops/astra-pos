@@ -608,11 +608,16 @@ svg.iconify{
 
 .rc-time-picker svg{
     margin-left: -25px;
-    z-index: 99999;
+    z-index: 99999 !important;
+    position:relative;
+}
+
+.rc-time-picker-clear{
+    display: none;
 }
 
 .rc-time-picker-panel{ 
-    z-index: 99999;
+    z-index: 99999 !important;
     margin-left: 10px;
 }
 
@@ -668,22 +673,50 @@ svg.iconify{
     border-left:0; 
 }
 .servicetbl th:nth-child(2), .servicetbl td:nth-child(2){
-    min-width:150px;
+    min-width:300px;
     border-left: 1px solid #d0d0d0;
-}
- 
-.servicetbl th:nth-child(3), .servicetbl td:nth-child(3){
-    min-width:150px;
-    border-left: 1px solid #d0d0d0;
-}
+} 
 
-.servicetbl th:nth-child(4), .servicetbl td:nth-child(4){
+.servicetbl th:nth-child(3), .servicetbl td:nth-child(3){
     min-width:calc(100% - 350px);
     border-right:0;
     border-left: 1px solid #d0d0d0; 
 }
-.servicetbl th:nth-child(5), .servicetbl td:nth-child(5){
+.servicetbl th:nth-child(4), .servicetbl td:nth-child(4){
     min-width:50px;
     border-right:0;
     border-left: 1px solid #d0d0d0; 
+}
+.MuiPopover-root{
+    z-index: 99999 !important;
+}
+
+.appointmentpopup .MuiInputBase-input{
+    padding: 16.5px 14px !important;
+}
+
+.appointmentcustomer  .MuiInputBase-root{
+    padding: 16.5px 14px !important;
+}
+
+
+.appointmentpopup .MuiButtonBase-root{
+    padding: 6px 16px;
+    background: #134163;
+    border-radius: 10px;
+    color:#fff;
+}
+
+.appointmentpopup .MuiInputAdornment-root .MuiButtonBase-root{
+    background: transparent;
+    color:#212B36;
+}
+
+.appointmentpopup .MuiIconButton-root{
+    border-radius: 50%;
+}
+
+.appointmentpopup .MuiFormControl-marginNormal, .appointmentpopup .MuiFormControl-marginNormal .MuiInputBase-root{
+    width:100% !important;
+    min-width: 100% !important;
 }

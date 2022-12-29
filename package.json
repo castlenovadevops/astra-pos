@@ -42,11 +42,17 @@
     "crypto": false
   },
   "dependencies": {
+    "@dccs/react-searchable-select-mui": "^0.2.11",
     "@devexpress/dx-react-scheduler": "^4.0.0",
     "@devexpress/dx-react-scheduler-material-ui": "^4.0.0",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@faker-js/faker": "^7.3.0",
+    "@fullcalendar/core": "^6.0.2",
+    "@fullcalendar/daygrid": "^6.0.2",
+    "@fullcalendar/interaction": "^6.0.2",
+    "@fullcalendar/react": "^6.0.2",
+    "@fullcalendar/timegrid": "^6.0.2",
     "@hookform/resolvers": "^2.9.3",
     "@iconify/react": "^3.2.2",
     "@jsonforms/core": "^3.0.0",

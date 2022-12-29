@@ -1,3 +1,3 @@
-.MuiPickersPopper-root{
+.MuiPickersPopper-root, .MuiPopover-paper{
     z-index: 99999;
 }
