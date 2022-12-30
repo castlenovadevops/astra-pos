@@ -117,7 +117,7 @@ module.exports = (sequelize) => {
      models.ticketservices.belongsTo(models.merchantEmployees, {foreignKey: 'serviceTechnicianId',targetKey: 'mEmployeeId'});
 
      models.ticketservices.hasMany(models.ticketservicetax, {foreignKey: 'ticketServiceId',sourceKey: 'ticketServiceId'});
-     models.ticketservicetax.belongsTo(models.ticketservices, {foreignKey: 'ticketServiceId',targetKey: 'ticketServiceId'});
+     // models.ticketservicetax.belongsTo(models.ticketservices, {foreignKey: 'ticketServiceId',targetKey: 'ticketServiceId'});
      
 
      models.ticketservices.hasMany(models.ticketservicediscount, {foreignKey: 'ticketServiceId',sourceKey: 'ticketServiceId'});

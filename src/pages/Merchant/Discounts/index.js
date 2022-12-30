@@ -58,6 +58,17 @@ export default class Discount extends React.Component{
                     )
                 },
                 {
+                    field: 'mDiscountStatus',
+                    headerName: 'Status',
+                    minWidth: 100,
+                    editable: false,
+                    renderCell: (params) => (
+                        <div>
+                            {params.row.mDiscountStatus ===  '1'? 'Active' : 'Inactive' }
+                        </div>
+                    )
+                },
+                {
                     field: 'Action',
                     headerName:'Actions',
                     flex:1,

@@ -248,6 +248,17 @@ export default class CreateTicketComponent extends React.Component{
                     ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
                     ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
                 }
+
+
+                ticketinput.selectedServices.forEach(element => {
+            console.log(element.ticketservicetaxes)
+            if(element.ticketservicetaxes.length > 0){
+                element.ticketservicetaxes.forEach(re=>{
+                    console.log(re)
+                })
+            }
+        });
+
                 console.log(ticketinput)
                 this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
                     console.log(ticketinput)
@@ -816,7 +827,7 @@ export default class CreateTicketComponent extends React.Component{
             }
             this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
                 this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
-                   
+                    console.log("GET TICKET SERVICES L:IST")
                     this.getTicketServices();
                 })
                 
@@ -846,6 +857,9 @@ export default class CreateTicketComponent extends React.Component{
 
     getTicketServices(){
         this.httpManager.postRequest("/merchant/ticket/getTicketServices",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
+           
+           console.log(r.data)
+           
             // this.props.data.closeCreateTicket()  
             this.formatData(r.data, 0)
         })
@@ -855,6 +869,8 @@ export default class CreateTicketComponent extends React.Component{
         if(i< data.length){
             var ticketservice = data[i]; 
             var service = ticketservice.mProduct
+            console.log("SERVICE TAX")
+            console.log(ticketservice.ticketservicetaxes)
             var obj = {
                 serviceDetail: service,
                 qty: ticketservice.serviceQty,

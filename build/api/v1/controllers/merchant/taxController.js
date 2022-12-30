@@ -278,9 +278,7 @@ module.exports = class RegistrationController extends baseController{
         var type = "default";
         var where = {
             merchantId: req.deviceDetails.merchantId,
-            mTaxStatus:{
-                [Sequelize.Op.ne]:2
-            },
+            mTaxStatus:1,
         }
         if(type === 'default'){
             where = {
@@ -328,9 +326,7 @@ module.exports = class RegistrationController extends baseController{
         var type = "all";
         var where = {
             merchantId: req.deviceDetails.merchantId,
-            mTaxStatus:{
-                [Sequelize.Op.ne]:2
-            },
+            mTaxStatus:1,
         }
         if(type === 'default'){
             where = {

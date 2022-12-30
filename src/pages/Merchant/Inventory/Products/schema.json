@@ -48,7 +48,7 @@
           "maxLength": 50,
           "grid":6, 
           "name":"mProductCategories",
-          "data":"/merchant/category/get",
+          "data":"/merchant/category/getActive",
           "dataformat":{
               "label":"mCategoryName",
               "value":"id"

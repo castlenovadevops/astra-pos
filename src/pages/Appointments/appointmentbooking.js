@@ -71,7 +71,7 @@ export default class AppointmentBookingComponent extends React.Component{
         if(i< this.state.appointments.length){
             var appt = this.state.appointments[i]
 
-            if(i === 0 && (appt.customer === null || appt.customer.mCustomerId === undefined)){
+            if(i === 0 && (appt.customer === null || appt.customer === undefined || appt.customer === '')){
                 continueOpt = false;  
             }
             appt.services.forEach((ser, j)=>{
@@ -141,7 +141,7 @@ export default class AppointmentBookingComponent extends React.Component{
 
     getServices(){
         this.setState({isLoading: true})
-        this.httpManager.postRequest(`merchant/product/get`,{data:"GET PRODUCT"}).then(response=>{ 
+        this.httpManager.postRequest(`merchant/product/getActive`,{data:"GET PRODUCT"}).then(response=>{ 
             // console.log(response.data)
             // this.setState({services: []},()=>{
             //     var data = []
@@ -288,7 +288,7 @@ export default class AppointmentBookingComponent extends React.Component{
                             <Paper style={{marginRight:'5px'}}>Time</Paper>
                             <TimePicker
                                 showSecond={false}
-                                defaultValue={moment().hour(today.format("HH")).minute(today.format("mm"))} 
+                                defaultValue={this.props.appointmentdetail !== undefined ?  moment().hour(Number(this.props.appointmentdetail.appointmentTime.split(":")[0])).minute(Number(this.props.appointmentdetail.appointmentTime.split(":")[1])) : moment().hour(today.format("HH")).minute(today.format("mm"))} 
                                 className="appt_timepicker"
                                 onChange={this.onChange}
                                 format={format}
@@ -360,7 +360,7 @@ export default class AppointmentBookingComponent extends React.Component{
                                                 this.setState({appointments: appts})
                                             }}
                                             options={this.state.customers} 
-                                            keyPropFn={(option) => option}
+                                            keyPropFn={(option) => option.mCustomerId}
                                             valuePropFn={(option) => option.mCustomerName+"("+option.mCustomerMobile+")"}
                                             /> 
                                         </div>

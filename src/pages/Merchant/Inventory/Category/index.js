@@ -42,7 +42,7 @@ export default class Category extends React.Component{
                     editable: false,
                     renderCell: (params) => (
                       <div>
-                          {params.row.mCategoryStatus}
+                          {params.row.mCategoryStatus === '1' ? 'Active' : 'Inactive'}
                       </div>
                     )
                 },

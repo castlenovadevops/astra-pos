@@ -114,12 +114,11 @@ export default class AppointmentCalendar extends React.Component {
     })
   }
 
-  formatData(i, results, data){
-    console.log(results)
+  formatData(i, results, data){ 
     if(i < results.length){
-        var appt = results[i] 
+        var appt = results[i]   
         data.push({
-            customer:appt.mCustomer,
+            customer:appt.mCustomer !== null ? appt.mCustomer.mCustomerId : appt.mCustomer ,
             services:[]
         })
         this.formatServiceData(0, i, results, data)

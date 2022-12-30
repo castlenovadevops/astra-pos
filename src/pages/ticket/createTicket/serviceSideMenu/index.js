@@ -77,7 +77,7 @@ export default class ServiceSideMenu extends  React.Component{
     }
 
     getCategories(){
-        this.httpManager.postRequest('merchant/category/get',{data:"GET CATEGORY"}).then(res=>{
+        this.httpManager.postRequest('merchant/category/getActive',{data:"GET CATEGORY"}).then(res=>{
             this.setState({categories: res.data}, ()=>{
                 if(this.state.categories.length > 0){
                     this.getProductsByCategory(this.state.categories[0].id)

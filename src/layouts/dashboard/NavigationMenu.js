@@ -60,6 +60,11 @@ export default class NavigationMenu extends React.Component{
                       title: 'Batch Reports',
                       path: '/app/batchreports',
                       icon: getIcon('mdi:select-group'),
+                  },  
+                  {
+                      title: 'Waiting List',
+                      path: '/app/waitinglist',
+                      icon: getIcon('mdi:clipboard-text-clock'),
                   }, 
                   {
                       title: 'Appointments',

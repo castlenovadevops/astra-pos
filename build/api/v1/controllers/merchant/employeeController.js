@@ -342,6 +342,40 @@ module.exports = class EmployeeController extends baseController{
         //         [Sequelize.Op.in] : sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
         //     }
         // },
+
+        attributes:{
+            include:[
+
+                [
+                    sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mCommissionId"
+                ], 
+                [
+                    sequelize.literal("(select mOwnerPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mOwnerPercentage"
+                ], 
+                [
+                    sequelize.literal("(select mEmployeePercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mEmployeePercentage"
+                ],
+                [
+                    sequelize.literal("(select mCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mCashPercentage"
+                ],
+                [
+                    sequelize.literal("(select mCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mCheckPercentage"
+                ],
+                [
+                    sequelize.literal("(select mTipsCashPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mTipsCashPercentage"
+                ],
+                [
+                    sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
+                    "mTipsCheckPercentage"
+                ]
+            ],
+        },
         include:[
             {
                 model:this.models.mEmployeeCommission,

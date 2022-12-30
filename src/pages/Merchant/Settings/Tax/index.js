@@ -61,6 +61,17 @@ export default class Tax extends React.Component{
                     )
                 },
                 {
+                    field: 'mTaxStatus',
+                    headerName: 'Tax Status',
+                    minWidth:200,
+                    editable: false,
+                    renderCell: (params) => (
+                        <div>
+                           {params.row.mTaxStatus === 1? 'Active' : 'Inactive'}
+                        </div>
+                    )
+                },
+                {
                     field: 'Action',
                     headerName:'Actions',
                     flex:1,

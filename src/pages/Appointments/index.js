@@ -17,7 +17,7 @@ export default class AppointmentComponent extends React.Component{
     }
 
     render(){
-        return <Page title="Payout | Astro POS">
+        return <Page title="Appointments | Astro POS">
                 {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
                 <Container maxWidth="xl" style={{display:'flex', alignItems:'center',flexDirection:'column', justifyContent:'space-between' }}>
                     <Grid Container>

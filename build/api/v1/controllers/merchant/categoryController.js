@@ -29,6 +29,12 @@ module.exports = class CategoryController extends baseController{
                     authorization:'authorizationAuth'
                 },
                 {
+                    path:this.path+"/getActive",
+                    type:"post",
+                    method: "getActiveCategory",
+                    authorization:'authorizationAuth'
+                },
+                {
                     path:this.path+"/update",
                     type:"post",
                     method: "updateCategory",
@@ -68,6 +74,19 @@ module.exports = class CategoryController extends baseController{
         let category = await this.readAll({
             where:{
                 merchantId:req.deviceDetails.merchantId
+            },
+            order: [
+                ['createdDate','ASC']
+            ], 
+        }, 'mCategory')
+        this.sendResponse({ data: category}, res, 200);
+    }
+
+    getActiveCategory = async (req,res,next)=>{ 
+        let category = await this.readAll({
+            where:{
+                merchantId:req.deviceDetails.merchantId,
+                mCategoryStatus:'1'
             },
             order: [
                 ['createdDate','ASC']

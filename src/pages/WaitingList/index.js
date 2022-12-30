@@ -97,7 +97,9 @@ export default class WaitingList extends React.Component {
     closeCreateTicket(){ 
             this.socket.emit("refreshTickets", {data:"success"}) 
             // window.location.href="/"
-        this.setState({showCreateTicket: false, ticketDetail:{}})
+        this.setState({showCreateTicket: false, ticketDetail:{}},()=>{
+            this.getWaitingList()
+        })
     }
     render(){
         return(

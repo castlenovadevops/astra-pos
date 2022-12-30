@@ -58,6 +58,17 @@ export default class ProductService extends React.Component{
                     )
                 },
                 {
+                    field: 'mProductStatus',
+                    headerName: 'Type',
+                    minWidth: 200,
+                    editable: false,
+                    renderCell: (params) => (
+                        <div style={{textTransform:'capitalize'}}>
+                            {params.row.mProductStatus === '1' ? 'Active' : 'Inactive'}
+                        </div>
+                    )
+                },
+                {
                     field: 'Action',
                     headerName:'Actions',
                     flex:1,

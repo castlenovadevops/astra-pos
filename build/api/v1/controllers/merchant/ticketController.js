@@ -190,7 +190,8 @@ module.exports = class TicketController extends baseController{
                 },
                 ticketType:{
                     [Sequelize.Op.ne]:'GiftCard'
-                }
+                },
+                isDraft:0
             },
             attributes:{
                 include:[

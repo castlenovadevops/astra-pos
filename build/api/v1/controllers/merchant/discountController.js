@@ -84,8 +84,7 @@ module.exports = class DiscountController extends baseController{
             id:{
                 [Sequelize.Op.in]:sequelize.literal("(select id from mDiscounts where mDiscountStatus!=2)")
             }
-        }
-
+        } 
         // attributes:{include: [ [
         //     Sequelize.col('mDiscountId'),
         //     `id`
