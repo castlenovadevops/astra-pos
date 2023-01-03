@@ -221,6 +221,9 @@ module.exports = class reportController extends baseController{
         if(req.input.reportPeriod === 'annually'){
             dateformat = '%Y';
         }
+
+        const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+
         const owner = await this.readOne({
                 where:{mEmployeeRoleName:'Owner'}, 
                 attributes:{
@@ -254,15 +257,15 @@ module.exports = class reportController extends baseController{
                             "mTipsCheckPercentage"
                         ],
                         [
-                            sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1 and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
+                            sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1 and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and "+dateqry+")))"),
                             "TotalTax"
                         ],
                         [
-                            sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
+                            sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and "+dateqry+"))"),
                             "Supplies"
                         ]
                 ]}}, 'merchantEmployees');
-        const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')";
+                
         const reportoptions = { 
             where:{ 
                 ticketId:{
@@ -348,6 +351,10 @@ module.exports = class reportController extends baseController{
     }
 
     getEmpReport = async(req, res)=>{
+
+        const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+
+
         const emps = await this.readAll({ 
             attributes:{
                 include:[
@@ -380,11 +387,11 @@ module.exports = class reportController extends baseController{
                         "mTipsCheckPercentage"
                     ],
                     [
-                        sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1  and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"'))))"),
+                        sequelize.literal("(select sum(mTaxAmount) from ticketservicetax where ticketServiceId in (select ticketserviceId from ticketservices where status=1  and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and "+dateqry+")))"),
                         "TotalTax"
                     ],
                     [
-                        sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))"),
+                        sequelize.literal("(select sum(servicePerUnitCost*serviceQty) from  ticketservices where status=1 and serviceTechnicianId=`merchantEmployees`.`mEmployeeId` and serviceId in (select mProductId from mProducts where mProductType='Product') and ticketId in (select ticketId from tickets where isDraft=0 and paymentStatus='Paid' and "+dateqry+"))"),
                         "Supplies"
                     ], 
             ]}}, 'merchantEmployees'); 
@@ -402,8 +409,11 @@ module.exports = class reportController extends baseController{
         }
 
         if(i < emps.length){
-            const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')";
+            // const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')";
             
+        const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+
+
             var empid= emps[i].dataValues.mEmployeeId || emps[i].mEmployeeId;
             console.log("$$$$$", emps[i])
             const reportoptions = { 

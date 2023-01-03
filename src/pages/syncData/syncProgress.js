@@ -165,6 +165,9 @@ export default class SyncProgress extends React.Component{
         else{
             this.setState({progress:100}, ()=>{
                 this.socket.emit('resetSync', {data:"Completed"})
+                if(this.props.afterSyncComplete){
+                    this.props.afterSyncComplete();
+                }
             })
         }
     }

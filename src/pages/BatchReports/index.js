@@ -287,7 +287,9 @@ export default class BatchReports extends React.Component {
                                                     </Grid>
                                                     <Grid item xs={12} style={{padding:'10px',display:'flex', flexDirection:'row'}}> 
                                                         <Grid item xs={3} md={3}><b>Batch Created Time</b></Grid>
-                                                        <Grid item xs={6} md={6}>  {moment(this.state.batchDetail.created_at).format('MM/DD/YYYY HH:mm:ss a')} </Grid> 
+                                                        <Grid item xs={6} md={6}>  {Moment.utc(this.state.batchDetail.created_at).local().format("MM/DD/YYYY HH:mm:ss a")}
+                                                        {/* moment(this.state.batchDetail.created_at).format('MM/DD/YYYY HH:mm:ss a') */}
+                                                         </Grid> 
                                                     </Grid> 
                                                     <Grid item xs={12} style={{padding:'8px',display:'flex', flexDirection:'row', background:'#ccc'}}> 
                                                             <Grid item xs={3} md={3}><b>Payment Date</b></Grid>

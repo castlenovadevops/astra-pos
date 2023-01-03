@@ -332,7 +332,7 @@ module.exports = class WaitinglistController extends baseController{
         var input = {
             ticketCode: ticketcode,
             customerId: req.input.appointment.customerId,
-            isDraft: 0, 
+            isDraft: 1, 
             ownerTechnician:req.input.appointment.appointmentBookedBy,
             merchantId: req.deviceDetails.merchantId,
             POSId: req.deviceDetails.device.POSId,
@@ -403,7 +403,7 @@ console.log("services length ", appointmentServices.length)
                 }) 
         }
         else{ 
-            this.update('appointments', {appointmentStatus:'ModifiedTicket', ticketId: ticketDetail.ticketId}, {where:{id:req.input.appointment.id}}).then(r=>{
+            this.update('appointments', { ticketId: ticketDetail.ticketId}, {where:{id:req.input.appointment.id}}).then(r=>{
                 this.readOne({where:{ticketId: ticketDetail.ticketId}, 
                 include:[
                     {

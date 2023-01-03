@@ -36,6 +36,12 @@ module.exports = class ProductController extends baseController{
                     authorization:'authorizationAuth'
                 },
                 {
+                    path:this.path+"/getActive",
+                    type:"post",
+                    method: "getActive",
+                    authorization:'authorizationAuth'
+                },
+                {
                     path:this.path+"/update",
                     type:"post",
                     method: "updateProduct",
@@ -132,6 +138,58 @@ module.exports = class ProductController extends baseController{
         }
     }
 
+    getActive= async (req,res,next)=>{ 
+        let products = await this.readAll({
+            order: [
+                ['createdDate','ASC']
+            ],
+            where:{
+                merchantId: req.deviceDetails.merchantId,
+                mProductStatus: '1',
+                mProductId:{
+                    [Sequelize.Op.in]:sequelize.literal("(select mProductId from mProductCategory where mCategoryId in (select mCategoryId from mCategory where mCategoryStatus='1') and status=1)")
+                }
+            },
+            include:[
+                {
+                    model:this.models.mProductCategory, 
+                    where:{
+                        status:1, 
+                    },
+                    required: false
+                },
+                {
+                    model:this.models.mProductTax, 
+                    attributes:{
+                        include:[
+                            [
+                                sequelize.literal("(select mTaxName from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                "mTaxName"
+                            ], 
+                            [
+                                sequelize.literal("(select mTaxType from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                "mTaxType"
+                            ],
+                            [
+                                sequelize.literal("(select mTaxValue from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                "mTaxValue"
+                            ]
+                        ]
+                    },
+                    where:{
+                        status:1,
+                        mTaxId:{
+                            [Sequelize.Op.in]: sequelize.literal("(select mTaxId from mTax where mTaxStatus=1)")
+                        }
+                    },
+                    required: false
+                }
+            ]
+            
+        }, 'mProducts')
+        this.sendResponse({ data: products}, res, 200);
+    }
+    
     get = async (req,res,next)=>{ 
         let products = await this.readAll({
             order: [
@@ -171,9 +229,7 @@ module.exports = class ProductController extends baseController{
             ],
             where:{
                 merchantId: req.deviceDetails.merchantId,
-                mProductStatus:{
-                    [Sequelize.Op.ne]:'2'
-                },
+                mProductStatus: '1',
                 mProductId:{
                     [Sequelize.Op.in]:sequelize.literal("(select mProductId from mProductCategory where mCategoryId='"+req.input.categoryId+"' and status=1)")
                 }
@@ -203,9 +259,12 @@ module.exports = class ProductController extends baseController{
                                 "mTaxValue"
                             ]
                         ]
-                    },
+                    }, 
                     where:{
-                        status:1
+                        status:1,
+                        mTaxId:{
+                            [Sequelize.Op.in]: sequelize.literal("(select mTaxId from mTax where mTaxStatus=1)")
+                        }
                     },
                     required: false
                 }

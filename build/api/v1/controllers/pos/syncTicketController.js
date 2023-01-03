@@ -232,7 +232,7 @@ module.exports = class SyncTicketController extends baseController{
                                                 this.delete('ticketservices',{ 
                                                     ticketId: ticketinput.ticketId
                                                 }).then(r=>{
-                                                    this.create(`tickets`, ticketinput).then(r=>{
+                                                    this.create(`tickets`, ticketinput, false).then(r=>{
                                                         this.saveTicketDiscounts(0,i, tickets, req, res, next)
                                                     });
                                                 }) 
@@ -256,7 +256,7 @@ module.exports = class SyncTicketController extends baseController{
         var ticketinput = tickets[i];
         if(j < ticketinput.ticketdiscounts.length){
             var input = ticketinput.ticketdiscounts[j]
-            this.create('ticketdiscount', input).then(r=>{
+            this.create('ticketdiscount', input, false).then(r=>{
                 this.saveTicketDiscounts(j+1,i, tickets, req, res, next);
             })
         }
@@ -271,7 +271,7 @@ module.exports = class SyncTicketController extends baseController{
         console.log("Save ticket discountcommission called",ticketinput)
         if(i <ticketinput.ticketdiscountcommissions.length){
             var input = ticketinput.ticketdiscountcommissions[i]
-            this.create('ticketdiscountcommission', input).then(r=>{
+            this.create('ticketdiscountcommission', input, false).then(r=>{
                 this.saveTicketDiscountCommission(ti, tickets, i+1, req, res, next);
             })
         }
@@ -285,7 +285,7 @@ module.exports = class SyncTicketController extends baseController{
         var ticketinput = tickets[ti];
         if(i < ticketinput.ticketpayments.length){
             var input = ticketinput.ticketpayments[i]
-            this.create('ticketpayment', input).then(r=>{
+            this.create('ticketpayment', input, false).then(r=>{
                 this.saveTicketPayments(ti, tickets, i+1, req, res, next);
             })
         }
@@ -299,7 +299,7 @@ module.exports = class SyncTicketController extends baseController{
         var ticketinput = tickets[ti];
         if(i < ticketinput.ticketservices.length){
             var input = ticketinput.ticketservices[i]
-            this.create('ticketservices', input).then(r=>{ 
+            this.create('ticketservices', input, false).then(r=>{ 
                 this.saveTicketCommissions(ti, tickets,0, i,req, res, next)
             })
         }
@@ -317,7 +317,7 @@ module.exports = class SyncTicketController extends baseController{
         if(j < service.ticketcommissions.length){
             var input = service.ticketcommissions[j]
             console.log(input)
-            this.create('ticketcommission', input).then(r=>{
+            this.create('ticketcommission', input, false).then(r=>{
                 this.saveTicketCommissions(ti, tickets, j+1, i, req, res, next);
             })
         }
@@ -332,7 +332,7 @@ module.exports = class SyncTicketController extends baseController{
         var services = ticketinput.ticketservices[i]
         if(j < services.ticketservicetaxes.length){
             var input = services.ticketservicetaxes[j]
-            this.create('ticketservicetax', input).then(r=>{
+            this.create('ticketservicetax', input, false).then(r=>{
                 this.saveServiceTaxes(ti, tickets, j+1, i, req, res, next);
             })
         }
@@ -348,7 +348,7 @@ module.exports = class SyncTicketController extends baseController{
         var services = ticketinput.ticketservices[i]
         if(j < services.ticketservicediscounts.length){
             var input = services.ticketservicediscounts[j]
-            this.create('ticketservicediscount', input).then(r=>{
+            this.create('ticketservicediscount', input, false).then(r=>{
                 this.saveServiceDiscounts(ti, tickets,j+1, i, req, res, next);
             })
         }

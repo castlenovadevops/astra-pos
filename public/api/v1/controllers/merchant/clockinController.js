@@ -34,7 +34,13 @@ module.exports = class ClockInController extends baseController{
                     type:"post",
                     method: "getTechnicians",
                     authorization:'authorizationAuth'
-                }
+                },
+                {
+                    path:this.path+"/clockout",
+                    type:"post",
+                    method: "clockOutAll",
+                    authorization:'authorizationAuth'
+                }, 
             ]
             // this.router.post(this.path+"/save", authenticate.accessAuth, this.saveCustomer); 
             // this.router.get(this.path+"/getMerchants", authenticate.authorizationAuth, this.getMerchants); 
@@ -46,6 +52,17 @@ module.exports = class ClockInController extends baseController{
         });
     } 
 
+    clockOutAll= async(req, res, next)=>{ 
+        let loginput = { 
+            status:2,
+            clockedOutOn: this.getDate()
+        }
+        this.update('empLog', loginput, {where:{clockedOutOn:{
+            [Sequelize.Op.in]:[null, '']
+        }, status:1}} ,true).then(results=>{
+            this.sendResponse({message:"Clocked-Out successfully."}, res, 200)
+        })
+    }
 
     clocklogUpdate= async(req, res, next)=>{
         var passcode = req.input.passCode;

@@ -59,7 +59,7 @@ module.exports = (sequelize) => {
              field: 'cardSold', 
              type: DataTypes.INTEGER, 
              primaryKey: false, 
-             allowNull: false,
+             allowNull: true,
              defaultValue: 0
         }, 
         status: {

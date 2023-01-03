@@ -49,15 +49,24 @@ module.exports = class TicketController extends baseController{
             "isDraft":0
         }
 
-
+        // req.input.selectedServices.forEach(element => {
+        //     console.log(element.ticketservicetaxes)
+        //     if(element.ticketservicetaxes.length > 0){
+        //         element.ticketservicetaxes.forEach(re=>{
+        //             console.log(re)
+        //         })
+        //     }
+        // });
         this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
-            this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{  
-                this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
-                    this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
-                        this.saveTicketServices(req, res, next); 
+            this.update('appointments',{appointmentStatus:'ModifiedTicket'}, {where:{ticketId: ticketDetail.ticketId}}).then(re=>{  
+                this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{  
+                    this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+                        this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+                            this.saveTicketServices(req, res, next); 
+                        });
                     });
                 });
-            })
+            });
         })
     }
 
@@ -148,6 +157,7 @@ module.exports = class TicketController extends baseController{
         var service = req.input.selectedServices[idx]; 
         if(tid < service.ticketservicetaxes.length){
             var input = service.ticketservicetaxes[tid];
+            console.log("SERVICETAX:::::" , input)
             var taxinput = {
                 ticketServiceId: ticketServiceId,
                 mTaxId: input.mTaxId,

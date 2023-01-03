@@ -4,6 +4,7 @@ const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
 const { Sequelize } = require('sequelize');
+const sequelize = require('../../models').sequelize;
 
 module.exports = class TicketController extends baseController{
     path = "/merchant/ticket";
@@ -37,7 +38,7 @@ module.exports = class TicketController extends baseController{
             where:{
                 ticketId: input.ticketId,
                 status:1
-            },
+            },  
             include:[
                 {
                     model: this.models.mProducts,
@@ -81,11 +82,27 @@ module.exports = class TicketController extends baseController{
                     }
                 },
                 {
-                    model: this.models.ticketservicetax,
+                    model: this.models.ticketservicetax, 
                     required: false,
                     where:{
                         status:1
-                    }
+                    }, 
+                    attributes:{
+                        include:[
+                            [
+                                sequelize.literal("(select mTaxName from mTax where mTaxId=`ticketservicetaxes`.`mTaxId`)"),
+                                "mTaxName"
+                            ], 
+                            [
+                                sequelize.literal("(select mTaxType from mTax where mTaxId=`ticketservicetaxes`.`mTaxId`)"),
+                                "mTaxType"
+                            ],
+                            [
+                                sequelize.literal("(select mTaxValue from mTax where mTaxId=`ticketservicetaxes`.`mTaxId`)"),
+                                "mTaxValue"
+                            ]
+                        ]
+                    },
                 },
                 {
                     model: this.models.ticketservicediscount,

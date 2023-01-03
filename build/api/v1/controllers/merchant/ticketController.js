@@ -260,7 +260,7 @@ module.exports = class TicketController extends baseController{
                     }
                 ],
                 ticketId:{
-                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where payMode='card')")
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where payMode='card' and Date(createdDate) between Date('"+fromdate.substr(0,10)+"')  and  Date('"+todate.substr(0,10)+"'))")
                 }
             },
             attributes:{

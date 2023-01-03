@@ -49,25 +49,25 @@ module.exports = class TicketController extends baseController{
             "isDraft":0
         }
 
-        req.input.selectedServices.forEach(element => {
-            console.log(element.ticketservicetaxes)
-            if(element.ticketservicetaxes.length > 0){
-                element.ticketservicetaxes.forEach(re=>{
-                    console.log(re)
-                })
-            }
-        });
-        // this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
-        //     this.update('appointments',{appointmentStatus:'ModifiedTicket'}, {where:{ticketId: ticketDetail.ticketId}}).then(re=>{  
-        //         this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{  
-        //             this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
-        //                 this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
-        //                     this.saveTicketServices(req, res, next); 
-        //                 });
-        //             });
-        //         });
-        //     });
-        // })
+        // req.input.selectedServices.forEach(element => {
+        //     console.log(element.ticketservicetaxes)
+        //     if(element.ticketservicetaxes.length > 0){
+        //         element.ticketservicetaxes.forEach(re=>{
+        //             console.log(re)
+        //         })
+        //     }
+        // });
+        this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
+            this.update('appointments',{appointmentStatus:'ModifiedTicket'}, {where:{ticketId: ticketDetail.ticketId}}).then(re=>{  
+                this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{  
+                    this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+                        this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
+                            this.saveTicketServices(req, res, next); 
+                        });
+                    });
+                });
+            });
+        })
     }
 
     saveTicketServices = async(req, res, next, idx=0)=>{

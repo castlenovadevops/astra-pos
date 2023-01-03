@@ -13,8 +13,16 @@ import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './app.css';
 
-import Socket from './socket';
+import { 
+  IdleTimerProvider, 
+  IdleTimerConsumer, 
+  IIdleTimerContext, 
+  IdleTimerContext,
+  useIdleTimerContext
+} from 'react-idle-timer'
 
+import Socket from './socket';
+import SyncProgress from './pages/syncData/syncProgress'; 
 
 export default class App extends React.Component{
   httpManager = new HTTPManager();
@@ -22,8 +30,62 @@ export default class App extends React.Component{
   constructor(){
     super();
     this.state={
-
+      syncData: false
     }
+
+    this.onPrompt=this.onPrompt.bind(this)
+    this.onIdle=this.onIdle.bind(this)
+    this.onAction=this.onAction.bind(this)
+    this.onActive=this.onActive.bind(this)
+    this.onLoginPrompt=this.onLoginPrompt.bind(this)
+    this.onLoginIdle=this.onLoginIdle.bind(this)
+    this.onLoginAction=this.onLoginAction.bind(this)
+    this.onLoginActive=this.onLoginActive.bind(this)
+  }
+
+  onPrompt(){
+    // Fire a Modal Prompt
+  }
+
+  onIdle(){
+    // Close Modal Prompt
+    // Do some idle action like log out your user
+    this.setState({syncData: true})
+  }
+
+  onActive(event){
+    // Close Modal Prompt
+    // Do some active action
+  }
+
+  onAction(event){
+    // Do something when a user triggers a watched event
+  }
+
+
+  onLoginPrompt(){
+    // Fire a Modal Prompt
+  }
+
+  onLoginIdle(){
+    // Close Modal Prompt
+    // Do some idle action like log out your user
+    var str = window.localStorage.getItem('userdetail') || ''
+    if(str !== ''){
+      this.httpManager.postRequest('/merchant/employee/clockout', {data:"LOGOUT ALL"}).then(res=>{
+        window.localStorage.removeItem('userdetail');
+        window.reload()
+      })
+    }
+  }
+
+  onLoginActive(event){
+    // Close Modal Prompt
+    // Do some active action
+  }
+
+  onLoginAction(event){
+    // Do something when a user triggers a watched event
   }
 
   componentDidMount(){ 
@@ -75,8 +137,31 @@ export default class App extends React.Component{
                   draggable={false}
                   pauseOnHover={false}
                   />
+
+<IdleTimerProvider
+            timeout={30 * 1000 * 60}
+            onPrompt={this.onLoginPrompt}
+            onIdle={this.onLoginIdle} 
+            onActive={this.onLoginActive}
+            onAction={this.onLoginAction}
+                  >
+            <IdleTimerProvider
+            timeout={15 * 1000 * 60}
+            onPrompt={this.onPrompt}
+            onIdle={this.onIdle} 
+            onActive={this.onActive}
+            onAction={this.onAction}
+                  >
+                  {this.state.syncData && <div style={{'visibility':'hidden'}}><SyncProgress afterSyncComplete={()=>{
+                      this.setState({syncData:false})
+                    }} /></div>}
                   <Socket />
             <Router />
+            </IdleTimerProvider>
+
+
+
+            </IdleTimerProvider>
         </ThemeProvider> 
     );
   }
