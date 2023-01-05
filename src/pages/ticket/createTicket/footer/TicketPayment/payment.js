@@ -274,7 +274,7 @@ export default class TicketPayment extends React.Component  {
                         </Typography>
                     </Grid>
                     <Grid item xs={2} style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'flex-end'}}>
-                        {this.props.ticketDetail.ticketType !== 'GiftCard' && <div style={{marginRight:'10px', display:'flex', flexDirection:'row', alignItems:'center', cursor:'pointer', justifyContent:'flex-end'}} 
+                        {this.props.ticketDetail.ticketType !== 'GiftCard' && this.props.ticketDetail.paymentStatus !== 'Paid' &&  <div style={{marginRight:'10px', display:'flex', flexDirection:'row', alignItems:'center', cursor:'pointer', justifyContent:'flex-end'}} 
                                 onClick={()=>{ 
                                     if(this.props.pageFrom === 'Ticket'){
                                             this.setState({selectCustomerPopup: true})

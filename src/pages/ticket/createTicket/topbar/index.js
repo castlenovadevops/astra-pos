@@ -79,9 +79,9 @@ export default class TicketTopBar extends React.Component{
         return  <div style={{height:'100%', width:'100%'}}>
                     <Grid className='fullHeightTicket padd20' item xs={12} spacing={2}   alignItems="baseline"> 
                         <Grid item xs={9}  style={{display:'flex'}} alignItems="center">
-                                <div className={this.props.data.isDisabled ? "topbtn disabled" : "topbtn" } onClick={()=>{
+                                <div className={this.props.data.ticketDetail.paymentStatus === 'Paid' ? "topbtn disabled" : "topbtn" } onClick={()=>{
                                             // console.log("OPEN TECH")
-                                        if(!this.props.data.isDisabled) {
+                                        if(this.props.data.ticketDetail.paymentStatus !== 'Paid') {
                                             this.openTechnician()
                                         }
                                     }}>

@@ -329,6 +329,10 @@ module.exports = class TicketController extends baseController{
                     [
                         Sequelize.col('`tickets`.`ticketId`'),
                         'id'
+                    ],
+                    [
+                        sequelize.literal("(select GROUP_CONCAT(payMode) from ticketpayment where ticketId=`tickets`.`ticketId`)"),
+                        'paymode'
                     ]
                 ]
             }

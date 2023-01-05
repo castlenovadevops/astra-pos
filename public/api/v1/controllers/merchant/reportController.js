@@ -222,7 +222,9 @@ module.exports = class reportController extends baseController{
             dateformat = '%Y';
         }
 
-        const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+        // const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+
+        const dateqry = "(ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
 
         const owner = await this.readOne({
                 where:{mEmployeeRoleName:'Owner'}, 
@@ -352,7 +354,7 @@ module.exports = class reportController extends baseController{
 
     getEmpReport = async(req, res)=>{
 
-        const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+        const dateqry = "(ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
 
 
         const emps = await this.readAll({ 
@@ -411,7 +413,7 @@ module.exports = class reportController extends baseController{
         if(i < emps.length){
             // const dateqry = "Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')";
             
-        const dateqry = "(Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"') or ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
+        const dateqry = "(ticketId in (select ticketId from ticketpayment where Date(createdDate) between Date('"+req.input.from_date.substr(0,10)+"')  and  Date('"+req.input.to_date.substr(0,10)+"')))";
 
 
             var empid= emps[i].dataValues.mEmployeeId || emps[i].mEmployeeId;

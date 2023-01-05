@@ -66,7 +66,7 @@ export default class ReportComponent extends React.Component{
 
         this.httpManager.postRequest(`pos/print/getPrinterByType`,{ReportPrint:1}).then(res=>{
             const printers = res.data
-            console.log(printers)
+            //console.log(printers)
             if(printers.length >0){
                 var reportdetail = [];
                 var html = [];
@@ -103,7 +103,7 @@ export default class ReportComponent extends React.Component{
                         this.state.employee_reportlist.forEach(t=>{ 
                             totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
                             totalTips =Number(totalTips)+Number(t.tips);
-                            console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                            //console.log(totalTips, Number(totalTips),"+",Number(t.tips))
                             totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
                             discounttotal =Number(discounttotal)+Number(t.discount); 
 
@@ -250,7 +250,7 @@ export default class ReportComponent extends React.Component{
                         emp.data.forEach(t=>{ 
                             totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
                             totalTips =Number(totalTips)+Number(t.tips);
-                            console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                            //console.log(totalTips, Number(totalTips),"+",Number(t.tips))
                             totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
                             discounttotal =Number(discounttotal)+Number(t.discount);
                             reportdetail.push(`<div style="borderBottom:'1px solid #000';display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
@@ -354,7 +354,7 @@ export default class ReportComponent extends React.Component{
     handleReportPrint(printername){ 
         var final_printed_data = this.state.printhtml; 
         window.api.printHTML({html:final_printed_data, printername:printername}).then(r=>{
-            console.log("Printed Successfully.")
+            //console.log("Printed Successfully.")
         })
     }
 
@@ -397,7 +397,7 @@ export default class ReportComponent extends React.Component{
                 this.clearPasscode()
             }
         }).catch(e=>{
-          // console.log(e)
+          // //console.log(e)
                 this.setState({showFormError:true, formError:e.message})
                 this.clearPasscode()
           
@@ -430,7 +430,7 @@ export default class ReportComponent extends React.Component{
 
 
     getEmpTotalDiscounts(data){
-        console.log(data)
+        //console.log(data)
         var total = 0
         if(data instanceof Array){
             data.forEach(e=>{
@@ -456,25 +456,26 @@ export default class ReportComponent extends React.Component{
         if(this.state.tabName === 'Owner'){
             this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
                 console.log(res)
-                this.setState({payments: res.payments, owner: res.owner,discounts: res.discounts,OwnerDiscount:0})
-
-                this.formatOwnerReport(res.data,{
-                    addedDates:[],
-                    data:[]
+                this.setState({payments: res.payments, owner: res.owner,discounts: res.discounts,OwnerDiscount:0},()=>{ 
+                    this.formatOwnerReport(res.data,{
+                        addedDates:[],
+                        data:[]
+                    })
                 })
             })
         }
         else{
             this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
-                // console.log(res)
-                this.setState({OwnerDiscount:0})
-                this.formatEmployeeData(res.data, []) 
+                // //console.log(res)
+                this.setState({OwnerDiscount:0},()=>{
+                    this.formatEmployeeData(res.data, []) 
+                })
             })
         }
     }   
 
     formatEmployeeData(data,response, i=0){
-        console.log("DATA CALLLING")
+        //console.log("DATA CALLLING")
         if(i < data.length){
             var obj = {
                 addedDates:[],
@@ -487,15 +488,15 @@ export default class ReportComponent extends React.Component{
             this.formatEmployeeReport(data, data[i].report, response, obj,i,  0)
         }
         else{
-            this.setState({employees: response}, ()=>{
-                console.log(this.state.employees)
+            this.setState({employees: response, showDatePopup: false}, ()=>{
+                //console.log(this.state.employees)
             })
         }
 
     }
 
     formatOwnerReport(data,response, i=0){ 
-        console.log(data.length)
+        //console.log(data.length)
         if(i< data.length){
             var rec = data[i]
             if(response.addedDates.indexOf(rec.created) === -1){ 
@@ -505,16 +506,18 @@ export default class ReportComponent extends React.Component{
                     serviceTotal: rec.TotalServiceAmount,
                     serviceAmount: rec.ServiceAmount,
                     tips: rec.Tips,
-                    discount: rec.Discount,
+                    discount: Number(rec.Discount)+(rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0),
                     date: rec.created
-                }
+                } 
+                console.log("DIS", (rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0))
+                console.log(obj, this.state.OwnerDiscount, "------", rec.OwnerDiscount)
                 var dis = Number(this.state.OwnerDiscount)+(rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0)
                 this.setState({OwnerDiscount: dis}, ()=>{
-                    console.log(this.state.OwnerDiscount)
+                    //console.log(this.state.OwnerDiscount)
                     response.data.push(obj);
                     response.addedDates.push(obj.date);
                     this.formatOwnerReport(data, response, i+1)
-                    console.log(rec.OwnerDiscount, dis)
+                    //console.log(rec.OwnerDiscount, dis)
                 })
             }
             else{
@@ -526,7 +529,7 @@ export default class ReportComponent extends React.Component{
                     serviceTotal: Number(obj.serviceTotal)+Number(rec.TotalServiceAmount),
                     serviceAmount:  Number(obj.serviceAmount)+Number(rec.ServiceAmount),
                     tips: Number(obj.tips)+Number(rec.Tips),
-                    discount: Number(obj.discount)+Number(rec.Discount),
+                    discount: Number(obj.discount)+Number(rec.Discount) +(rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0),
                     date: obj.date
                 } 
                 var dis1 = Number(this.state.OwnerDiscount)+(rec.OwnerDiscount != null ? Number(rec.OwnerDiscount) : 0)
@@ -539,8 +542,8 @@ export default class ReportComponent extends React.Component{
         }   
         else{
 
-            this.setState({employee_reportlist: response.data}, ()=>{
-                // console.log("EMP REPOTR", this.state.employee_reportlist)
+            this.setState({employee_reportlist: response.data, showDatePopup: false}, ()=>{
+                // //console.log("EMP REPOTR", this.state.employee_reportlist)
             })
         }
     }
@@ -570,7 +573,7 @@ export default class ReportComponent extends React.Component{
                     date: rec.created
                 }
                 empobj.nettAmount = Number(empobj.nettAmount)+Number(rec.ServiceAmount)
-                console.log("ID",empobj.nettTotal, empobj.Tips)
+                //console.log("ID",empobj.nettTotal, empobj.Tips)
                 empobj.nettTotal = Number(empobj.nettTotal)+Number(rec.ServiceAmount)+(rec.Tips !== null ? Number(rec.Tips) : 0)
                 empobj.data.push(obj);
                 empobj.addedDates.push(obj.date); 
@@ -578,7 +581,7 @@ export default class ReportComponent extends React.Component{
             }
             else{
                 var idx = empobj.addedDates.indexOf(rec.created)
-                console.log(rec.created, idx)
+                //console.log(rec.created, idx)
                 var obj  = Object.assign({}, empobj.data[idx]);
                 obj = {
                     ticketCount:obj.ticketCount+1,
@@ -592,7 +595,7 @@ export default class ReportComponent extends React.Component{
                 empobj.nettAmount = Number(empobj.nettAmount)+Number(rec.ServiceAmount)
                 empobj.nettTotal = Number(empobj.nettTotal)+Number(rec.ServiceAmount)+(rec.Tips !== null ? Number(rec.Tips) : 0)
 
-                console.log("else",obj.nettTotal, rec.Tips)
+                //console.log("else",obj.nettTotal, rec.Tips)
                 empobj.data[idx] = obj;
                 this.formatEmployeeReport(emps, data, response, empobj, ei, i+1)
             }
@@ -605,7 +608,7 @@ export default class ReportComponent extends React.Component{
 
     getDiscountAmount(option){
         var disamt = '0.00';
-        console.log(this.state.discounts)
+        //console.log(this.state.discounts)
         this.state.discounts.map((d, i)=>{
             if(d.mDiscountDivisionType === option && d.discountAmount){ 
                 disamt = d.discountAmount ? Number(d.discountAmount).toFixed(2)  : '0.00'
@@ -654,7 +657,7 @@ export default class ReportComponent extends React.Component{
             this.state.employee_reportlist.forEach(t=>{ 
                 totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
                 totalTips =Number(totalTips)+Number(t.tips);
-                console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                //console.log(totalTips, Number(totalTips),"+",Number(t.tips))
                 totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
                 discounttotal =Number(discounttotal)+Number(t.discount);
                 reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000', padding:'2px 0'}}> 
@@ -773,7 +776,7 @@ export default class ReportComponent extends React.Component{
         emp.discounts.map((d, i)=>{
             if(d.mDiscountDivisionType === option && d.discountAmount){ 
                 disamt = d.discountAmount ? Number(d.discountAmount).toFixed(2)  : '0.00'
-                console.log(d)
+                //console.log(d)
                 if(option === 'Both')
                 disamt = d.discountAmount ? (Number(d.discountAmount)*Number(d.mEmployeeDivision)/100).toFixed(2)  : '0.00'
             }  
@@ -816,7 +819,7 @@ export default class ReportComponent extends React.Component{
              emp.data.forEach(t=>{ 
                 totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
                 totalTips =Number(totalTips)+Number(t.tips);
-                console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                //console.log(totalTips, Number(totalTips),"+",Number(t.tips))
                 totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
                 discounttotal =Number(discounttotal)+Number(t.discount);
                 reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000', padding:'2px 0'}}> 
@@ -967,7 +970,7 @@ export default class ReportComponent extends React.Component{
     //             })
 
     //             discounttotal = emp.discountdata.OwnerDiscount+emp.discountdata.EmpDiscount+emp.discountdata.OwnerEmpDiscount;
-    //             console.log(discounttotal);
+    //             //console.log(discounttotal);
 
     //             reportdetail.push(
     //                 <div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row', borderBottom:'1px solid #000',fontWeight:'700', padding:'2px 0'}}> 

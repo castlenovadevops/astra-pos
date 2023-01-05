@@ -49,6 +49,7 @@ module.exports = class TicketController extends baseController{
             "isDraft":0
         }
 
+        // console.log(req.input)
         // req.input.selectedServices.forEach(element => {
         //     console.log(element.ticketservicetaxes)
         //     if(element.ticketservicetaxes.length > 0){
