@@ -247,15 +247,15 @@ module.exports = class ProductController extends baseController{
                     attributes:{
                         include:[
                             [
-                                sequelize.literal("(select mTaxName from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                sequelize.literal("(select mTaxName from mTax where mTaxId=`mProductTaxes`.`mTaxId` and mTaxStatus=1)"),
                                 "mTaxName"
                             ], 
                             [
-                                sequelize.literal("(select mTaxType from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                sequelize.literal("(select mTaxType from mTax where mTaxId=`mProductTaxes`.`mTaxId` and mTaxStatus=1)"),
                                 "mTaxType"
                             ],
                             [
-                                sequelize.literal("(select mTaxValue from mTax where mTaxId=`mProductTaxes`.`mTaxId`)"),
+                                sequelize.literal("(select mTaxValue from mTax where mTaxId=`mProductTaxes`.`mTaxId` and mTaxStatus=1)"),
                                 "mTaxValue"
                             ]
                         ]

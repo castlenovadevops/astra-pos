@@ -46,7 +46,8 @@ export default class ReportComponent extends React.Component{
             payments:[],
             employees:[], profit:'',
             OwnerDiscount:0,
-            printhtml:''
+            printhtml:'',
+            adjustedTips:0,
          }
 
          this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
@@ -456,7 +457,7 @@ export default class ReportComponent extends React.Component{
         if(this.state.tabName === 'Owner'){
             this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
                 console.log(res)
-                this.setState({payments: res.payments, owner: res.owner,discounts: res.discounts,OwnerDiscount:0},()=>{ 
+                this.setState({adjustedTips:res.adjustedTips.tipsAmount ? Number(res.adjustedTips.tipsAmount) : 0,  payments: res.payments, owner: res.owner,discounts: res.discounts,OwnerDiscount:0},()=>{ 
                     this.formatOwnerReport(res.data,{
                         addedDates:[],
                         data:[]
@@ -750,6 +751,10 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={4}>${this.getTotalAmountcollected()}</Grid>
                     </Grid> 
 
+                    {this.state.adjustedTips > 0 && <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
+                        <Grid item xs={8}>Adjusted Tips</Grid>
+                        <Grid item xs={4}>${Number(this.state.adjustedTips).toFixed(2)}</Grid>
+                    </Grid>}
                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
                         <Grid item xs={8}>profit</Grid>
                         <Grid item xs={4}>${this.getProfitAmount()}</Grid>

@@ -349,7 +349,20 @@ module.exports = class reportController extends baseController{
             ]
         }
         const discounts=await this.readAll(discountoptions, 'ticketdiscount')
-        this.sendResponse({data: reports, owner:owner, payments: payments, discounts: discounts}, res, 200)
+
+        const adjustedTips = await this.readOne({
+            where:{ 
+                ticketServiceId:{
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketServiceId from ticketservices where  ticketId in (select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid' and ticketId in (select ticketId from ticketpayment where payMode='card')))")
+                },
+                createdBy:'Adjusted',
+                status:1
+            },
+            attributes:[
+                [Sequelize.fn('sum', Sequelize.col('tipsAmount')), 'tipsAmount'],
+            ] ,
+        }, `ticketTips`)
+        this.sendResponse({data: reports, owner:owner, payments: payments, discounts: discounts, adjustedTips: adjustedTips}, res, 200)
     }
 
     getEmpReport = async(req, res)=>{
@@ -477,11 +490,27 @@ module.exports = class reportController extends baseController{
                     
                 ]
             }
+            
             const discounts=await this.readAll(discountoptions, 'ticketservicediscount')
+
+        const adjustedTips = await this.readOne({
+            where:{ 
+                ticketServiceId:{
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketServiceId from ticketservices where serviceTechnicianId='"+empid+"' and ticketId in (select ticketId from tickets where "+dateqry+" and isDraft=0 and paymentStatus='Paid'))")
+                },
+                createdBy:'Adjusted',
+                status:1,
+            },
+            attributes:[
+                [Sequelize.fn('sum', Sequelize.col('tipsAmount')), 'tipsAmount'],
+            ] ,
+        }, `ticketTips`)
+
             var obj ={
                 report: reports,
                 discounts: discounts,
-                emp:emps[i]
+                emp:emps[i],
+                adjustedTips: adjustedTips
             }
             response.push(obj); 
             this.getEmpTickets(req, res,emps, i+1, response)

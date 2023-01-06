@@ -54,7 +54,7 @@ module.exports = class BatchController extends baseController{
         this.create('batches', input).then(r=>{
             var batchID  = r.dataValues !== undefined ? r.dataValues.batchId : r.batchId
             this.update(`tickets`,{batchId: batchID},{where:{ticketId:{
-                [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+todate.substring(0, 10)+" 23:59:59')")
+                [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and payMode='card' and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+todate.substring(0, 10)+" 23:59:59')")
             }}})
             this.sendResponse({data: input}, res, 200)
         }).catch(e=>{

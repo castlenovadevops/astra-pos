@@ -102,7 +102,7 @@ export default class TicketFooterComponent extends React.Component{
         if(this.props.data.ticketDetail.paymentStatus==='Paid'){  
             var isdisable = true;
             this.props.data.ticketDetail.ticketpayments.forEach(elmt=>{
-                if(elmt.payMode.trim().toLowerCase() === 'card'){ 
+                if(elmt.payMode.trim().toLowerCase() === 'card' && (this.props.data.originalTicketDetail.batchId === undefined || this.props.data.originalTicketDetail.batchId === null || this.props.data.originalTicketDetail.batchId === '')){ 
                     isdisable = false
                 }
             })
@@ -192,7 +192,7 @@ export default class TicketFooterComponent extends React.Component{
                                 </Grid>
                                 <Grid xs={4}>
                                     <Button style={{borderRadius: 0}} onClick={()=>this.addTips()} fullWidth variant="outlined" disabled={this.isCardPaid()}>
-                                        Tips
+                                       Tips
                                     </Button> 
                                 </Grid>
                             </Grid>
@@ -257,8 +257,8 @@ export default class TicketFooterComponent extends React.Component{
                             </Grid>
                             <Grid item xs={7} style={{border:'2px solid #f0f0f0'}}>
                                 <Grid item xs={12} style={{display:'flex',height:'100%'}}> 
-                                    <Grid xs={4}>
-                                         <Button style={{height:'100%', borderRadius:0}} disabled={!this.props.data.tipsAdjust || this.props.data.selectedServices.length === 0} onClick={()=>this.addTips()} fullWidth variant="outlined">Tips</Button> 
+                                    <Grid xs={4}> 
+                                         <Button style={{height:'100%', borderRadius:0}} disabled={ this.props.data.originalTicketDetail.batchId !== null || this.props.data.originalTicketDetail.batchId !== '' || !this.props.data.tipsAdjust || this.props.data.selectedServices.length === 0} onClick={()=>this.addTips()} fullWidth variant="outlined">Tips</Button> 
                                     </Grid>
                                 
                                     <Grid xs={4}>

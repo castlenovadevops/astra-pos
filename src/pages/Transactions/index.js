@@ -344,7 +344,7 @@ export default class Transactions extends React.Component {
                                     <Grid item xs={12} style={{position:'absolute', bottom:0, left:0, right:0, borderTop:'1px solid #f0f0f0',display:'flex', flexDirection:'row', padding:10}}>
 
                                     <Grid item xs={9} md={9}> <h3>Total</h3></Grid>
-                                    <Grid item xs={3} md={3}> <h3>${Number(this.state.transactiondetail.grand_total).toFixed(2)}</h3></Grid>
+                                    <Grid item xs={3} md={3}> <h3>${Number(this.state.transactiondetail.ticketPayment).toFixed(2)}</h3></Grid>
 
                                     </Grid>
                                 </Grid>

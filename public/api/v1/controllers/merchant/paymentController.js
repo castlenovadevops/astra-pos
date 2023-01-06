@@ -188,7 +188,7 @@ module.exports = class TicketController extends baseController{
                         technicianId:service.technician.mEmployeeId,
                         tipsAmount: service.totalTips,
                         ticketServiceId: service.ticketServiceId,
-                        createdBy: req.userData.mEmployeeId,
+                        createdBy: "Adjusted",//req.userData.mEmployeeId,
                         createdDate: this.getDate(),
                         status:1
                     }

@@ -41,7 +41,8 @@ export default class CreateTicketComponent extends React.Component{
             tips_input:{},
             ticketdiscounts:[],
             ticketdiscountcommissions:[],
-            updateTips: false
+            updateTips: false,
+            originalTicketDetail:{}
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
         this.onSelectService  = this.onSelectService.bind(this);
@@ -179,7 +180,8 @@ export default class CreateTicketComponent extends React.Component{
                             var discountobj = Object.assign({}, discount);
                             discountobj.mDiscountAmount = 0
                             if(discount.mDiscountType === 'Percentage'){
-                                discountobj.mDiscountAmount  = (Number(discount.mDiscountValue)/100) * (Number(price.ticketSubTotal) - Number(calculatedtotalDiscountAmount))
+                                // discountobj.mDiscountAmount  = (Number(discount.mDiscountValue)/100) * (Number(price.ticketSubTotal) - Number(calculatedtotalDiscountAmount))
+                                discountobj.mDiscountAmount  = (Number(discount.mDiscountValue)/100) * (Number(price.ticketSubTotal))
                                 calculatedtotalDiscountAmount += discountobj.mDiscountAmount;
                                 // price.ticketSubTotal = Number(price.ticketSubTotal) -  discountobj.mDiscountAmount;
                                 // console.log("DIS", price.ticketSubTotal)
@@ -300,28 +302,31 @@ export default class CreateTicketComponent extends React.Component{
 
     saveTicketPromise = async(req, res, next)=>{
         return new Promise(async (resolve) => { 
-            if(this.state.selectedServices.length > 0){
-                // console.log("AAAA")
-                // console.log("AAAA", this.state.ticketDetail)
-                var ticketobj = Object.assign({}, this.state.ticketDetail)
-                ticketobj.customerId = this.state.customer_detail.mCustomerId !== undefined ?  this.state.customer_detail.mCustomerId :'';
-                this.setState({ticketDetail: ticketobj}, ()=>{
-                    var ticketinput = {
-                        customer_detail: this.state.customer_detail,
-                        ticketDetail:Object.assign({}, this.state.ticketDetail), 
-                        selectedServices: Object.assign([], this.state.selectedServices),
-                        ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
-                        ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
-                    }
-                    console.log(ticketinput)
-                    this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
-                        resolve("success")
-                    })
-                });
-            }
-            else{
-                resolve("Success")
-            }
+            this.setState({selectedRow:-1},()=>{
+                if(this.state.selectedServices.length > 0){
+                    // console.log("AAAA")
+                    // console.log("AAAA", this.state.ticketDetail)
+                    var ticketobj = Object.assign({}, this.state.ticketDetail)
+                    ticketobj.customerId = this.state.customer_detail.mCustomerId !== undefined ?  this.state.customer_detail.mCustomerId :'';
+                    this.setState({ticketDetail: ticketobj}, ()=>{
+                        var ticketinput = {
+                            customer_detail: this.state.customer_detail,
+                            ticketDetail:Object.assign({}, this.state.ticketDetail), 
+                            selectedServices: Object.assign([], this.state.selectedServices),
+                            ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
+                            ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+                        }
+                        console.log(ticketinput)
+                        this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
+                            this.reloadTicket();
+                            resolve("success")
+                        })
+                    });
+                }
+                else{
+                    resolve("Success")
+                }
+            })
         })
     }
 
@@ -354,6 +359,8 @@ export default class CreateTicketComponent extends React.Component{
                     console.log(ticketinput)
                     if(option === 'close')
                         this.props.data.closeCreateTicket();
+                    else
+                        this.reloadTicket();
                 })
             })
         }
@@ -538,21 +545,36 @@ export default class CreateTicketComponent extends React.Component{
             }
             if(service.mProductTaxType === "Default"){
                 obj.ticketservicetaxes = [];//Object.assign([], this.state.defaultTaxes)
-                this.state.defaultTaxes.forEach(t=>{
-                    t.mTaxAmount = 0;
-                    obj.ticketservicetaxes.push(Object.assign({}, t))
-                })
+                if(this.state.defaultTaxes.length > 0){
+                    this.state.defaultTaxes.forEach((t, ti)=>{
+                        t.mTaxAmount = 0;
+                        obj.ticketservicetaxes.push(Object.assign({}, t))
+                        if(ti === this.state.defaultTaxes.length-1){ 
+                            this.calculateDiscountForService(obj)
+                        }
+                    })
+                }
+                else{ 
+                    this.calculateDiscountForService(obj)
+                }
             }
             else{
                 // obj.ticketservicetaxes = Object.assign([], service.mProductTaxes)
                 obj.ticketservicetaxes = [];//Object.assign([], this.state.defaultTaxes)
-                service.mProductTaxes.forEach(t=>{
-                    t.mTaxAmount = 0;
-                    obj.ticketservicetaxes.push(Object.assign({}, t))
-                })
+                if(service.mProductTaxes.length > 0){
+                    service.mProductTaxes.forEach((t, ti)=>{
+                        t.mTaxAmount = 0;
+                        obj.ticketservicetaxes.push(Object.assign({}, t))
+                        console.log("SERVICE TAX APPLY LLLL",service.mProductTaxes)
+                        if(ti === service.mProductTaxes.length-1){ 
+                            this.calculateDiscountForService(obj)
+                        }
+                    })
+                }
+                else{ 
+                    this.calculateDiscountForService(obj)
+                }
             }
-            
-            this.calculateDiscountForService(obj)
             // this.calculateAllServices()
         }
     }
@@ -620,14 +642,15 @@ export default class CreateTicketComponent extends React.Component{
             }
             var discountdetail = Object.assign({},obj.ticketservicediscounts[i]);
             if(discountdetail.mDiscountType === 'Percentage'){
-                discountdetail["mDiscountAmount"] = Number((discountdetail.mDiscountValue/100)*obj.subTotal).toFixed(2);
+                // discountdetail["mDiscountAmount"] = Number((discountdetail.mDiscountValue/100)*obj.subTotal).toFixed(2);
+                discountdetail["mDiscountAmount"] = Number((discountdetail.mDiscountValue/100)*(Number(obj.qty) * Number(obj.perunit_cost))).toFixed(2);
             }
             else{
                 discountdetail["mDiscountAmount"] = Number(discountdetail.mDiscountValue).toFixed(2);
             }
             obj.ticketservicediscounts[i] = discountdetail;
             obj.totalDiscount = Number(obj.totalDiscount)+Number(discountdetail["mDiscountAmount"]);
-            obj.subTotal= Number(obj.subTotal)-Number(obj.totalDiscount)
+            obj.subTotal= (Number(obj.qty) * Number(obj.perunit_cost)) - Number(obj.totalDiscount)//Number(obj.subTotal)- Number(obj.totalDiscount)
             ticketDetail.serviceDiscountApplied = 1
             this.setState({ticketDetail: ticketDetail});
             this.calculateDiscountForService(obj, i+1, idx);
@@ -906,7 +929,8 @@ export default class CreateTicketComponent extends React.Component{
 
     getTicketDetails(){
         this.httpManager.postRequest("/merchant/ticket/getTicketDetail",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
-            this.setState({ticketDetail: r.data}, ()=>{
+            console.log("TICKET", r.data)
+            this.setState({ticketDetail: r.data,originalTicketDetail: r.data}, ()=>{
                 // this.reloadTicket(r.data)
                 if(this.state.ticketDetail.paymentStatus === 'Paid'){
                     // this.getTicketPayments()
@@ -930,6 +954,8 @@ export default class CreateTicketComponent extends React.Component{
                 this.setState({isPaidOnOpen: true, isDisabled: true})
             }
             this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
+
+                this.getTicketDetails()
                 this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
                     console.log("GET TICKET SERVICES L:IST")
                     this.getTicketServices();
@@ -963,9 +989,10 @@ export default class CreateTicketComponent extends React.Component{
         this.httpManager.postRequest("/merchant/ticket/getTicketServices",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
            
            console.log(r.data)
-           
-            // this.props.data.closeCreateTicket()  
+            this.setState({selectedServices:[]},()=>{ 
             this.formatData(r.data, 0)
+            })
+            // this.props.data.closeCreateTicket()  
         })
     }
 
@@ -1040,6 +1067,7 @@ export default class CreateTicketComponent extends React.Component{
 
                                     <Grid item xs={12} style={{height:'100px' }} className='fullWidth'>
                                     <TicketFooterComponent data={{
+                                        originalTicketDetail:this.state.originalTicketDetail,
                                                                             tipsAdjust: this.state.tipsAdjust,
                                                                             isDisabled: this.state.isPaidOnOpen,
                                                                             isTicketEdit: this.props.isTicketEdit,
