@@ -6,6 +6,10 @@ process.once('loaded', () => {
         on (eventName, callback) {
             ipcRenderer.on(eventName, callback)
           },
+
+          async closeWindow (args) {
+            return  ipcRenderer.invoke("closeWindow", args)
+          },
       async getPrinters (args) {
         return await ipcRenderer.invoke("getPrinters", args)
       },

@@ -9,6 +9,24 @@ let mainWindow;
 // eslint-disable-next-line no-unused-vars
 const server = require('./server');
 
+var force_quit = false;
+var menu = Menu.buildFromTemplate([
+{
+    label: 'Astra POS',
+    submenu: [
+        {label: 'About App', selector: 'orderFrontStandardAboutPanel:'},
+        {
+            label: 'Quit', 
+            accelerator: 'CmdOrCtrl+Q', 
+            click: function() { 
+                // force_quit=true; 
+                app.quit();
+            }
+        }
+    ]
+}]);
+
+Menu.setApplicationMenu(menu);
 app.disableHardwareAcceleration(); 
 
 // const db = new sqlite3.Database(
@@ -61,28 +79,62 @@ const createWindow = () => {
   ); 
   // mainWindow.setIcon(path.join(__dirname, '/icon.png'));
   mainWindow.maximize();
-  // mainWindow.setSize(1024, 768);
-  // mainWindow.setMenuBarVisibility(false);
-  // mainWindow.setApplicationMenu(null);
-    // mainWindow.removeMenu();
+   
   if (isDev) {
     mainWindow.webContents.on('did-frame-finish-load', () => {
       mainWindow.webContents.openDevTools();
     });
   } 
-  /**app quit */
-  mainWindow.on('quit', function(e){
-    // console.log("before-quit")
-  }); 
+  
+  
   mainWindow.once('ready-to-show', () => {
     // console.log("public-ready-to-show")
     
   }); 
+  
 
-  mainWindow.on('close', function(e){
-    // db.close();
-    // console.log("Closed event");
-  })
+
+mainWindow.on('close', function(e){ 
+  if(!force_quit){
+    mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  else{
+    console.log("CLOSING THE APP")
+  }
+});
+
+// You can use 'before-quit' instead of (or with) the close event
+app.on('before-quit', function (e) { 
+  if(!force_quit){
+    mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  else{
+    console.log("CLOSING THE APP")
+  }
+});
+
+// Remove mainWindow.on('closed'), as it is redundant
+
+app.on('activate-with-no-open-windows', function(){
+    mainWindow.show();
+});
+
+  /**app quit */
+  mainWindow.on('quit', function(e){
+    if(!force_quit){
+      mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    else{
+      console.log("CLOSING THE APP")
+    }
+  }); 
+  
 
 };  
 
@@ -287,3 +339,9 @@ function print_webcontents(browser_window,printer_name) {
       }
   });
 }
+
+
+ipcMain.handle('closeWindow', async(event)=>{
+  force_quit = true;
+  app.quit();
+}) 

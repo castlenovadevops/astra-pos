@@ -2,6 +2,7 @@
 import Router from './routes'; 
 // theme
 import ThemeProvider from './theme';
+import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 // components
 import ScrollToTop from './components/ScrollToTop';
 // import { BaseOptionChartStyle } from './components/chart/BaseOptionChart';
@@ -30,7 +31,8 @@ export default class App extends React.Component{
   constructor(){
     super();
     this.state={
-      syncData: false
+      syncData: false,
+      openCloseDialog: false
     }
 
     this.onPrompt=this.onPrompt.bind(this)
@@ -74,7 +76,8 @@ export default class App extends React.Component{
     if(str !== ''){
       this.httpManager.postRequest('/merchant/employee/clockout', {data:"LOGOUT ALL"}).then(res=>{
         window.localStorage.removeItem('userdetail');
-        window.reload()
+        // window.reload()
+        window.location.href="/"
       })
     }
   }
@@ -89,6 +92,9 @@ export default class App extends React.Component{
   }
 
   componentDidMount(){ 
+    window.api.on("closecalled",(e)=>{
+      this.setState({openCloseDialog: true})
+    })
     var accessToken=window.localStorage.getItem('accessToken') || '' 
     if(accessToken === ''){ 
       this.httpManager.postRequest(`common/getToken`, deviceDetect(window.navigator.userAgent)).then(response=>{ 
@@ -159,7 +165,22 @@ export default class App extends React.Component{
             <Router />
             </IdleTimerProvider>
 
+            {this.state.openCloseDialog && <Dialog open={this.state.openCloseDialog}>
+                    <DialogContent>
+                        Your are trying to close the app. Are you sure to continue?
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={()=>{
+                          window.api.closeWindow().then(r=>{
 
+                          })
+                      }} variant={"contained"}> Yes </Button> 
+                      <Button onClick={()=>{
+                          this.setState({openCloseDialog: false})
+                      }} variant={"outlined"}> No </Button>
+                    </DialogActions>
+                  </Dialog>
+                    }
 
             </IdleTimerProvider>
         </ThemeProvider> 

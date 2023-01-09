@@ -70,7 +70,10 @@ module.exports = class TicketController extends baseController{
                 if(paidamount === undefined || paidamount === null){
                     paidamount = 0
                 } 
-                var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                var remainAmount = (Number(ticket.ticketTotalAmount) - Number(paidamount)).toFixed(2)
+                if(Number(remainAmount) > 0){
+                    console.log("REMAINING GREATER THAN 0")
+                }
                 console.log("Payments remain",ticket.ticketTotalAmount,  remainAmount, paidamount)
                 this.readAll(options, 'ticketpayment').then(payments=>{
                     this.sendResponse({data: payments, remainAmount:remainAmount}, res, 200);
@@ -140,9 +143,13 @@ module.exports = class TicketController extends baseController{
                 if(paidamount === undefined || paidamount === null){
                     paidamount = 0
                 }
-                var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                // var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
+                // console.log(remainAmount, paidamount)
+
+                var remainAmount = (Number(ticket.ticketTotalAmount) - Number(paidamount)).toFixed(2)
+                console.log("REMAINING AMOUNT FROM PAYMENT CONTROLLER")
                 console.log(remainAmount, paidamount)
-                if(remainAmount <= 0){
+                if(Number(remainAmount) <= 0){ 
                     this.update('tickets', {paymentStatus:'Paid',ticketId: ticket.ticketId}, {where:{ticketId: ticket.ticketId}}).then(r=>{
                         this.sendResponse({message:"Paid successfully"}, res, 200);
                     })
