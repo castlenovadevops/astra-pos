@@ -71,7 +71,7 @@ module.exports = class CustomerController extends baseController{
     }
     saveCustomerFromCheckin= async(req,res,next)=>{
         var input = req.input;
-        input.merchantId = req.deviceDetails.merchantId;
+        input.merchantId = input.merchantId;
         input.mCustomerStatus = 1;
         input.createdBy= '';//req.userData.mEmployeeId;
         input.createdDate = this.getDate();

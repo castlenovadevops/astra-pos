@@ -80,8 +80,7 @@ module.exports = class AppointmentController extends baseController{
            
             appinput["guestName"] = obj.guestName
             appinput["customerId"] = obj.customer !== null?  customerdetail.mCustomerId : ''
-            appinput["parentId"] = ''
-            appinput["appointmentStatus"] = 'Booked'
+            appinput["parentId"] = '' 
            
 
             this.create('appointments', appinput).then(async (r)=>{

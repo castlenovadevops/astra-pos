@@ -3,46 +3,32 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-     return sequelize.define("batches", {
-        batchId:{
-            field:'batchId',
+     return sequelize.define("sys_settings", {
+        id:{
+            field:'id',
             type: DataTypes.UUID,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
-        batchName: {
-             field: 'batchName', 
+        feature: {
+             field: 'feature', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false 
         },
-        merchantId: {
-             field: 'merchantId', 
+        value: {
+             field: 'value', 
              type: DataTypes.STRING(255), 
              primaryKey: false, 
              allowNull: false 
         },
-        createdBy: {
-             field: 'createdBy', 
-             type: DataTypes.STRING(100), 
+        status: {
+             field: 'status', 
+             type: DataTypes.INTEGER, 
              primaryKey: false, 
              allowNull: false,
              defaultValue:1,
-        },
-        createdDate: {
-             field: 'createdDate', 
-             type: DataTypes.STRING(100), 
-             primaryKey: false, 
-             allowNull: false,
-             defaultValue:1,
-        },
-        batchMode: {
-             field: 'batchMode', 
-             type: DataTypes.STRING(100), 
-             primaryKey: false, 
-             allowNull: false,
-             defaultValue:'manual',
-        }
+        }, 
     }, {
       freezeTableName: true,
       timestamps: false,

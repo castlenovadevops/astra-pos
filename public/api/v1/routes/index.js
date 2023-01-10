@@ -43,6 +43,8 @@ const AppointmentController = require('../controllers/merchant/appointmentContro
 const BatchController = require('../controllers/merchant/batchController');
 const WaitinglistController = require('../controllers/merchant/waitinglistController');
 
+const SettingsController = require('../controllers/settings/settingsController');
+
 const express = require('express');
 const path = require('path');
 
@@ -97,6 +99,7 @@ const corsOptions ={
         new SyncTicketController(),
 
         new PrintController(),
+        new SettingsController(),
         new CheckInController(),
         new AppointmentController(),
         new BatchController(),

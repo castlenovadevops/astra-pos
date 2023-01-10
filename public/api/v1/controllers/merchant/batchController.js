@@ -23,6 +23,18 @@ module.exports = class BatchController extends baseController{
                     authorization:"authorizationAuth"
                 }, 
                 {
+                    path:this.path+"/autobatch",
+                    type:"post",
+                    method: "autoBatch",
+                    authorization:"authorizationAuth"
+                }, 
+                {
+                    path:this.path+"/autobatchprevday",
+                    type:"post",
+                    method: "autoBatchPrevDay",
+                    authorization:"authorizationAuth"
+                },
+                {
                     path:this.path+"/getBatches",
                     type:"post",
                     method: "getBatches",
@@ -49,7 +61,8 @@ module.exports = class BatchController extends baseController{
             batchName: batchname,
             createdBy: req.userData.mEmployeeId,
             createdDate: this.getDate(),
-            merchantId: req.deviceDetails.merchantId
+            merchantId: req.deviceDetails.merchantId,
+            batchMode: 'manual'
         }
         this.create('batches', input).then(r=>{
             var batchID  = r.dataValues !== undefined ? r.dataValues.batchId : r.batchId
@@ -62,6 +75,72 @@ module.exports = class BatchController extends baseController{
         })
     }
 
+    autoBatchPrevDay = async(req, res, next)=>{ 
+        let batches = await this.readAll({},'batches')
+        var batchname = "Batch "+(batches.length+1)
+        var fromdate = req.input.fromdate 
+        // var todate = req.input.to_date || this.getDate()
+        var input  = {
+            batchName: batchname,
+            createdBy: req.userData.mEmployeeId,
+            createdDate: this.getDate(),
+            merchantId: req.deviceDetails.merchantId,
+            batchMode:'auto'
+        }
+        var tickets = await this.readAll({where:{ticketId:{
+            [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and payMode='card' and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+fromdate.substring(0, 10)+" 23:59:59')")
+        }}}, 'tickets')
+        console.log(tickets)
+        console.log("TICKET LENGTH BATCH AUTO", tickets.length)
+        if(tickets.length > 0){
+            this.create('batches', input).then(r=>{
+                var batchID  = r.dataValues !== undefined ? r.dataValues.batchId : r.batchId
+                this.update(`tickets`,{batchId: batchID},{where:{ticketId:{
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and payMode='card' and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+fromdate.substring(0, 10)+" 23:59:59')")
+                }}}).then(r=>{
+                    this.sendResponse({data: input}, res, 200)
+                })
+            }).catch(e=>{
+                this.sendResponse({message:"Error occurred. Please try again later"}, res, 400)
+            })
+        }
+        else{
+            this.sendResponse({data: "Batch not created"}, res, 200)
+        }
+    }
+
+    autoBatch = async(req, res, next)=>{ 
+        let batches = await this.readAll({},'batches')
+        var batchname = "Batch "+(batches.length+1)
+        var fromdate =  this.getDate()
+        // var todate = req.input.to_date || this.getDate()
+        var input  = {
+            batchName: batchname,
+            createdBy: req.userData.mEmployeeId,
+            createdDate: this.getDate(),
+            merchantId: req.deviceDetails.merchantId,
+            batchMode:'auto'
+        }
+        var tickets = await this.readAll({where:{ticketId:{
+            [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and payMode='card' and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+fromdate.substring(0, 10)+" 23:59:59')")
+        }}}, 'tickets')
+        console.log(tickets)
+        console.log("TICKET LENGTH BATCH AUTO", tickets.length)
+        if(tickets.length > 0){ 
+            this.create('batches', input).then(r=>{
+                var batchID  = r.dataValues !== undefined ? r.dataValues.batchId : r.batchId
+                this.update(`tickets`,{batchId: batchID},{where:{ticketId:{
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and payMode='card'  and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+fromdate.substring(0, 10)+" 23:59:59')")
+                }}})
+                this.sendResponse({data: input}, res, 200)
+            }).catch(e=>{
+                this.sendResponse({message:"Error occurred. Please try again later"}, res, 400)
+            })
+        }
+        else{
+            this.sendResponse({data: input}, res, 200)
+        }
+    }
 
     getBatches= async(req, res, next)=>{
         var fromdate = req.input.from_date || this.getDate()
