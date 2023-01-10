@@ -9,7 +9,7 @@ import FormManager from "../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
 import FButton from '../../../components/formComponents/components/button';
-
+import AutoBatchComponent from "../../../autoBatch";
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class Customer extends React.Component{
@@ -225,6 +225,7 @@ export default class Customer extends React.Component{
     render(){
         return <Page title="Customer | Astro POS">
                 {this.state.isLoading && <Loader show={this.state.isLoading} />}
+                <AutoBatchComponent/>
                 <ToastContainer
             position="top-center"
             autoClose={5000}

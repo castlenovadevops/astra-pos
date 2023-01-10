@@ -8,7 +8,7 @@ import FormManager from "../../../components/formComponents/FormManager";
 import schema from './schema.js';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material'; 
 import PaymentModal from "../../ticket/createTicket/footer/TicketPayment"; 
-
+import AutoBatchComponent from "../../../autoBatch";
 import CardList from './list';
 import DialogComponent from "../../../components/Dialog";
 
@@ -210,7 +210,7 @@ export default class GiftCards extends React.Component{
     render(){
         return <Page title="Gift Cards | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
-            
+            <AutoBatchComponent/> 
             {!this.state.addForm &&
                 <Container maxWidth="xl">
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

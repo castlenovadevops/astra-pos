@@ -5,6 +5,7 @@ import HTTPManager from "../../../../utils/httpRequestManager";
 import { toast, ToastContainer } from 'react-toastify';
 import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
+import AutoBatchComponent from "../../../../autoBatch";
 import {Box, Grid,   Container, Typography, Stack} from '@mui/material';
 export default class CommissionPayment extends React.Component{
     httpManager = new HTTPManager();
@@ -89,6 +90,7 @@ export default class CommissionPayment extends React.Component{
     render(){
         return <Page title="Loyalty Points Settings | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
+            <AutoBatchComponent/> 
             <ToastContainer
             position="top-center"
             autoClose={5000}

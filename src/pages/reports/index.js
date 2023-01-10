@@ -13,7 +13,7 @@ import LoaderContent from '../../components/Loader';
  import HTTPManager from '../../utils/httpRequestManager';
  import NumberPad from '../../components/numberpad';
  import './tabs.css';
-import { instanceOf } from 'prop-types';
+ import AutoBatchComponent from '../../autoBatch';
 
  const ITEM_HEIGHT = 48;
  const ITEM_PADDING_TOP = 8;
@@ -1040,6 +1040,7 @@ export default class ReportComponent extends React.Component{
         return(
             <Page title="Report | Astro POS">
                  {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}  
+                 <AutoBatchComponent/> 
                 {this.state.isAuthenticated &&  <Card style={{  position:'absolute',top:64, left:0, right:0, bottom:0, zIndex:'999'}}>
                             <div className="tab">
                                 {/* {this.state.restrictionmode === 'Owner' &&  */}

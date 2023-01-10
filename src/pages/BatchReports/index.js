@@ -1,7 +1,8 @@
 import React from "react";  
 import Moment from 'moment';  
-import { Card,  Stack, Container, TextField , Grid,IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText } from '@mui/material';
-
+import { Card,  Stack, Container, TextField , Grid,IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, FormControlLabel } from '@mui/material';
+ 
+import { TimerOutlined } from '@mui/icons-material'
 // //import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 import {LocalizationProvider, DesktopDatePicker} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
@@ -12,10 +13,14 @@ import HTTPManager from "../../utils/httpRequestManager";
 import moment from 'moment';
 
  
+import TimePicker from 'rc-time-picker'; 
 import Iconify from '../../components/Iconify';
 import Loader from "../../components/Loader";
-const getIcon = (name) => <Iconify style={{color:'#d0d0d0', marginLeft:'5px'}} icon={name} width={22} height={22} />;
-
+const getIcon = (name) => <Iconify style={{color:'#000', marginLeft:'5px'}} icon={name} width={22} height={22} />;
+ 
+const today = moment()
+const format = 'hh:mm A';
+const format24 = 'HH:mm';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -49,7 +54,9 @@ export default class BatchReports extends React.Component {
         tickets:[],
         batchDetail:{},
         showDetail:false,
-        printalert:false
+        printalert:false,
+        openSettings:false,
+        batchTime:moment().hour(23).minute(55)
     }
       
     this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
@@ -57,6 +64,44 @@ export default class BatchReports extends React.Component {
     this.getBatchReports = this.getBatchReports.bind(this);
     this.getBatchTickets = this.getBatchTickets.bind(this);
     this.showBatchDetail = this.showBatchDetail.bind(this);
+    this.onChange = this.onChange.bind(this)
+    this.saveTime = this.saveTime.bind(this)
+    this.getData = this.getData.bind(this)
+  }
+
+  saveTime(){
+    this.setState({isLoading: true},()=>{
+        this.httpManager.postRequest("/pos/syssettings/saveSettings", {feature:"batchsettle", value: this.state.batchTime.format(format24)}).then(res=>{
+            this.getData();
+        })
+    })
+  }
+
+  getData(){
+    this.getBatchReports();
+    this.setState({isLoading: true},()=>{
+        this.httpManager.postRequest("pos/syssettings/getSettingsByFeature", {feature:'batchsettle', status:1}).then(res=>{
+            if(res.data !== null){
+                console.log(res.data)
+                if(res.data.value.split(":") instanceof Array){
+                    if(res.data.value.split(":").length === 2){
+                        var tmp = res.data.value.split(":")
+                        
+                        window.localStorage.setItem('batchTime', (tmp[1]+" "+tmp[0]).trim())
+                        var time = moment().hour(tmp[0]).minute(tmp[1])
+                        this.setState({batchTime: time}, ()=>{
+                            console.log(this.state.batchTime)
+                        })
+                    }
+                }
+            }
+            this.setState({isLoading: false, openSettings: false})
+        })
+    })
+  }
+
+  onChange(value){
+    this.setState({batchTime: value})
   }
  
     handlechangeFromDate(e){
@@ -70,7 +115,7 @@ export default class BatchReports extends React.Component {
         this.setState({isLoading: true})
         let detail = window.localStorage.getItem("merchantdetail");
         this.setState({merchantdetail: JSON.parse(detail)}, function(){  
-                this.getBatchReports() 
+                this.getData()
         });
     }
 
@@ -108,6 +153,12 @@ export default class BatchReports extends React.Component {
                     <IconButton onClick={()=>{
                         this.setState({showDatePopup: true})
                     }}><CalendarMonthOutlined/></IconButton>
+                </div>
+
+                <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end'}}> 
+                    <IconButton onClick={()=>{
+                       this.setState({openSettings: true})
+                    }}>{getIcon('mdi:cog')}</IconButton>
                 </div>
 
             </div>
@@ -315,6 +366,30 @@ export default class BatchReports extends React.Component {
                         <DialogActions style={{display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'1rem'}}> 
                         </DialogActions>
             </Dialog>  
+
+
+            <Dialog onClose={()=>{
+                this.setState({openSettings: false})
+            }} open={this.state.openSettings}>
+                <DialogContent>
+                    <span>Select Time:</span>
+                    <TimePicker
+                        showSecond={false}
+                        defaultValue={this.state.batchTime} 
+                        className="appt_timepicker"
+                        onChange={this.onChange}
+                        format={format}
+                        use12Hours
+                        inputReadOnly
+                        inputIcon={<TimerOutlined/>}
+                    /> 
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={()=>{
+                            this.saveTime()
+                    }} >Save</Button>
+                </DialogActions>
+            </Dialog>
 
                 </div> 
             </div>

@@ -3,7 +3,7 @@ import React from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers'; 
 import Page from '../../components/Page';
-
+import AutoBatchComponent from '../../autoBatch';
 // material
 import { Button, Card, Stack, Container,TextField, Typography,Dialog,DialogTitle,DialogContent } from '@mui/material';
 import TableContent from '../../components/table/tableView';
@@ -142,6 +142,7 @@ export default class PayoutComponent extends React.Component{
     render(){
         return(
             <Page title="Payout | Astro POS">
+                <AutoBatchComponent/> 
                 {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
                 <Container maxWidth="xl">
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

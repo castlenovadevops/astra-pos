@@ -26,7 +26,7 @@ var menu = Menu.buildFromTemplate([
     ]
 }]);
 
-Menu.setApplicationMenu(menu);
+// Menu.setApplicationMenu(menu);
 app.disableHardwareAcceleration(); 
 
 // const db = new sqlite3.Database(
@@ -89,7 +89,8 @@ const createWindow = () => {
   
   mainWindow.once('ready-to-show', () => {
     // console.log("public-ready-to-show")
-    
+    console.log("appOpen called")
+    mainWindow.webContents.send("appOpen", "app started" )
   }); 
   
 

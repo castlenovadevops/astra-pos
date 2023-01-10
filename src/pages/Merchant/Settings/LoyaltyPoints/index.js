@@ -8,7 +8,7 @@ import schema from '../LPSettings/schema.json';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
 import LPRedeemSettings from '../LPRedeemSettings';
 import LPActivationSettings from '../LPActivationSettings';
-
+import AutoBatchComponent from "../../../../autoBatch";
 
 export default class CommissionPayment extends React.Component{
     httpManager = new HTTPManager();
@@ -93,6 +93,7 @@ export default class CommissionPayment extends React.Component{
     render(){
         return <Page title="Loyalty Points Settings | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
+            <AutoBatchComponent/> 
             <ToastContainer
             position="top-center"
             autoClose={5000}

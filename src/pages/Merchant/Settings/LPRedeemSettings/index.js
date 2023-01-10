@@ -4,7 +4,7 @@ import Page from '../../../../components/Page';
 import HTTPManager from "../../../../utils/httpRequestManager"; 
 import { toast, ToastContainer } from 'react-toastify'; 
 import {Box, Grid,   Container, Typography, Stack, InputAdornment} from '@mui/material';
-
+import AutoBatchComponent from "../../../../autoBatch";
 import FTextField from "../../../../components/formComponents/components/textField";
 import FButton from "../../../../components/formComponents/components/button";
 import FSelect from "../../../../components/formComponents/components/select";
@@ -150,6 +150,7 @@ export default class CommissionPayment extends React.Component{
     render(){
         return <Page title="Loyalty Points Redeem Settings | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
+            <AutoBatchComponent/> 
             <ToastContainer
             position="top-center"
             autoClose={5000}

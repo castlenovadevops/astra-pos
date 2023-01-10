@@ -6,7 +6,9 @@ process.once('loaded', () => {
         on (eventName, callback) {
             ipcRenderer.on(eventName, callback)
           },
-
+          async appOpen(args){
+            return ipcRenderer.invoke('appOpen', args)
+          },
           async closeWindow (args) {
             return  ipcRenderer.invoke("closeWindow", args)
           },

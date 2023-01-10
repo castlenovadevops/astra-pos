@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
-
+import AutoBatchComponent from '../../autoBatch';
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64;
@@ -40,6 +40,7 @@ export default function DashboardLayout() {
       <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
       <MainStyle>
+        <AutoBatchComponent/>
         <Outlet />
       </MainStyle>
     </RootStyle>

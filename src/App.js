@@ -12,8 +12,7 @@ import HTTPManager from './utils/httpRequestManager';
 import React from 'react';
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './app.css';
-
+import './app.css'; 
 import { 
   IdleTimerProvider, 
   IdleTimerConsumer, 
@@ -21,9 +20,11 @@ import {
   IdleTimerContext,
   useIdleTimerContext
 } from 'react-idle-timer'
+import AutoSync from './autoSync';
 
 import Socket from './socket';
 import SyncProgress from './pages/syncData/syncProgress'; 
+import dayjs from 'dayjs'; 
 
 export default class App extends React.Component{
   httpManager = new HTTPManager();
@@ -32,7 +33,8 @@ export default class App extends React.Component{
     super();
     this.state={
       syncData: false,
-      openCloseDialog: false
+      openCloseDialog: false,
+      batchtime:'55 23 * * *'
     }
 
     this.onPrompt=this.onPrompt.bind(this)
@@ -43,6 +45,7 @@ export default class App extends React.Component{
     this.onLoginIdle=this.onLoginIdle.bind(this)
     this.onLoginAction=this.onLoginAction.bind(this)
     this.onLoginActive=this.onLoginActive.bind(this)
+    this.getBatchSettleTime = this.getBatchSettleTime.bind(this)
   }
 
   onPrompt(){
@@ -91,9 +94,26 @@ export default class App extends React.Component{
     // Do something when a user triggers a watched event
   }
 
+  updateBatch(){ 
+    this.setState({autobatch:false}, ()=>{
+      setTimeout(() => {
+          this.setState({autobatch: true}, ()=>{
+            this.updateBatch()
+          })
+      }, 100);
+    })
+  }
+
   componentDidMount(){ 
     window.api.on("closecalled",(e)=>{
       this.setState({openCloseDialog: true})
+    }) 
+
+    // this.updateBatch()
+    window.api.on("appOpen", (e)=>{
+      this.httpManager.postRequest(`/merchant/batch/autobatchprevday`, {fromdate:dayjs(new Date().toISOString()).add(-1,'day').format("YYYY-MM-DD")}).then(r=>{
+        console.log(r)
+      })
     })
     var accessToken=window.localStorage.getItem('accessToken') || '' 
     if(accessToken === ''){ 
@@ -101,6 +121,7 @@ export default class App extends React.Component{
         // console.log("REOPNSE")
         // console.log(response)
         window.localStorage.setItem('accessToken', response.token) 
+        this.getBatchSettleTime()
         toast.success(response.message,  {
             position: "top-center",
             autoClose: 5000,
@@ -125,6 +146,31 @@ export default class App extends React.Component{
       });
       })
     } 
+    else{
+      console.log("MOUNT CALLED")
+      this.getBatchSettleTime();
+    }
+  }
+
+  getBatchSettleTime(){
+    console.log("SETLE CALLED")
+    var thisobj = this;
+    this.httpManager.postRequest("pos/syssettings/getSettingsByFeature", {feature:'batchsettle', status:1}).then(res=>{
+      if(res.data !== null){
+          if(res.data.value.split(":") instanceof Array){
+              if(res.data.value.split(":").length === 2){
+                  var tmp = res.data.value.split(":")  
+                  window.localStorage.setItem('batchTime', (tmp[1]+" "+tmp[0]).trim())
+                  thisobj.setState({batchtime: tmp[1]+" "+tmp[0]+" * * *"}, ()=>{ 
+                      console.log(this.state.batchtime)
+                  })
+              }
+          }
+      }
+      else{ 
+        this.setState({batchtime:'55 23 * * *'})
+      }
+  })
   }
 
   render(){
@@ -151,21 +197,14 @@ export default class App extends React.Component{
             onActive={this.onLoginActive}
             onAction={this.onLoginAction}
                   >
-            <IdleTimerProvider
-            timeout={15 * 1000 * 60}
-            onPrompt={this.onPrompt}
-            onIdle={this.onIdle} 
-            onActive={this.onActive}
-            onAction={this.onAction}
-                  >
-                  {this.state.syncData && <div style={{'visibility':'hidden'}}><SyncProgress afterSyncComplete={()=>{
+            <AutoSync batchtime={this.state.batchtime}/>
+                  {/* {this.state.syncData && <div style={{'visibility':'hidden'}}><SyncProgress afterSyncComplete={()=>{
                       this.setState({syncData:false})
-                    }} /></div>}
+                    }} /></div>} */}
                   <Socket />
-            <Router />
-            </IdleTimerProvider>
+            <Router /> 
 
-            {this.state.openCloseDialog && <Dialog open={this.state.openCloseDialog}>
+            {/* {this.state.openCloseDialog && <Dialog open={this.state.openCloseDialog}>
                     <DialogContent>
                         Your are trying to close the app. Are you sure to continue?
                     </DialogContent>
@@ -180,7 +219,7 @@ export default class App extends React.Component{
                       }} variant={"outlined"}> No </Button>
                     </DialogActions>
                   </Dialog>
-                    }
+                    } */}
 
             </IdleTimerProvider>
         </ThemeProvider> 

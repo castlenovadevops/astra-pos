@@ -18,6 +18,7 @@ export default class SelectedServicesComponent extends  React.Component{
 
     static getDerivedStateFromProps(nextProps, prevState) { 
         if (nextProps.data.selectedServices !==  prevState.selectedServices || nextProps.data.selectedRow !== prevState.selectedRow) { 
+            console.log(nextProps.data.selectedServices)
             return {selectedServices: nextProps.data.selectedServices, selectedRow: nextProps.data.selectedRow}
         }
         return null;

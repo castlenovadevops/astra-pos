@@ -34,7 +34,13 @@ module.exports = class CustomerController extends baseController{
                     type:"post",
                     method: "saveCustomer",
                     authorization:'authorizationAuth'
-                }, 
+                },  
+                {
+                    path:this.path+"/saveCustomerFromCheckin",
+                    type:"post",
+                    method: "saveCustomerFromCheckin",
+                    authorization:'accessAuth'
+                },
                 {
                     path:this.path+"/updateCustomer",
                     type:"post",
@@ -61,6 +67,22 @@ module.exports = class CustomerController extends baseController{
             else{
                 this.sendResponse({message:"This mobile number not exists."}, res, 200)
             }
+        })
+    }
+    saveCustomerFromCheckin= async(req,res,next)=>{
+        var input = req.input;
+        input.merchantId = req.deviceDetails.merchantId;
+        input.mCustomerStatus = 1;
+        input.createdBy= '';//req.userData.mEmployeeId;
+        input.createdDate = this.getDate();
+
+        input.updatedBy= '';//req.userData.mEmployeeId;
+        input.updatedDate = this.getDate();
+        console.log("saveCustomerFromCheckin CALLED")
+        console.log(input)
+        
+        this.create('mCustomers', input).then(async (resp)=>{ 
+            this.sendResponse({message:"Saved sucessfully", data:resp}, res, 200)
         })
     }
 

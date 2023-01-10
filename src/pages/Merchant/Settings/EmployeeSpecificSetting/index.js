@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Card, Grid,   Container, Typography, Stack, TextField} from '@mui/material';  
-
+import AutoBatchComponent from "../../../../autoBatch";
 const service = {
     borderBottom:'2px solid #f0f0f0',
     padding: 10,
@@ -180,6 +180,7 @@ export default class EmployeeSetting extends React.Component{
     render(){
         return <Page title="Employee Specific Setting | Astro POS">
             {/* {this.state.isLoading && <Loader show={this.state.isLoading} />} */}
+            <AutoBatchComponent/> 
             <ToastContainer
             position="top-center"
             autoClose={5000}

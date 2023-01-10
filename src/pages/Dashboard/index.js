@@ -1,5 +1,7 @@
 import React from "react";
 import MerchantDashboard from './merchantDashboard'; 
+// import AutoSync from "../../autoSync";
+import AutoBatchComponent from "../../autoBatch";
 export default class Dashboard extends React.Component{
     constructor(){
         super();
@@ -19,6 +21,10 @@ export default class Dashboard extends React.Component{
         })
     }
     render(){
-        return  <MerchantDashboard style={{height:'100%'}}/> 
+        return  <> 
+        <MerchantDashboard style={{height:'100%'}}/> 
+        <AutoBatchComponent/>
+        {/* {window.localStorage.getItem('batchTime') !== undefined && window.localStorage.getItem('batchTime') !== '' && <AutoSync batchtime={(window.localStorage.getItem('batchTime') || '55 23')+' * * *'}/>}  */}
+        </>
     }
 }

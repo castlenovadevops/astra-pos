@@ -13,7 +13,7 @@ import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers';
 import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
 import Page from '../../components/Page';
 import LoaderContent from '../../components/Loader'; 
-
+import AutoBatchComponent from "../../autoBatch";
 // const ITEM_HEIGHT = 48;
 // const ITEM_PADDING_TOP = 8;
 // const MenuProps = {
@@ -147,6 +147,7 @@ export default class Transactions extends React.Component {
         return(
             <Page title="Transactions | Astra POS">
                  {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
+                 <AutoBatchComponent/> 
                  <Container maxWidth="xl">
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4" gutterBottom>

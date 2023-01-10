@@ -1,7 +1,7 @@
 import React from "react"; 
 import axios from 'axios';
 import Moment from 'moment';
-
+import AutoBatchComponent from "../../autoBatch";
 import { Paper,Grid,Button, Stack, Container, Typography,IconButton,TextField,DialogContentText,Dialog,DialogTitle,DialogContent,DialogActions } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers';
@@ -105,7 +105,7 @@ export default class WaitingList extends React.Component {
         return(
             <Page title="Waiting List | Astra POS">
                  {this.state.isLoading && <LoaderContent show={this.state.isLoading} />}
-                   
+                 <AutoBatchComponent/> 
         {this.state.showCreateTicket && <div className="createTicketContainer" ><TicketContainer ticketDetail={this.state.ticketDetail} 
         ownerTechnician={this.state.ownerTechnician} functions={{
             closeCreateTicket:this.closeCreateTicket

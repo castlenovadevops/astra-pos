@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Box, Grid,   Container, Typography, Stack} from '@mui/material'; 
-
+import AutoBatchComponent from "../../../../autoBatch";
 export default class DefaultDiscountDivision extends React.Component{
     httpManager = new HTTPManager();
 
@@ -170,6 +170,7 @@ export default class DefaultDiscountDivision extends React.Component{
     render(){
         return <Page title="Default Discount Division | Astro POS">
             {/* {this.state.isLoading && <Loader show={this.state.isLoading} />} */}
+            <AutoBatchComponent/> 
             <ToastContainer
             position="top-center"
             autoClose={5000}

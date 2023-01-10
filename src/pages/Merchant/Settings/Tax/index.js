@@ -10,7 +10,7 @@ import schema from './schema.json';
 import parse from 'html-react-parser'
 import {Box, Grid, Card, Container,  Typography, Stack,  Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button} from '@mui/material';
 import FButton from '../../../../components/formComponents/components/button';
-
+import AutoBatchComponent from "../../../../autoBatch";
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class Tax extends React.Component{
@@ -387,6 +387,7 @@ export default class Tax extends React.Component{
     render(){
         return <Page title="Tax | Astro POS">
                 {this.state.isLoading && <Loader show={this.state.isLoading} />}
+                <AutoBatchComponent/> 
                 <ToastContainer
                 position="top-center"
                 autoClose={5000}

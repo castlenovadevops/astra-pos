@@ -10,6 +10,7 @@ import schema from './schema.json';
 import {Box, Grid, Card,  Container, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@mui/material';
 import FButton from '../../../components/formComponents/components/button';
 import { Offline, Online } from "react-detect-offline";
+import AutoBatchComponent from "../../../autoBatch";
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class Employee extends React.Component{
@@ -257,6 +258,7 @@ export default class Employee extends React.Component{
     render(){
         return <Page title="Employees | Astro POS">
             {this.state.isLoading && <Loader show={this.state.isLoading} />}
+            <AutoBatchComponent/>
             <ToastContainer
             position="top-center"
             autoClose={5000}

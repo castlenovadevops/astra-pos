@@ -89,7 +89,7 @@ const createWindow = () => {
   
   mainWindow.once('ready-to-show', () => {
     // console.log("public-ready-to-show")
-    
+    mainWindow.webContents.send("appOpen", "app started" )
   }); 
   
 
