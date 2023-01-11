@@ -302,7 +302,7 @@ export default class CreateTicketComponent extends React.Component{
 
     saveTicketPromise = async(req, res, next)=>{
         return new Promise(async (resolve) => { 
-            this.setState({selectedRow:-1},()=>{
+            
                 if(this.state.selectedServices.length > 0){
                     // console.log("AAAA")
                     // console.log("AAAA", this.state.ticketDetail)
@@ -319,14 +319,15 @@ export default class CreateTicketComponent extends React.Component{
                         console.log(ticketinput)
                         this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
                             this.reloadTicket();
+                            this.setState({selectedRow:-1},()=>{})
                             resolve("success")
                         })
                     });
                 }
                 else{
+                    this.setState({selectedRow:-1},()=>{})
                     resolve("Success")
                 }
-            })
         })
     }
 
@@ -357,6 +358,8 @@ export default class CreateTicketComponent extends React.Component{
                 console.log(ticketinput)
                 this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
                     console.log(ticketinput)
+
+                    this.setState({selectedRow:-1},()=>{})
                     if(option === 'close')
                         this.props.data.closeCreateTicket();
                     else
@@ -953,7 +956,7 @@ export default class CreateTicketComponent extends React.Component{
                 // this.getTicketPayments()
                 this.setState({isPaidOnOpen: true, isDisabled: true})
             }
-            this.setState({ticketDetail: this.props.data.ticketDetail, ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
+            this.setState({ticketDetail: this.props.data.ticketDetail, selectedTech:this.props.data.ticketDetail.merchantEmployee,  ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
 
                 this.getTicketDetails()
                 this.setState({selectedTech: this.props.data.ticketDetail.merchantEmployee, customer_detail: this.props.data.ticketDetail.mCustomer !== null ? this.props.data.ticketDetail.mCustomer : {}},()=>{
@@ -1039,7 +1042,7 @@ export default class CreateTicketComponent extends React.Component{
         return  <Grid container className='fullWidth fullHeight' style={{background:'#fff', borderTop:'1px solid #f0f0f0'}}>
                     <Grid item xs={12}  className='fullWidth fullHeight'>
                             <Grid item xs={12} style={{height:'100px', background:'red'}} className='fullWidth'>
-                               {this.state.selectedTech.mEmployeeId !== undefined && <TicketTopBar data={{
+                               {this.state.selectedTech !== undefined && this.state.selectedTech.mEmployeeId !== undefined && <TicketTopBar data={{
                                     selectedTech:this.state.selectedTech,
                                     customer_detail:this.state.customer_detail,
                                     ticketDetail: this.state.ticketDetail,

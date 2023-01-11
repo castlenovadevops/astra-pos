@@ -18,7 +18,8 @@ module.exports = (req, res, next) => {
                 // console.log(crypto.AESDecrypt( req.body.data)); 
             }
             const devicetoken = req.headers.devicetoken 
-            console.log(devicetoken)
+            console.log("DEVICE TOKEN HEADER", req.input)
+            // console.log(devicetoken)
             if(devicetoken!== undefined){
                 const decoded_device = jwt.verify(devicetoken, secretKey); 
                 req.deviceDetails = decoded_device; 

@@ -1,7 +1,7 @@
 import React from "react";  
 import Moment from 'moment';  
 import { Card,  Stack, Container, TextField , Grid,IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, FormControlLabel } from '@mui/material';
- 
+ import AutoBatchComponent from "../../autoBatch";
 import { TimerOutlined } from '@mui/icons-material'
 // //import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 import {LocalizationProvider, DesktopDatePicker} from '@mui/x-date-pickers';
@@ -73,6 +73,7 @@ export default class BatchReports extends React.Component {
     this.setState({isLoading: true},()=>{
         this.httpManager.postRequest("/pos/syssettings/saveSettings", {feature:"batchsettle", value: this.state.batchTime.format(format24)}).then(res=>{
             this.getData();
+            window.location.href = "/batchreports";
         })
     })
   }
@@ -223,7 +224,7 @@ export default class BatchReports extends React.Component {
     render() {
         return(
             <div style={{height:'100%'}}> 
-
+ <AutoBatchComponent/>
                 {this.state.isLoading &&  <Loader show={this.state.isLoading}></Loader>}
                 
                 

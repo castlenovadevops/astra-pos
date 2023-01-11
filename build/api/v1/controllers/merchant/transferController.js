@@ -81,6 +81,9 @@ module.exports = class TicketController extends baseController{
     }
 
     createTicketForTransfer= async(req, res, next, ticketcode)=>{ 
+        console.log("&&&&&&&&&")
+        console.log(req.input)
+        console.log("&&&&&&&&&")
         try{
         var input = {
             ticketCode: ticketcode,
@@ -96,9 +99,9 @@ module.exports = class TicketController extends baseController{
             taxApplied: req.input.ticketDetail.taxApplied,
             serviceDiscountApplied: req.input.ticketDetail.serviceDiscountApplied,
             ticketDiscountApplied:0,
-            tipsAmount: req.input.service.totalTips || '',
-            serviceAmount: req.input.service.subTotal,
-            ticketTotalAmount:req.input.service.subTotal+ req.input.service.totalTax -  req.input.service.totalDiscount + req.input.service.totalTips
+            tipsAmount:  '',
+            serviceAmount: '',
+            ticketTotalAmount:''
         } 
         this.create('tickets', input).then(ticket=>{ 
             this.transferService(ticket.dataValues, req, res, next);

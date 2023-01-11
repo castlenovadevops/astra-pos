@@ -174,8 +174,10 @@ module.exports = class SyncCategoryController extends baseController{
         var detail = data[idx]
         if(tidx < detail.mProductTaxes.length){
             var taxdetail = detail.mProductTaxes[tidx]; 
-            this.create('mProductTax', taxdetail, false).then(r=>{
-                this.saveProductTax(tidx+1, idx, data, model, syncedRows, req, res, next);
+            this.update('mProductTax', {status:2}, {where:{mProductId: taxdetail.mProductId, mTaxId: taxdetail.mTaxId}}).then(r=>{
+                this.create('mProductTax', taxdetail, false).then(r=>{
+                    this.saveProductTax(tidx+1, idx, data, model, syncedRows, req, res, next);
+                })
             })
         }
         else{

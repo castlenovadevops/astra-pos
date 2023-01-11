@@ -47,8 +47,10 @@ module.exports = class AppointmentController extends baseController{
     
 
     saveAppointment = async(req, res, next)=>{ 
-        var merchantdetail = await this.readOne({where:{status:1}}, 'mDefaultCommission')
-        if(merchantdetail.dataValues.merchantId === req.input.data.merchantId){
+         var merchantdetail = await this.readOne({where:{status:1}}, 'mDefaultCommission')
+         console.log("APPOINTMENT CALLED", merchantdetail.dataValues.merchantId , req.input.data.merchantId)
+         if(merchantdetail.dataValues.merchantId === req.input.data.merchantId){
+            console.log("APPOINTMENT CALLED 1")
             this.saveAppointments(0, req, res, next) 
         }
         else{
@@ -57,7 +59,9 @@ module.exports = class AppointmentController extends baseController{
     }
 
     saveAppointments = async(i,req,res,next, parentappid='')=>{
+        console.log("APPOINTMENT CALLED 2")
         var keys =  req.input.data.appointments
+        console.log(req.input)
         var owner = await this.readOne({where:{mEmployeeRoleName:'Owner'}}, 'merchantEmployees')
         if(i < keys.length){
             var obj = keys[i]
