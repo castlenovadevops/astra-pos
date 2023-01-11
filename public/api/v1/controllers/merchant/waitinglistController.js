@@ -273,12 +273,34 @@ module.exports = class WaitinglistController extends baseController{
                             {
                                 model:this.models.mProducts,
                                 required: false,
+                                where:{
+                                    mProductStatus:1
+                                },
                                 include:[
                                     {
                                         model:this.models.mProductTax,
-                                        where:{
-                                            status:1
+                                        attributes:{
+                                            include:[
+                                                [
+                                                    sequelize.literal("(select mTaxName from mTax where mTaxId=`appointmentServices->mProduct->mProductTaxes`.`mTaxId`)"),
+                                                    "mTaxName"
+                                                ], 
+                                                [
+                                                    sequelize.literal("(select mTaxType from mTax where mTaxId=`appointmentServices->mProduct->mProductTaxes`.`mTaxId`)"),
+                                                    "mTaxType"
+                                                ],
+                                                [
+                                                    sequelize.literal("(select mTaxValue from mTax where mTaxId=`appointmentServices->mProduct->mProductTaxes`.`mTaxId`)"),
+                                                    "mTaxValue"
+                                                ]
+                                            ]
                                         },
+                                        // where:{
+                                        //     status:1,
+                                        //     mTaxId:{
+                                        //         [Sequelize.Op.in]: sequelize.literal("(select mTaxId from mTax where mTaxStatus=1)")
+                                        //     }
+                                        // },
                                         required:false
                                     }
                                 ]
@@ -295,6 +317,7 @@ module.exports = class WaitinglistController extends baseController{
                     ]
                 }
             }, `appointments`).then(apps=>{
+                console.log(apps)
                 this.sendResponse({data: apps}, res, 200)
             })
         })
@@ -379,6 +402,7 @@ console.log("services length ", appointmentServices.length)
         console.log("APPT SERVICE", appointmentServices.length, idx)
         if(idx<appointmentServices.length){
             var service = appointmentServices[idx].dataValues || appointmentServices[idx]; 
+            
             var serviceinput = {
                 "ticketId" : ticketDetail.ticketId,
                 "serviceId"	: service.mProduct.mProductId,
@@ -439,28 +463,59 @@ console.log("services length ", appointmentServices.length)
 
     saveTicketServiceTax= async (req,res,next,ticketServiceId,appointmentServices, idx,tid,ticketDetail)=>{
         var service = appointmentServices[idx].dataValues || appointmentServices[idx]; 
-        if(tid < service.mProduct.mProductTaxes.length){
-            var input = service.mProduct.mProductTaxes[tid].mTax.dataValues || service.mProduct.mProductTaxes[tid].mTax;
-            console.log("SERVICE TAX", input)
-            var taxinput = {
-                ticketServiceId: ticketServiceId,
-                mTaxId: input.mTaxId,
-                mTaxName: input.mTaxName,
-                mTaxType: input.mTaxType,
-                mTaxValue: input.mTaxValue,
-                mTaxAmount: 0,//input.mTaxAmount,
-                status:1,
-                createdBy: req.userData.mEmployeeId,
-                createdDate: this.getDate(),
-            } 
-            this.create('ticketservicetax', taxinput, true).then(r=>{ 
-                this.saveTicketServiceTax(req, res, next, ticketServiceId, appointmentServices, idx, tid+1,ticketDetail)
-            }).catch(e=>{
-                console.log("ERROR", e)
-            })
+        if(service.mProduct.mProductTaxType === 'Default'){
+            service.mProduct.mProductTaxes = await this.readAll({where:{ mTaxStatus:{
+                [Sequelize.Op.ne]:2
+            },
+            isDefault:1}}, 'mTax') 
+            if(tid < service.mProduct.mProductTaxes.length){
+                var input = service.mProduct.mProductTaxes[tid].dataValues || service.mProduct.mProductTaxes[tid];
+                console.log("SERVICE TAX", input)
+                var taxinput = {
+                    ticketServiceId: ticketServiceId,
+                    mTaxId: input.mTaxId,
+                    mTaxName: input.mTaxName,
+                    mTaxType: input.mTaxType,
+                    mTaxValue: input.mTaxValue,
+                    mTaxAmount: 0,//input.mTaxAmount,
+                    status:1,
+                    createdBy: req.userData.mEmployeeId,
+                    createdDate: this.getDate(),
+                } 
+                this.create('ticketservicetax', taxinput, true).then(r=>{ 
+                    this.saveTicketServiceTax(req, res, next, ticketServiceId, appointmentServices, idx, tid+1,ticketDetail)
+                }).catch(e=>{
+                    console.log("ERROR", e)
+                })
+            }
+            else{ 
+                this.saveTicketServices(req,res, next, ticketDetail, appointmentServices, idx+1)
+            }
         }
-        else{ 
-            this.saveTicketServices(req,res, next, ticketDetail, appointmentServices, idx+1)
+        else{
+            if(tid < service.mProduct.mProductTaxes.length){
+                var input = service.mProduct.mProductTaxes[tid].mTax.dataValues || service.mProduct.mProductTaxes[tid].mTax;
+                console.log("SERVICE TAX", input)
+                var taxinput = {
+                    ticketServiceId: ticketServiceId,
+                    mTaxId: input.mTaxId,
+                    mTaxName: input.mTaxName,
+                    mTaxType: input.mTaxType,
+                    mTaxValue: input.mTaxValue,
+                    mTaxAmount: 0,//input.mTaxAmount,
+                    status:1,
+                    createdBy: req.userData.mEmployeeId,
+                    createdDate: this.getDate(),
+                } 
+                this.create('ticketservicetax', taxinput, true).then(r=>{ 
+                    this.saveTicketServiceTax(req, res, next, ticketServiceId, appointmentServices, idx, tid+1,ticketDetail)
+                }).catch(e=>{
+                    console.log("ERROR", e)
+                })
+            }
+            else{ 
+                this.saveTicketServices(req,res, next, ticketDetail, appointmentServices, idx+1)
+            }
         }
     }
 }

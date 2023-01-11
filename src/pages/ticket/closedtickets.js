@@ -2,7 +2,7 @@
 import React from "react";
 import {Typography, Button} from '@mui/material';
 import { Print } from "@mui/icons-material";
-import TableView from "../../components/table/tableView";
+import TableView from "../../components/table/closedTableView";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Grid } from "@mui/material";
 import * as Moment from 'moment';
 import HTTPManager from "../../utils/httpRequestManager";
@@ -117,8 +117,25 @@ export default class ClosedTicketsComponent extends React.Component{
         this.handleTicketPayment = this.handleTicketPayment.bind(this)
         this.onSubmitBatchSettle  = this.onSubmitBatchSettle.bind(this)
         this.loadClosedTicketsToBatch = this.loadClosedTicketsToBatch.bind(this)
+        this.checkBatch= this.checkBatch.bind(this)
+        this.openClosedDatePopup = this.openClosedDatePopup.bind(this)
     }
 
+    openClosedDatePopup(){
+        this.setState({showDatePopup: true})
+    }
+
+    checkBatch(){  
+        this.httpManager.postRequest('merchant/ticket/getOpenTickets',{data:"FORM DASHBOARD"}).then(res=>{ 
+            console.log(res.data.length)
+            if(res.data.length > 0){
+                this.setState({showConfirm: true})
+            }
+            else{
+                this.loadClosedTicketsToBatch()
+            }
+        })
+    }
 
 
 
@@ -285,7 +302,7 @@ export default class ClosedTicketsComponent extends React.Component{
                         </DialogActions>
             </Dialog>
                 
-            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+            {/* <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
                 <div> </div>
                 <div style={{display:'flex', alignItems:'center', marginBottom:'1rem'}}>
                     <div>
@@ -305,8 +322,11 @@ export default class ClosedTicketsComponent extends React.Component{
                         this.setState({showDatePopup: true})
                     }}>{getIcon('mdi:calendar-check')}</div>
                 </div>
-            </div>
-            <TableView columns={this.state.columns} data={this.state.ticketslist} onRowClick={(params)=>{
+            </div> */}
+            <TableView columns={this.state.columns} tblFunctions={{
+                checkBatch: this.checkBatch,
+                openClosedDatePopup: this.openClosedDatePopup
+            }} data={this.state.ticketslist} onRowClick={(params)=>{
                 console.log(params)
                 this.props.data.editTicket(params.row)
             }}/>

@@ -40,7 +40,7 @@ export default class HTTPManager{
                 // console.log(error)
                 if(error.response !== undefined){
                     if(error.response.status === 401){
-                        window.localStorage.clear();
+                        window.localStorage.removeItem('userdetail');
                     }
                 }
                 reject(error);

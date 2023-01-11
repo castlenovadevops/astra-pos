@@ -189,7 +189,10 @@ export default class NavigationMenu extends React.Component{
                   </Typography> 
 
                 </Box>
-                  <Typography   sx={{ color: 'text.primary', fontSize:'12px' }}>
+                  <Typography   sx={{ color: 'text.primary', fontSize:'12px' }} onClick={()=>{
+                    window.localStorage.removeItem('userdetail')
+                    window.location.href='/';
+                  }}>
                     <img src={'/static/icons/logout.png'} alt="Logout" style={{maxHeight:'40px'}} />
                   </Typography> 
                 </div>  

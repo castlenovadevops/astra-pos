@@ -13,7 +13,7 @@ import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers';
 import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
 import Page from '../../components/Page';
 import LoaderContent from '../../components/Loader'; 
-
+import { RefreshOutlined } from "@mui/icons-material";
 import TicketContainer from "../ticket";
 // const ITEM_HEIGHT = 48;
 // const ITEM_PADDING_TOP = 8;
@@ -71,7 +71,7 @@ export default class WaitingList extends React.Component {
         })
     }
     getWaitingList(){   
-
+        this.setState({isLoading: true})
         this.httpManager.postRequest(`merchant/WaitingList/getAppointmentsList`, {currenttime: dayjs(new Date().toISOString()).format('HH:mm')}).then(res=>{
             console.log(res.data)
             this.setState({waitinglist: res.data, isLoading: false })
@@ -116,6 +116,11 @@ export default class WaitingList extends React.Component {
                         <Typography variant="h4" gutterBottom>
                         Waiting List
                         </Typography> 
+                        <div>
+                            <IconButton onClick={()=>{
+                                this.getWaitingList()
+                            }}><RefreshOutlined/></IconButton>
+                        </div>
                     </Stack>
                     <Stack>
                         <Paper style={{ background: 'white',height: '90%'}}>
@@ -153,7 +158,7 @@ export default class WaitingList extends React.Component {
                             </Grid> 
                             <Grid item xs={5} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
                                {t.appointmentServices.map(a=>{
-                                    return <b>{a.mProduct.mProductName},</b>
+                                    return <b>{a.mProduct !== null ? a.mProduct.mProductName : ''},</b>
                                })}
                             </Grid> 
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', textTransform:'capitalize'}}> 

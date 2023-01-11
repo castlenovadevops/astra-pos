@@ -87,22 +87,22 @@ module.exports = class TicketController extends baseController{
                     where:{
                         status:1
                     }, 
-                    // attributes:{
-                    //     include:[
-                    //         [
-                    //             sequelize.literal("(select mTaxName from mTax where mTaxId=`ticketservicetaxes`.`mTaxId` and mTaxStatus=1)"),
-                    //             "mTaxName"
-                    //         ], 
-                    //         [
-                    //             sequelize.literal("(select mTaxType from mTax where mTaxId=`ticketservicetaxes`.`mTaxId` and mTaxStatus=1)"),
-                    //             "mTaxType"
-                    //         ],
-                    //         [
-                    //             sequelize.literal("(select mTaxValue from mTax where mTaxId=`ticketservicetaxes`.`mTaxId` and mTaxStatus=1)"),
-                    //             "mTaxValue"
-                    //         ]
-                    //     ]
-                    // },
+                    attributes:{
+                        include:[
+                            [
+                                sequelize.literal("(select mTaxName from mTax where mTaxId=`ticketservicetaxes`.`mTaxId` and mTaxStatus=1)"),
+                                "mTaxName"
+                            ], 
+                            [
+                                sequelize.literal("(select mTaxType from mTax where mTaxId=`ticketservicetaxes`.`mTaxId` and mTaxStatus=1)"),
+                                "mTaxType"
+                            ],
+                            [
+                                sequelize.literal("(select mTaxValue from mTax where mTaxId=`ticketservicetaxes`.`mTaxId` and mTaxStatus=1)"),
+                                "mTaxValue"
+                            ]
+                        ]
+                    },
                 },
                 {
                     model: this.models.ticketservicediscount,

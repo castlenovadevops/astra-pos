@@ -50,7 +50,7 @@ export default class AccountPopover extends React.Component {
   }
 
   logout(){
-    window.localStorage.clear();
+    window.localStorage.removeItem('userdetail');
     window.location.reload();
   }
 

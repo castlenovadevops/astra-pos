@@ -95,26 +95,26 @@ const createWindow = () => {
 
 
 mainWindow.on('close', function(e){ 
-  if(!force_quit){
-    mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  else{
-    console.log("CLOSING THE APP")
-  }
+  // if(!force_quit){
+  //   mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  // }
+  // else{
+  //   console.log("CLOSING THE APP")
+  // }
 });
 
 // You can use 'before-quit' instead of (or with) the close event
 app.on('before-quit', function (e) { 
-  if(!force_quit){
-    mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  else{
-    console.log("CLOSING THE APP")
-  }
+  // if(!force_quit){
+  //   mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  // }
+  // else{
+  //   console.log("CLOSING THE APP")
+  // }
 });
 
 // Remove mainWindow.on('closed'), as it is redundant
@@ -125,14 +125,14 @@ app.on('activate-with-no-open-windows', function(){
 
   /**app quit */
   mainWindow.on('quit', function(e){
-    if(!force_quit){
-      mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    else{
-      console.log("CLOSING THE APP")
-    }
+    // if(!force_quit){
+    //   mainWindow.webContents.send("closecalled", "GET CONFIRMATION")
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    // }
+    // else{
+    //   console.log("CLOSING THE APP")
+    // }
   }); 
   
 
