@@ -136,7 +136,7 @@ export default class TicketFullPayment extends React.Component  {
     renderNotes(){
         return <Dialog
     style={{zIndex:'99999'}}
-    className="lgwidth"
+    className="paynotespopup"
     open={true}
     onClose={()=>{
         this.setState({notesPopup: false})
@@ -149,6 +149,23 @@ export default class TicketFullPayment extends React.Component  {
         <DialogContent>
                 {/* <ModalTitleBar onClose={()=> this.setState({notesPopup: false}) } title="Notes"/>   */}
                 <Grid item xs={12} style={{display:'flex',margin :10}}>
+                    <Grid item xs={4} style={{display:'flex'}}> 
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'100%', height:'70px',border:this.state.cardtype === 'VISA' ? '1px solid #bee1f7': '1px solid #134163', background:this.state.cardtype === 'VISA' ? '#bee1f7' :'transparent', margin:10,borderRadius:10, cursor:'pointer'}} align="left" onClick={()=>{
+                            this.setState({cardtype: 'VISA'})
+                        }}>VISA</Typography>
+                    </Grid>
+                    <Grid item xs={4} style={{display:'flex'}}> 
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'100%', height:'70px', border:this.state.cardtype === 'Master' ? '1px solid #bee1f7': '1px solid #134163', background:this.state.cardtype === 'Master' ? '#bee1f7' :'transparent', margin:10,borderRadius:10, cursor:'pointer'}} align="left" onClick={()=>{
+                            this.setState({cardtype: 'Master'})
+                        }}>Master</Typography>
+                    </Grid>
+                    <Grid item xs={4} style={{display:'flex'}}> 
+                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'100%', height:'70px', border:this.state.cardtype === 'American Express' ? '1px solid #bee1f7': '1px solid #134163', background:this.state.cardtype === 'American Express' ? '#bee1f7' :'transparent', margin:10,borderRadius:10, cursor:'pointer'}} align="left" onClick={()=>{
+                            this.setState({cardtype: 'American Express'})
+                        }}>American Express</Typography>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} style={{display:'flex',margin :10}}>
                         <TextField 
                             fullWidth
                             label="Notes"
@@ -160,7 +177,7 @@ export default class TicketFullPayment extends React.Component  {
                             onChange={this.handlechangeDesc} 
                         />
                 </Grid>
-                <Grid item xs={12} style={{display:'flex',margin :10}}>
+                {/* <Grid item xs={12} style={{display:'flex',margin :10}}>
                 <FormControl fullWidth> 
                         <Select
                             label="Card Type"
@@ -183,7 +200,7 @@ export default class TicketFullPayment extends React.Component  {
                         
                         </Select>
                     </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} style={{display:'flex',marginTop:10}}>
                     <Grid item xs={4}></Grid>
                     <Grid item xs={4} style={{display: 'flex', justifyContent:'center', alignItems:'center'}}> 

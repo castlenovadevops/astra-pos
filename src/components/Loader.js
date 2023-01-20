@@ -8,7 +8,7 @@ export default class Loader extends React.Component{
         return <div className="loaderContainer">
             <Dialog
                 open={true}
-                style={{width: '100%',height: '100%',top: '50%',left: '50%',transform: 'translate(-50%, -50%)',}}
+                style={{width: '100%',height: '100%',top: '50%',left: '50%',transform: 'translate(-50%, -50%)',zIndex:'99999'}}
                 title= 'Loading'
                 disablePortal={false}
                 PaperProps={{

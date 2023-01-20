@@ -214,7 +214,7 @@ module.exports = class reportController extends baseController{
 
     getReport = async(req,res)=>{
         console.log(req.input);
-        var dateformat = '%d-%m-%Y';
+        var dateformat = '%m-%d-%Y';
         if(req.input.reportPeriod === 'monthly'){
             dateformat = '%m-%Y';
         }
@@ -415,7 +415,7 @@ module.exports = class reportController extends baseController{
     }
 
     getEmpTickets = async(req,res, emps, i, response)=>{ 
-        var dateformat = '%d-%m-%Y';
+        var dateformat = '%m-%d-%Y';
         if(req.input.reportPeriod === 'monthly'){
             dateformat = '%m-%Y';
         }

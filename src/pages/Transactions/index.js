@@ -161,28 +161,28 @@ export default class Transactions extends React.Component {
                         <Paper style={{ background: 'white',height: '90%'}}>
                             {this.state.type === 'paid' && <div style={{height: "100%"}}>
                             <Grid container spacing={3}  style={{height:'40px', background:'#f0f0f0', width:'100%', margin:'10px 0', padding: 0}}>
-                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px', fontWeight:'bold'}}> 
                                     Date
                                 </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                                     Ticket
                                 </Grid>
-                                {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                                     Transaction #
                                 </Grid> */}
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Transaction Type
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
+                                    Transaction #
                                 </Grid>
-                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                                     Total
                                 </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
-                                    Payment Mode
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
+                                    Mode
                                 </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                                     Paid On
                                 </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px', fontWeight:'bold'}}> 
                                     Employee 
                                 </Grid>
                             </Grid>
@@ -197,31 +197,31 @@ export default class Transactions extends React.Component {
                                     this.setState({showDetail: true})
                                 })
                             }}>
-                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
+                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px'}}> 
                                 {Moment.utc(t.ticketDate).local().format("HH:mm:ss a")}<br/>
                                 <span style={{color:'#ccc'}}>{Moment.utc(t.ticketDate).local().format("MM/DD/YYYY")}</span>
                             </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}}> 
                                 {t.ticket.ticketCode}
                             </Grid>
-                            {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                            {/* <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}}> 
                                 
                             </Grid> */}
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}}> 
                                 <b>#{t.transactionId}</b>
                             </Grid>
-                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
+                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}}> 
                                 <b>${Number(t.ticketPayment).toFixed(2)}</b>
                             </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
-                                {(t.payMode === 'Loyalty Points' || t.payMode === 'GiftCard') && <b>{t.payMode}</b>}
-                                <b>{t.payMode !== null && t.payMode.toLowerCase() === 'cash' ? 'Cash' : t.paymentType}</b>
+                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', textTransform:'capitalize'}}> 
+                                {/* {(t.payMode === 'Loyalty Points' || t.payMode === 'GiftCard') && <b>{t.payMode}</b>} */}
+                                <b>{ t.payMode !== null && (t.payMode.toLowerCase() === 'cash' ? 'Cash' : ( t.payMode !== 'Loyalty Points' && t.payMode !== 'GiftCard' ? t.paymentType+"("+t.cardType+")" : t.payMode))}</b>
                             </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
+                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px'}}> 
                                 {Moment.utc(t.createdDate).local().format("HH:mm:ss a")}<br/>
                                 <span style={{color:'#ccc'}}>{Moment.utc(t.createdDate).local().format("MM/DD/YYYY")}</span>
                             </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', textTransform:'capitalize'}}> 
+                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px', textTransform:'capitalize'}}> 
                                 {/* {this.getEmpName(t.technician_id)} */}
                                 {t.mEmployeeFirstName+" "+t.mEmployeeLastName}
                             </Grid>
@@ -231,7 +231,7 @@ export default class Transactions extends React.Component {
                     
                     
                         {this.state.isLoading === false && this.state.transactions.length === 0 && <div>
-                            <p style={{fontSize:'14px', width:'100%', textAlign:'center'}}>No transactions added yet.</p>
+                            <p style={{fontSize:'12px', width:'100%', textAlign:'center'}}>No transactions added yet.</p>
                         </div>}
                         </div>}
                         </Paper> 
@@ -267,7 +267,7 @@ export default class Transactions extends React.Component {
                                                 <LocalizationProvider dateAdapter={AdapterDateFns} fullWidth >
                                                     <DesktopDatePicker
                                                         label="From"
-                                                        inputFormat="dd/MM/yyyy"
+                                                        inputFormat="MM/dd/yyyy"
                                                         maxDate={new Date()}
                                                         style={{marginRight:'10px'}}
                                                         value={this.state.from_date}
@@ -281,7 +281,7 @@ export default class Transactions extends React.Component {
                                                             style={{marginLeft:'10px'}}>
                                                         <DesktopDatePicker
                                                             label="To"
-                                                            inputFormat="dd/MM/yyyy"
+                                                            inputFormat="MM/dd/yyyy"
                                                             minDate={this.state.from_date}
                                                             maxDate={new Date()}
                                                             value={this.state.to_date} 
@@ -325,17 +325,17 @@ export default class Transactions extends React.Component {
                                    {this.state.transactiondetail.id !== undefined && <Grid item xs={12} style={{padding:'20px',display:'flex', flexDirection:'row'}}> 
                                         <Grid item xs={3} md={3}><b>Payment</b></Grid>
                                         <Grid item xs={6} md={6}> 
-                                            <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
+                                            <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'12px'}}> 
                                                 {Moment.utc(this.state.transactiondetail.createdDate).local().format("HH:mm:ss a MM/DD/YYYY")} <br/><br/>
                                                <b>Tender:</b> {this.state.transactiondetail.payMode.toLowerCase() === 'cash' ? this.state.transactiondetail.payMode : this.state.transactiondetail.card_type}<br/>
                                                <b>Ticket Code:</b> {this.state.transactiondetail.ticket.ticketCode}<br/>
                                                <b>Employee:</b> {this.state.transactiondetail.mEmployeeFirstName+" "+this.state.transactiondetail.mEmployeeLastName}<br/><br/>
-                                               {this.state.transactiondetail.notes && <> <b>Notes:</b><br/> {this.state.transactiondetail.notes}</> }
+                                               {this.state.transactiondetail.paymentNotes && <> <b>Notes:</b><br/> {this.state.transactiondetail.paymentNotes}</> }
                                             </Grid>
                                         </Grid>
 
                                         <Grid item xs={3}  md={3}>
-                                            <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'14px'}}> 
+                                            <Grid item xs={12} style={{height:'100%',width:'100%', margin:0, padding:'10px', fontSize:'12px'}}> 
                                                 <b>${Number(this.state.transactiondetail.ticketPayment).toFixed(2)}</b>
                                             </Grid> 
                                         </Grid>

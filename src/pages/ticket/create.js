@@ -8,6 +8,7 @@ import './createTicket/css/topbar.css';
 import SelectedServicesComponent from './createTicket/selectedServices';
 import TicketTotalComponent from './createTicket/ticketTotal';
 import TicketFooterComponent from "./createTicket/footer"; 
+import Loader from "../../components/Loader";
 
 export default class CreateTicketComponent extends React.Component{
     httpManager = new HTTPManager();
@@ -17,6 +18,7 @@ export default class CreateTicketComponent extends React.Component{
         this.state={
             userdetail:{}, 
             isLoading: false, 
+            forceSaveTicket: false,
             ticketDetail:{},
             isPaidOnOpen: false,
             showError: false,
@@ -133,11 +135,15 @@ export default class CreateTicketComponent extends React.Component{
         console.log(this.state.selectedRow)
         services.splice(this.state.selectedRow, 1);
         console.log(services);
-        this.setState({selectedServices: services},()=>{
+        this.setState({selectedServices: services, forceSaveTicket: true},()=>{
             this.calculateAllServices(0);
-            this.saveTicket()
             if(this.state.selectedServices.length === 0){
                 this.voidTicket();
+            }
+            else{
+                this.saveTicketPromise().then(r=>{
+                    this.reloadTicket();
+                })
             }
         })
     }
@@ -300,7 +306,7 @@ export default class CreateTicketComponent extends React.Component{
         }
     }
 
-    saveTicketPromise = async(req, res, next)=>{
+    saveTicketPromise = async(opt=true)=>{
         return new Promise(async (resolve) => { 
             
                 if(this.state.selectedServices.length > 0){
@@ -319,7 +325,8 @@ export default class CreateTicketComponent extends React.Component{
                         console.log(ticketinput)
                         this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
                             this.reloadTicket();
-                            this.setState({selectedRow:-1},()=>{})
+                            if(opt)
+                                this.setState({selectedRow:-1},()=>{})
                             resolve("success")
                         })
                     });
@@ -344,20 +351,9 @@ export default class CreateTicketComponent extends React.Component{
                     ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
                     ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
                 }
-
-
-                ticketinput.selectedServices.forEach(element => {
-            console.log(element.ticketservicetaxes)
-            if(element.ticketservicetaxes.length > 0){
-                element.ticketservicetaxes.forEach(re=>{
-                    console.log(re)
-                })
-            }
-        });
-
-                console.log(ticketinput)
+  
                 this.httpManager.postRequest('merchant/ticket/saveTicket',ticketinput).then(resp=>{
-                    console.log(ticketinput)
+                    console.log("SAVED",ticketinput)
 
                     this.setState({selectedRow:-1},()=>{})
                     if(option === 'close')
@@ -525,7 +521,9 @@ export default class CreateTicketComponent extends React.Component{
     }
 
     onSelectRowService(rowIndex){
-        this.setState({selectedRow: rowIndex})
+        this.setState({selectedRow: -1},()=>{
+            this.setState({selectedRow: rowIndex})
+        })
     }
 
     onSelectService(service){
@@ -940,7 +938,7 @@ export default class CreateTicketComponent extends React.Component{
                     this.setState({isPaidOnOpen: true, isDisabled: true})
                 }
                 this.setState({ ticketdiscounts: this.state.ticketDetail.ticketdiscounts}, ()=>{ 
-                    this.setState({selectedTech: this.state.ticketDetail.merchantEmployee, customer_detail: this.state.ticketDetail.mCustomer !== null ? this.state.ticketDetail.mCustomer : {}},()=>{
+                    this.setState({selectedTech: this.state.ticketDetail.merchantEmployee, customer_detail: this.state.ticketDetail.mCustomer !== null ? this.state.ticketDetail.mCustomer : {}, isLoading: false},()=>{
                        
                         // this.getTicketServices();
                     })
@@ -1041,7 +1039,7 @@ export default class CreateTicketComponent extends React.Component{
     render(){
         return  <Grid container className='fullWidth fullHeight' style={{background:'#fff', borderTop:'1px solid #f0f0f0'}}>
                     <Grid item xs={12}  className='fullWidth fullHeight'>
-                            <Grid item xs={12} style={{height:'100px', background:'red'}} className='fullWidth'>
+                            <Grid item xs={12} style={{height:'100px'}} className='fullWidth'>
                                {this.state.selectedTech !== undefined && this.state.selectedTech.mEmployeeId !== undefined && <TicketTopBar data={{
                                     selectedTech:this.state.selectedTech,
                                     customer_detail:this.state.customer_detail,
@@ -1050,7 +1048,17 @@ export default class CreateTicketComponent extends React.Component{
                                     isDisabled: false,
                                     selectCustomerDetail:this.selectCustomerDetail,
                                     handleCloseTicket: ()=> {
-                                        this.props.data.closeCreateTicket()
+                                        if(this.state.ticketDetail.paidStatus === 'Paid'){
+                                            this.props.data.closeCreateTicket()
+                                        }
+                                        else if(this.state.forceSaveTicket){
+                                            this.saveTicketPromise().then(res=>{
+                                                this.props.data.closeCreateTicket()
+                                            })
+                                        }
+                                        else{
+                                            this.props.data.closeCreateTicket()
+                                        }
                                     }
                                 }}/>}
                             </Grid>
@@ -1168,6 +1176,7 @@ export default class CreateTicketComponent extends React.Component{
                         }}>OK </Button> 
                     </DialogActions>
                 </Dialog>
+                {this.state.isLoading && <Loader/>}
             </Grid> 
     }
 }

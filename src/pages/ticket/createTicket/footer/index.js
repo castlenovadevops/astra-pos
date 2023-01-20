@@ -126,7 +126,7 @@ export default class TicketFooterComponent extends React.Component{
         if(this.props.data.selectedServices.length > 0){
             this.setState({isLoading:true})
             this.props.data.saveTicketPromise().then(r=>{
-                this.setState({openPayment: true})
+                this.setState({openPayment: true, isLoading: false})
             })
         }
     }

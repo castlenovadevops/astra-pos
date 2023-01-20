@@ -126,7 +126,7 @@ export default class OpenTicketsComponent extends React.Component{
             <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end'}}>
                 <Button className="bgbtn" onClick={()=>{
                     this.props.data.transferToNewTicket()
-                }} >Trasfer to New ticket</Button>
+                }} >Transfer to New ticket</Button>
             </div>
             <TableView columns={this.state.columns} data={this.state.ticketslist} />
         </>

@@ -32,7 +32,12 @@ module.exports = class TicketController extends baseController{
     getTransactions = async(req, res)=>{
         var input = req.input
 
-        var options = {
+        var options = { 
+            order:[ 
+                [
+                    'createdDate', 'desc'
+                ]
+            ],
             where:{
                 id:{
                     [Sequelize.Op.in] : Sequelize.literal("(select id from ticketpayment where Date(createdDate) between Date('"+input.from_date+"') and Date('"+input.to_date+"') )")

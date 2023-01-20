@@ -167,20 +167,20 @@ export default class BatchReports extends React.Component {
             <Card style={{ background: 'white',height: '90%'}}>
                 <div style={{height: "100%"}}>
                     <Grid container spacing={3}  style={{height:'40px', background:'#f0f0f0', width:'100%', margin:'10px 0', padding: 0}}>
-                        <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px', fontWeight:'bold'}}> 
+                        <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px', fontWeight:'bold'}}> 
                             Date
                         </Grid>
-                        <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                        <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                             Batch ID
                         </Grid> 
-                        <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                        <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                             Batch Name
                         </Grid>
-                        <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                        <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                             Number of Tickets
                         </Grid> 
 
-                        <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', fontWeight:'bold'}}> 
+                        <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                             
                         </Grid> 
                     </Grid>
@@ -191,19 +191,19 @@ export default class BatchReports extends React.Component {
                         {this.state.batches.map(t=>{ 
                             // console.log("transactions:",t)
                             return <Grid container spacing={3}  style={{height:'80px', cursor:'pointer', width:'100%', margin:0, padding: '10px 0',borderBottom:'1px solid #f0f0f0'}} >
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}} onClick={()=>{ this.showBatchDetail(t)}}> 
+                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px'}} onClick={()=>{ this.showBatchDetail(t)}}> 
                                    {Moment(t.createdDate).format("MM/DD/YYYY HH:mm:ss a")}
                                 </Grid>
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}} onClick={()=>{ this.showBatchDetail(t); }}> 
+                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}} onClick={()=>{ this.showBatchDetail(t); }}> 
                                     {t.batchId}
                                 </Grid> 
-                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}} onClick={()=>{  this.showBatchDetail(t); }}> 
+                                <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}} onClick={()=>{  this.showBatchDetail(t); }}> 
                                     <b>{t.batchName}</b>
                                 </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}} onClick={()=>{ this.showBatchDetail(t);}}> 
+                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px'}} onClick={()=>{ this.showBatchDetail(t);}}> 
                                     <b>{t.ticketCount}</b>
                                 </Grid> 
-                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px', textTransform:'capitalize'}}> 
+                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', textTransform:'capitalize'}}> 
                                     {/* <Print style={{marginLeft:'1rem'}} onClick={(e)=>{
                                         e.preventDefault();
                                     }}/> */}
@@ -214,7 +214,7 @@ export default class BatchReports extends React.Component {
                     </div> }
                 
                     {this.state.isLoading === false && this.state.batches.length === 0 && <div>
-                        <p style={{fontSize:'14px', width:'100%', textAlign:'center'}}>No batches added yet.</p>
+                        <p style={{fontSize:'12px', width:'100%', textAlign:'center'}}>No batches added yet.</p>
                     </div>}
                 </div>
             </Card> 
@@ -339,7 +339,7 @@ export default class BatchReports extends React.Component {
                                                     </Grid>
                                                     <Grid item xs={12} style={{padding:'10px',display:'flex', flexDirection:'row'}}> 
                                                         <Grid item xs={3} md={3}><b>Batch Created Time</b></Grid>
-                                                        <Grid item xs={6} md={6}>  {Moment.utc(this.state.batchDetail.created_at).local().format("MM/DD/YYYY HH:mm:ss a")}
+                                                        <Grid item xs={6} md={6}>  {Moment(this.state.batchDetail.createdDate).format("MM/DD/YYYY HH:mm:ss a")}
                                                         {/* moment(this.state.batchDetail.created_at).format('MM/DD/YYYY HH:mm:ss a') */}
                                                          </Grid> 
                                                     </Grid> 

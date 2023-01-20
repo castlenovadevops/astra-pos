@@ -44,7 +44,7 @@ export class TaxListComponent extends React.Component{
                     <Typography id="modal-modal-title" variant="subtitle2"  
                     style={{maxHeight:'60px', overflow:'hidden', textOverflow:'ellipsis', MozUserSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none', userSelect: 'none'}}
                     align="center"> 
-                    {(tax.mTaxType==="percentage")?tax.mTaxValue+"%":"$"+tax.mTaxValue} 
+                    {(tax.mTaxType==="Percentage")?tax.mTaxValue+"%":"$"+tax.mTaxValue} 
                     </Typography>
                     </Grid>
 

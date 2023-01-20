@@ -204,7 +204,7 @@ export default class App extends React.Component{
                   <Socket />
             <Router /> 
 
-            {/* {this.state.openCloseDialog && <Dialog open={this.state.openCloseDialog}>
+            {this.state.openCloseDialog && <Dialog open={this.state.openCloseDialog}>
                     <DialogContent>
                         Your are trying to close the app. Are you sure to continue?
                     </DialogContent>
@@ -219,7 +219,7 @@ export default class App extends React.Component{
                       }} variant={"outlined"}> No </Button>
                     </DialogActions>
                   </Dialog>
-                    } */}
+                    }
 
             </IdleTimerProvider>
         </ThemeProvider> 

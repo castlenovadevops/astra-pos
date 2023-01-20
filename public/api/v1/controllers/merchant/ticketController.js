@@ -155,6 +155,9 @@ module.exports = class TicketController extends baseController{
             order:[
                 [
                     'createdDate', 'desc'
+                ],
+                [
+                    'ticketCode', 'desc'
                 ]
             ],
             include:[
@@ -284,6 +287,14 @@ module.exports = class TicketController extends baseController{
         var todate = req.input.to_date || this.getDate()
 
         let options = {
+            order:[
+                [
+                    'createdDate', 'desc'
+                ],
+                [
+                    'ticketCode', 'desc'
+                ]
+            ],
             include:[
                 {
                     model: this.models.mCustomers,
@@ -331,7 +342,7 @@ module.exports = class TicketController extends baseController{
                         'id'
                     ],
                     [
-                        sequelize.literal("(select GROUP_CONCAT(payMode) from ticketpayment where ticketId=`tickets`.`ticketId`)"),
+                        sequelize.literal("(select GROUP_CONCAT(DISTINCT payMode) from ticketpayment where ticketId=`tickets`.`ticketId`)"),
                         'paymode'
                     ]
                 ]

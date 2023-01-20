@@ -26,6 +26,7 @@
     body{
         caret-color: transparent;
         /* overflow: hidden; */
+        font-size:12px;
     }
 
     input, select, textarea{
@@ -359,6 +360,11 @@
     max-width: 80%;
 }
 
+.noprintpopup .MuiDialog-paper{
+    width:500px;
+    height:150px;
+}
+
 .sideMenu{
     display:flex;
     flex-direction: column;
@@ -441,6 +447,13 @@
     height:300px;
 }
 
+.paynotespopup .MuiDialog-paper{
+    width:600px;
+    height:350px;
+}
+.paynotespopup .MuiDialogContent-root{
+    overflow: hidden;
+}
 
 .tipspopup .MuiDialog-paper{
     width:600px;
@@ -719,4 +732,9 @@ svg.iconify{
 .appointmentpopup .MuiFormControl-marginNormal, .appointmentpopup .MuiFormControl-marginNormal .MuiInputBase-root{
     width:100% !important;
     min-width: 100% !important;
+}
+
+
+.MuiDataGrid-root .MuiTypography-subtitle2, .MuiDataGrid-root p {
+    font-size: 13px;
 }

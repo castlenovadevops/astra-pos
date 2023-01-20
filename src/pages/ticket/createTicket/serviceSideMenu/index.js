@@ -143,7 +143,7 @@ export default class ServiceSideMenu extends  React.Component{
     transferToNewTicket(){
         if(this.props.data.selectedServices.length > 1){
             console.log("TRASFER TO NEW TICKET CALLED")
-            this.props.data.saveTicketPromise().then(r=>{ 
+            this.props.data.saveTicketPromise(false).then(r=>{ 
                 this.httpManager.postRequest(`merchant/transfer/createTicket`, {ticketDetail: this.props.data.ticketDetail, service: this.props.data.selectedServices[this.props.data.selectedRow]}).then(res=>{
                     this.props.data.afterCompleteTransfer()
                     this.props.data.onSelectSideMenu(-1);
