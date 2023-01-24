@@ -102,7 +102,7 @@ export default class ClosedTicketsComponent extends React.Component{
                         >
                             Pay
                         </Button>} */} 
-                        {(params.row.paymentStatus === 'Paid') && <b style={{textTransform:'capitalize', textOverflow:'ellipsis', height:'50px', overflow:'hidden'}}>{params.row.paymode}</b>}
+                        {(params.row.paymentStatus === 'Paid') && <b style={{textTransform:'capitalize', display:'flex', alignItems:'center', textOverflow:'ellipsis', height:'50px', overflow:'hidden'}}>{params.row.paymode}</b>}
                         {/* <Print style={{marginLeft:'1rem'}} onClick={()=>this.handleTicketPrint(params.row)}/> */}
                     </div>
                     )

@@ -222,7 +222,7 @@ export default class TicketFullPayment extends React.Component  {
                                     this.props.data.completePayment();
                                 })
                             })
-                        }} color="secondary" variant="contained">Save</Button> 
+                        }} disabled={this.state.cardtype === '' || this.state.description.trim() === ''} color="secondary" variant="contained">Save</Button> 
                     </Grid>
                     <Grid item xs={4}></Grid>
                 </Grid>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button} from '@material-ui/core/';  
+import { Grid, Button, Card} from '@material-ui/core/';  
 import VoidModal from './voidticket'; 
 import TicketTipsModal from './TicketTips';
 import PaymentModal from './TicketPayment';
@@ -28,7 +28,8 @@ export default class TicketFooterComponent extends React.Component{
             isCombine: false,
             discountPopup: false,
             discountsList : [],
-            openPrint: false
+            openPrint: false,
+            selectCard_popup: false
         }
 
         this.voidTicket = this.voidTicket.bind(this);
@@ -117,9 +118,14 @@ export default class TicketFooterComponent extends React.Component{
     }
 
     handleCloseTips(msg, tipsInput){ 
-        this.props.data.handleCloseTips(msg, tipsInput)
-
-        this.setState({addTips_popup: false});
+        console.log("CLOSE TIPS")
+        this.props.data.handleCloseTips(msg, tipsInput) 
+        // if(this.props.data.ticketpayments.length > 0){
+        //     this.setState({addTips_popup: false, selectCard_popup: true});
+        // }
+        // else{
+            this.setState({addTips_popup: false, selectCard_popup: false});
+        // }
     }
 
     handleTicketPayment(){ 
@@ -334,6 +340,8 @@ export default class TicketFooterComponent extends React.Component{
                     this.setState({discountPopup: false})
                 }
             }} />} 
+
+            
         </>
     }
 }

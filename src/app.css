@@ -445,7 +445,8 @@
 .notespopup .MuiDialog-paper{
     width:500px;
     height:300px;
-}
+    z-index: 99999;
+} 
 
 .paynotespopup .MuiDialog-paper{
     width:600px;

@@ -1,5 +1,5 @@
 import React from "react"; 
-import {Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button} from '@mui/material';
+import {Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Card} from '@mui/material';
 import TicketTopBar from "./createTicket/topbar";
 import HTTPManager from "../../utils/httpRequestManager";
 import ServiceSideMenu from "./createTicket/serviceSideMenu";
@@ -44,7 +44,10 @@ export default class CreateTicketComponent extends React.Component{
             ticketdiscounts:[],
             ticketdiscountcommissions:[],
             updateTips: false,
-            originalTicketDetail:{}
+            originalTicketDetail:{},
+            selectCard_popup: false,
+            selectedTransaction:{},
+            tipsInput:{}
         }  
         this.setTicketOwner = this.setTicketOwner.bind(this)
         this.onSelectService  = this.onSelectService.bind(this);
@@ -72,11 +75,34 @@ export default class CreateTicketComponent extends React.Component{
         this.saveTicketPromise = this.saveTicketPromise.bind(this);
         this.selectCustomerDetail = this.selectCustomerDetail.bind(this);
         this.formatData = this.formatData.bind(this);
-        // this.getTicketPayments = this.getTicketPayments.bind(this);
+        this.getTicketPayments = this.getTicketPayments.bind(this);
         this.reloadTicket = this.reloadTicket.bind(this);
         this.onSelectTicketToCombine = this.onSelectTicketToCombine.bind(this)
-        this.getTicketDetails = this.getTicketDetails.bind(this)
+        this.getTicketDetails = this.getTicketDetails.bind(this) 
+        this.continueTransaction = this.continueTransaction.bind(this)
     } 
+
+
+
+    getTicketPayments(){
+        this.httpManager.postRequest(`merchant/payment/getpayments`, {data: this.state.ticketDetail}).then(res=>{
+            var payments = [];
+            if(res.data.length > 0){
+                res.data.forEach((p, i)=>{
+                    if(p.payMode.toLowerCase() === 'card'){
+                        payments.push(p)
+                    }
+                    if(i === res.data.length-1){ 
+                        console.log("PAYMMENT:::", payments)
+                        this.setState({ticketpayments: payments,isLoading:false});
+                    }
+                })
+            }
+            else{
+                this.setState({ticketpayments: payments,isLoading:false});
+            }
+        }) 
+    }
 
     onSelectTicketToCombine(ticket){
         this.setState({isLoading: true}, ()=>{
@@ -93,7 +119,8 @@ export default class CreateTicketComponent extends React.Component{
         })
     }
 
-    reloadTicket(ticket){ 
+    reloadTicket(ticket){  
+        this.getTicketDetails()
         this.getTicketServices(); 
     }
 
@@ -364,9 +391,9 @@ export default class CreateTicketComponent extends React.Component{
             })
         }
     }
-    
-    handleCloseTips(msg, tipsInput){
-        console.log(tipsInput)
+
+    continueTransaction(){
+        var tipsInput = Object.assign({}, this.state.tipsInput);
         if(tipsInput !== undefined){
             this.setState({selectedServices: tipsInput.selectedServices}, ()=>{
                 var tipinputobj = Object.assign(tipsInput);
@@ -375,6 +402,36 @@ export default class CreateTicketComponent extends React.Component{
                 this.calculateAllServices(0);
             })
         }
+    }
+    
+    handleCloseTips(msg, tipsInput){ 
+        this.setState({selectedTransaction :{}}, ()=>{
+            console.log(this.state.ticketpayments)
+            if(this.state.ticketpayments.length > 0){ 
+                this.setState({tipsInput: tipsInput, selectCard_popup: true},()=>{
+                    console.log(this.state.selectCard_popup)
+                });
+            }
+            else{
+                if(tipsInput !== undefined){
+                    this.setState({selectedServices: tipsInput.selectedServices}, ()=>{
+                        var tipinputobj = Object.assign(tipsInput);
+                        delete tipinputobj.selectedServices
+                        this.setState({ tips_input: tipinputobj, updateTips: true})
+                        this.calculateAllServices(0);
+                    })
+                }
+                this.setState({  selectCard_popup: false});
+            }
+        })
+        // if(tipsInput !== undefined){
+        //     this.setState({selectedServices: tipsInput.selectedServices}, ()=>{
+        //         var tipinputobj = Object.assign(tipsInput);
+        //         delete tipinputobj.selectedServices
+        //         this.setState({ tips_input: tipinputobj, updateTips: true})
+        //         this.calculateAllServices(0);
+        //     })
+        // }
         // "tipsType": ticketDetail.tipsType,
     }
 
@@ -813,11 +870,13 @@ export default class CreateTicketComponent extends React.Component{
                 ticketDetail:Object.assign({}, this.state.ticketDetail), 
                 selectedServices: Object.assign([], this.state.selectedServices),
                 ticketdiscounts:Object.assign([], this.state.ticketdiscounts),
-                ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions)
+                ticketdiscount_commissions : Object.assign([], this.state.ticketdiscountcommissions),
+                price: Object.assign({}, this.state.totalValues),
+                selectedTransaction: Object.assign({}, this.state.selectedTransaction)
             }
             console.log(ticketinput)
             this.httpManager.postRequest('merchant/payment/updateTips',ticketinput).then(resp=>{
-                this.setState({updateTips: false})
+                this.setState({updateTips: false, tipsInput:{}, selectedTransaction:{}, selectCard_popup: false})
             })
         }
     }
@@ -920,13 +979,7 @@ export default class CreateTicketComponent extends React.Component{
         else{
             this.setState({selectedTech:{}})
         }
-    }
-
-    // getTicketPayments(){
-    //     this.httpManager.postRequest(`merchant/payment/getpayments`, {data: this.props.data.ticketDetail}).then(res=>{
-    //         this.setState({ticketpayments: res.data }); 
-    //     })
-    // }
+    } 
 
     getTicketDetails(){
         this.httpManager.postRequest("/merchant/ticket/getTicketDetail",{ticketId: this.state.ticketDetail.ticketId} ).then(r=>{
@@ -934,7 +987,7 @@ export default class CreateTicketComponent extends React.Component{
             this.setState({ticketDetail: r.data,originalTicketDetail: r.data}, ()=>{
                 // this.reloadTicket(r.data)
                 if(this.state.ticketDetail.paymentStatus === 'Paid'){
-                    // this.getTicketPayments()
+                    this.getTicketPayments()
                     this.setState({isPaidOnOpen: true, isDisabled: true})
                 }
                 this.setState({ ticketdiscounts: this.state.ticketDetail.ticketdiscounts}, ()=>{ 
@@ -951,7 +1004,7 @@ export default class CreateTicketComponent extends React.Component{
     componentDidMount(){ 
         if(this.props.data.ticketDetail.ticketId !== undefined){
             if(this.props.data.ticketDetail.paymentStatus === 'Paid'){
-                // this.getTicketPayments()
+                this.getTicketPayments()
                 this.setState({isPaidOnOpen: true, isDisabled: true})
             }
             this.setState({ticketDetail: this.props.data.ticketDetail, selectedTech:this.props.data.ticketDetail.merchantEmployee,  ticketdiscounts: this.props.data.ticketDetail.ticketdiscounts}, ()=>{ 
@@ -1079,6 +1132,7 @@ export default class CreateTicketComponent extends React.Component{
                                     <Grid item xs={12} style={{height:'100px' }} className='fullWidth'>
                                     <TicketFooterComponent data={{
                                         originalTicketDetail:this.state.originalTicketDetail,
+                                        ticketpayments: this.state.ticketpayments,
                                                                             tipsAdjust: this.state.tipsAdjust,
                                                                             isDisabled: this.state.isPaidOnOpen,
                                                                             isTicketEdit: this.props.isTicketEdit,
@@ -1086,8 +1140,7 @@ export default class CreateTicketComponent extends React.Component{
                                                                             selectedTech: this.state.selectedTech,
                                                                             ticketDetail: this.state.ticketDetail, 
                                                                             customer_detail: this.state.customer_detail,
-                                                                            ticketdiscounts: this.state.ticketdiscounts,
-                                                                            ticketpayments: this.state.ticketpayments,
+                                                                            ticketdiscounts: this.state.ticketdiscounts, 
                                                                             saveTicket: this.saveTicket,
                                                                             saveTicketPromise: this.saveTicketPromise,
                                                                             reloadTicket: this.reloadTicket,
@@ -1177,6 +1230,54 @@ export default class CreateTicketComponent extends React.Component{
                     </DialogActions>
                 </Dialog>
                 {this.state.isLoading && <Loader/>}
+
+
+                {this.state.selectCard_popup && <Dialog open={this.state.selectCard_popup} onClose={()=>{
+                this.setState({selectCard_popup: false})
+            }}
+            className="notespopup"
+            style={{zIndex:'99999'}}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                
+            </DialogTitle>
+            <DialogContent>
+                <h6> Please select the transaction to map the tip payment: </h6>  
+
+                {this.state.ticketpayments.map(r=>{
+                    return <Card style={{margin:'10px 0', background: this.state.selectedTransaction.transactionId === r.transactionId ? '#bee1f7' : 'transparent' ,border:this.state.selectedTransaction.transactionId === r.transactionId ? '1px solid #bee1f7' : '1px solid #d0d0d0', cursor:'pointer'}} onClick={()=>{
+                        this.setState({selectedTransaction: r})
+                    }}>
+                        <div style={{display:'flex', flexDirection:'column', fontSize:'13px', padding:'10px'}}>
+                            <div style={{display:'flex', flexDirection:'row'}}>
+                                <div style={{marginRight:'1rem'}}>Transaction #:</div>
+                                <div>{r.transactionId}</div>
+                            </div>
+                            <div style={{display:'flex', flexDirection:'row'}}>
+                                <div style={{marginRight:'1rem'}}>Card Type:</div>
+                                <div style={{textTransform:'capitalize'}}>{r.cardType}</div>
+                            </div>
+                            <div style={{display:'flex', flexDirection:'row'}}>
+                                <div style={{marginRight:'1rem'}}>Notes:</div>
+                                <div style={{textTransform:'capitalize'}}>{r.paymentNotes}</div>
+                            </div>
+                        </div>
+                    </Card>
+                })}
+
+
+<div style={{display:'flex', flexDirection:'row'}}>
+                                <Button variant={"contained"} disabled={this.state.selectedTransaction.transactionId === undefined} onClick={()=>{
+                                    this.continueTransaction()
+                                }}>
+                                    Continue
+                                </Button>
+                            </div>
+                </DialogContent>
+            </Dialog>}
+
             </Grid> 
     }
 }

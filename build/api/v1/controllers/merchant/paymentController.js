@@ -174,9 +174,28 @@ module.exports = class TicketController extends baseController{
             "ticketTotalAmount"	: ticketDetail.ticketTotalAmount, 
             "tipsType": ticketDetail.tipsType, 
         }
-        this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{ 
-            this.saveTicketServices(req, res, next); 
-        });
+        // console.log(input)
+        console.log("^^^^^^^^^^^")
+        console.log(input)
+        if(input.selectedTransaction.transactionId !== undefined){
+            var existdetail = await this.readOne({where:{ticketId: ticketDetail.ticketId}}, 'tickets')
+            var tipamt = existdetail.tipsAmount || existdetail.dataValues.tipsAmount
+            var payinput = {
+                ticketPayment: Number(input.selectedTransaction.ticketPayment) - Number(tipamt) + Number(input.price.tipsAmount)  //Number(input.price.ticketSubTotal) + Number(input.price.tipsAmount)
+            }
+            console.log(tipamt,payinput )
+            this.update('ticketpayment',payinput, {where:{id: input.selectedTransaction.id}} ).then(re=>{  
+                this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{ 
+                    this.saveTicketServices(req, res, next); 
+                });
+            });
+        }
+        else{
+
+            this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{ 
+                this.saveTicketServices(req, res, next); 
+            });
+        }
 
     }
 
