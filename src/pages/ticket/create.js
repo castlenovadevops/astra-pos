@@ -407,7 +407,7 @@ export default class CreateTicketComponent extends React.Component{
     handleCloseTips(msg, tipsInput){ 
         this.setState({selectedTransaction :{}}, ()=>{
             console.log(this.state.ticketpayments)
-            if(this.state.ticketpayments.length > 0){ 
+            if(this.state.ticketpayments.length > 0 && tipsInput !== undefined){ 
                 this.setState({tipsInput: tipsInput, selectCard_popup: true},()=>{
                     console.log(this.state.selectCard_popup)
                 });

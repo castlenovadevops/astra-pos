@@ -56,7 +56,7 @@ export default class TicketPayment extends React.Component  {
             if(htmlres.htmlMsg instanceof Array){
                 htmlres.htmlMsg.forEach(html=>{ 
                     var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
-                    final_printed_data += "<div style='max-width:270px'>"+html+"</div>";
+                    final_printed_data += "<div style='max-width:280px'>"+html+"</div>";
                     final_printed_data += '</body></html>';
                     if(htmlres.printers.printerIdentifier !== undefined){
                     // window.api.printHTML({html:html, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)

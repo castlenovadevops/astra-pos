@@ -14,7 +14,7 @@ import FCurrency from './components/currency';
 import FCheckBox from './components/checkBox';
 import HTTPManager from '../../utils/httpRequestManager';
 import parse from 'html-react-parser'
-
+import PermissionsComponent from './components/permissions'
 import { Offline, Online } from "react-detect-offline";
 export default class FormManager extends React.Component{
     httpManager = new HTTPManager(); 
@@ -47,6 +47,11 @@ export default class FormManager extends React.Component{
         this.handleCloseDialog = this.handleCloseDialog.bind(this); 
         this.renderErrorActionButtons = this.renderErrorActionButtons.bind(this);
         this.resetForm = this.resetForm.bind(this);
+        this.updatePermissions = this.updatePermissions.bind(this)
+    } 
+
+    updatePermissions(values){
+        this.setState({permissions: values})
     }
 
     resetForm(){
@@ -422,6 +427,10 @@ export default class FormManager extends React.Component{
                         <Link variant="subtitle2" to={field.url} component={RouterLink}>{field.label}</Link>    
                     </div>
                 </Grid>)
+            }
+
+            else if(component === 'Permission'){
+                formFields.push(<Grid item xs={12}><PermissionsComponent updatePermissions={this.updatePermissions} value={field.value} showPermission={field.permissionType} permissions={field.permissions}/></Grid>)
             }
             else{ 
                 formFields.push(<Grid item xs={grid}>

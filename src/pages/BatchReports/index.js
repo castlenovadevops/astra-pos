@@ -67,6 +67,43 @@ export default class BatchReports extends React.Component {
     this.onChange = this.onChange.bind(this)
     this.saveTime = this.saveTime.bind(this)
     this.getData = this.getData.bind(this)
+
+    this.getPrintHTML = this.getPrintHTML.bind(this)
+  }
+
+  getPrintHTML(t){
+    this.httpManager.postRequest(`pos/print/getBatchPrintHTML`,{id : t.batchId}).then(htmlres=>{
+            
+        if(htmlres.htmlMsg instanceof Array){
+            htmlres.htmlMsg.forEach(html=>{ 
+                var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+                final_printed_data += "<div style='max-width:280px'>"+html+"</div>";
+                final_printed_data += '</body></html>';
+                if(htmlres.printers.printerIdentifier !== undefined){
+                // window.api.printHTML({html:html, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                    window.api.printHTML({html:final_printed_data, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                        console.log("Printed Successfully.")
+                    })
+                }
+                else{
+                    this.setState({printerror: true})
+                }
+            })
+        }
+        else{ 
+            var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+            final_printed_data += "<div style='max-width:270px'>"+htmlres.htmlMsg+"</div>";
+            final_printed_data += '</body></html>';
+            if(htmlres.printers.printerIdentifier !== undefined){
+                window.api.printHTML({html:final_printed_data , printername:htmlres.printers.printerIdentifier}).then(r=>{
+                    console.log("Printed Successfully.")
+                })
+            }
+            else{
+                this.setState({printerror: true})
+            }
+        }
+    })
   }
 
   saveTime(){
@@ -204,9 +241,10 @@ export default class BatchReports extends React.Component {
                                     <b>{t.ticketCount}</b>
                                 </Grid> 
                                 <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', textTransform:'capitalize'}}> 
-                                    {/* <Print style={{marginLeft:'1rem'}} onClick={(e)=>{
+                                    <Print style={{marginLeft:'1rem'}} onClick={(e)=>{
+                                        this.getPrintHTML(t)
                                         e.preventDefault();
-                                    }}/> */}
+                                    }}/>
                                 </Grid>
                             </Grid>
                         })}

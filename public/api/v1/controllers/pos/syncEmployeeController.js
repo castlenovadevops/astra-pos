@@ -40,9 +40,9 @@ module.exports = class SyncCategoryController extends baseController{
     syncEmployees = async(req, res, next)=>{ 
         // console.log("SYNC EMPLOYEE CALLED")
         
-        this.deleteAll('merchantEmployees').then(r=>{
+        // this.deleteAll('merchantEmployees').then(r=>{
             this.pullData(req, res, next)
-        })
+        // })
     } 
 
     pullData = async(req, res, next)=>{ 
@@ -69,27 +69,27 @@ module.exports = class SyncCategoryController extends baseController{
         if(idx<data.length){ 
             var detail = data[idx];
             let detailexist = await this.readOne({where:{mEmployeeId: data[idx].mEmployeeId }}, 'merchantEmployees')
-            if(detailexist !== null){
+            // if(detailexist !== null){
                 // console.log("UPDATEEEEEE", data[idx]);
                 this.delete('merchantEmployees', {mEmployeeId:  data[idx].mEmployeeId}).then(r=>{
-                    this.create('merchantEmployees', data[idx], false).then(async r=>{
+                    this.create('merchantEmployees', data[idx], false).then(async r=>{ 
                         this.delete('mEmployeeCommission',{mEmployeeId:detail.mEmployeeId}).then(r=>{
                             this.delete('mEmployeePermissions',{mEmployeeId:detail.mEmployeeId}).then(r=>{
                                 this.saveEmpCommission(0, idx, data, model, syncedRows,  req, res, next)
                             });
-                        })
+                        }) 
                     })
                 })
-            }
-            else{
-                // console.log("EEEEEEEEE", data[idx]);
-                this.create('merchantEmployees', data[idx], false).then(async r=>{ 
-                    var pkfield = pkfields[model]
-                        syncedRows.push(detail[pkfield])
-                        // this.saveData(idx+1, data, req, res, next,syncedRows)
-                        this.saveEmpCommission(0, idx, data, model, syncedRows,  req, res, next)
-                })
-            }
+            // }
+            // else{
+            //     // console.log("EEEEEEEEE", data[idx]);
+            //     this.create('merchantEmployees', data[idx], false).then(async r=>{ 
+            //         var pkfield = pkfields[model]
+            //             syncedRows.push(detail[pkfield])
+            //             // this.saveData(idx+1, data, req, res, next,syncedRows)
+            //             this.saveEmpCommission(0, idx, data, model, syncedRows,  req, res, next)
+            //     })
+            // }
         }
         else{
             var input = { 
@@ -122,8 +122,8 @@ module.exports = class SyncCategoryController extends baseController{
         // console.log(detail)
         if(tidx < detail.mEmployeePermissions.length){
             var taxdetail = detail.mEmployeePermissions[tidx];
-            // console.log("$$$$$")
-            // console.log(taxdetail)
+            console.log("$$$$$")
+            console.log(taxdetail)
             this.create('mEmployeePermissions', taxdetail, false).then(r=>{
                 this.saveEmpPermissions(tidx+1, idx, data, model, syncedRows, req, res, next);
             })

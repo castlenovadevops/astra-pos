@@ -10,6 +10,7 @@ import schema from './schema.json';
 import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
 import FButton from '../../../components/formComponents/components/button';
 import AutoBatchComponent from "../../../autoBatch";
+import { checkButtonAccess } from "../../../utils/protector";
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class Discount extends React.Component{
@@ -203,8 +204,8 @@ export default class Discount extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>       
-                {(userdetail.mEmployeeRoleName !== 'Admin' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
-               {(userdetail.mEmployeeRoleName === 'Admin' || userdetail.mEmployeeRoleName==='Owner') &&  <FButton
+                {(checkButtonAccess('Discount') !== 'W' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
+               {(checkButtonAccess('Discount') === 'W' || userdetail.mEmployeeRoleName==='Owner') &&  <FButton
                 variant="outlined" 
                 size="small" 
                 onClick={()=>this.openEdit(params.row)} 
@@ -348,13 +349,13 @@ export default class Discount extends React.Component{
                     <Typography variant="h4" gutterBottom>
                     Discount
                     </Typography>
-                    <FButton 
+                    {checkButtonAccess('Discount') === 'W' && <FButton 
                     onClick={()=>this.openAdd()}
                     size="large"
                     variant="contained"
                     label="Add Discount"
                     startIcon={getIcon('mdi:plus')}
-                    />
+                    />}
                 </Stack>
 
                 <Card>

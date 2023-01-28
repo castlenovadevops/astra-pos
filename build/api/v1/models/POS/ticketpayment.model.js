@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // We export a function that defines the model.
 // This function will automatically receive as parameter the Sequelize connection object.
 module.exports = (sequelize) => {
-	return sequelize.define("ticketpayment", {
+	const ticketpayment =  sequelize.define("ticketpayment", {
           id:{
                field:'id',
                type: DataTypes.UUID,
@@ -90,4 +90,13 @@ module.exports = (sequelize) => {
       updatedAt: false,
       deletedAt: false
     })
+
+
+    ticketpayment.associate = function(models){
+     
+     models.merchantEmployees.hasMany(models.ticketpayment, {foreignKey: 'createdBy',sourceKey: 'mEmployeeId'});
+     models.ticketpayment.belongsTo(models.merchantEmployees, {foreignKey: 'createdBy',targetKey: 'mEmployeeId'}); 
+ 
+     }
+    return ticketpayment;
 }      

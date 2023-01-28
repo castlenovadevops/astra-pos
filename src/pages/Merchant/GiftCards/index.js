@@ -11,7 +11,8 @@ import PaymentModal from "../../ticket/createTicket/footer/TicketPayment";
 import AutoBatchComponent from "../../../autoBatch";
 import CardList from './list';
 import DialogComponent from "../../../components/Dialog";
-
+import { checkButtonAccess } from "../../../utils/protector";
+import NotAuthorized from '../../notauthorized';
 
 export default class GiftCards extends React.Component{
     httpManager = new HTTPManager();
@@ -248,9 +249,11 @@ export default class GiftCards extends React.Component{
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 
                      <Grid item xs={12}>  
                         <Stack spacing={3}> 
-                            <FormManager formProps={this.state.schema} reloadPayment={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()} formFunctions={{
+                           {checkButtonAccess('GiftCard') === 'W' && <FormManager formProps={this.state.schema} reloadPayment={(msg)=>this.reloadData(msg)} closeForm={()=>this.handleCloseform()} formFunctions={{
                                 onStateChange: this.onStateChange
-                            }}/>
+                            }}/>}
+                            {checkButtonAccess('GiftCard') !== 'W' && <NotAuthorized />
+                            }
                         </Stack>
                     </Grid>
                 </Grid>

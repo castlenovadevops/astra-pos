@@ -11,6 +11,7 @@ import {Box, Grid, Card,  Container, Typography, Stack, Dialog, DialogTitle, Dia
 import FButton from '../../../components/formComponents/components/button';
 import { Offline, Online } from "react-detect-offline";
 import AutoBatchComponent from "../../../autoBatch";
+import { checkButtonAccess } from "../../../utils/protector";
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
 export default class Employee extends React.Component{
@@ -107,9 +108,9 @@ export default class Employee extends React.Component{
         if(detail !== '' && detail !== undefined && detail !=='{}'){
           var userdetail = JSON.parse(detail);
         return <div>       
-            {(userdetail.mEmployeeRoleName !== 'Admin' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
+            {(checkButtonAccess('Employee') !== 'W' && userdetail.mEmployeeRoleName!=='Owner') && <div style={{margin:'0 8px'}}>N/A</div>}
                 <Offline>
-                    {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
+                    {(checkButtonAccess('Employee') === 'W' || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
                     variant="outlined" 
                     size="small" 
                     disabled={ true }
@@ -117,7 +118,7 @@ export default class Employee extends React.Component{
                     label="Edit"/>}
                 </Offline>
                 <Online>
-                    {(userdetail.mEmployeeRoleName === 'Admin'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
+                    {(checkButtonAccess('Employee') === 'W'  || userdetail.mEmployeeRoleName==='Owner')&&  <FButton
                         variant="outlined" 
                         size="small" 
                         disabled={ !navigator.onLine }
@@ -155,8 +156,194 @@ export default class Employee extends React.Component{
             if(field.name === 'mEmployeeRole' || field.name === 'mEmployeePasscode'){
                 field.disabled = true;
             }
-            props.push(field);
+            if(field.component !== 'Permission'){
+                props.push(field);
+            }
             if(i === properties.length-1){
+                console.log(data)
+                props.push( {
+                    "component":"Permission", 
+                    "permissionType":"Admin",
+                    "name":"permissions",
+                    "value" :  data["mEmployeePermissions"] !== undefined &&  data["mEmployeePermissions"] !== null &&  data["mEmployeePermissions"] !== '' ? JSON.parse(data["mEmployeePermissions"]) : {} ,
+                    "permissions":[
+                        {
+                            key:"Employee",
+                            label:"Employee Management",
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        },
+                        {
+                            key:"Customer",
+                            label:"Customer Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        },
+                        {
+                            key:"Inventory",
+                            label:"Inventory Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        },
+                        {
+                            key:"GiftCard",
+                            label:"GiftCard Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        }, 
+                        {
+                            key:"DefaultCommission",
+                            label:"Default Commission Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        }, 
+                        {
+                            key:"DefaultDiscount",
+                            label:"Default Discount Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        }, 
+                        {
+                            key:"Discount",
+                            label:"Discount Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        }, 
+                        {
+                            key:"Tax",
+                            label:"Tax Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        }, 
+                        {
+                            key:"EmpSettings",
+                            label:"Employee Specific Settings", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        },
+                        {
+                            key:"LoyaltyPoints",
+                            label:"Loyalty Points", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                },
+                                {
+                                    "label":"Write",
+                                    "Value" :"W"
+                                }
+                            ]
+                        },  
+                        {
+                            key:"Transactions",
+                            label:"Transactions", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                }
+                            ]
+                        }, 
+                        {
+                            key:"Payout",
+                            label:"Payout Management", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                }, 
+                                {
+                                    "label":"Pay",
+                                    "Value" :"W"
+                                }, 
+                            ]
+                        }, 
+                        {
+                            key:"Report",
+                            label:"Reports", 
+                            options:[
+                                {
+                                    "label":"Read",
+                                    "Value" :"R"
+                                }, 
+                            ]
+                        },  
+                    ]
+                }) 
+
                 props.push({
                     "component":"TextField", 
                     "type": "hidden", 
@@ -243,6 +430,182 @@ export default class Employee extends React.Component{
                     field.disabled =false;
                     props.push(field);
                     if(i === properties.length-1){
+                        props.push( {
+                            "component":"Permission", 
+                            "permissionType":"Admin",
+                            "permissions":[
+                                {
+                                    key:"Employee",
+                                    label:"Employee Management",
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                },
+                                {
+                                    key:"Customer",
+                                    label:"Customer Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                },
+                                {
+                                    key:"Inventory",
+                                    label:"Inventory Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                },
+                                {
+                                    key:"GiftCard",
+                                    label:"GiftCard Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                }, 
+                                {
+                                    key:"DefaultCommission",
+                                    label:"Default Commission Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                }, 
+                                {
+                                    key:"DefaultDiscount",
+                                    label:"Default Discount Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                }, 
+                                {
+                                    key:"Discount",
+                                    label:"Discount Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                }, 
+                                {
+                                    key:"Tax",
+                                    label:"Tax Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                }, 
+                                {
+                                    key:"EmpSettings",
+                                    label:"Employee Specific Settings", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                },
+                                {
+                                    key:"LoyaltyPoints",
+                                    label:"Loyalty Points", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        },
+                                        {
+                                            "label":"Write",
+                                            "Value" :"W"
+                                        }
+                                    ]
+                                },  
+                                {
+                                    key:"Transactions",
+                                    label:"Transactions", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        }
+                                    ]
+                                }, 
+                                {
+                                    key:"Payout",
+                                    label:"Payout Management", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        }, 
+                                    ]
+                                }, 
+                                {
+                                    key:"Report",
+                                    label:"Reports", 
+                                    options:[
+                                        {
+                                            "label":"Read",
+                                            "Value" :"R"
+                                        }, 
+                                    ]
+                                },  
+                            ]
+                        })
                         schemaobj.properties = props;
                     }
                 });
@@ -277,14 +640,14 @@ export default class Employee extends React.Component{
                     Employee Management
                     </Typography>
                     <Online>
-                        <FButton 
+                        {checkButtonAccess('Employee') === 'W' && <FButton 
                         onClick={()=>this.openAdd()}
                         size="large"
                         disabled={ !navigator.onLine }
                         variant="contained"
                         label="Add Employee"
                         startIcon={getIcon('mdi:plus')}
-                        />
+                        />}
                     </Online>
                     <Offline>
                         <FButton  

@@ -8,8 +8,9 @@ import SyncCodeComponent from './pages/syncCode';
 // import DevicesComponent from './pages/Devices';
 
 import NotFound from './pages/Page404';
-import { isDeviceRegistered, isLogin } from './utils/protector';
- 
+import { isDeviceRegistered, isLogin, checkPageAccess } from './utils/protector';
+import NotAuthorized from './pages/notauthorized';
+
 import Dashboard from './pages/Dashboard'; 
 import SimpleLayout from './layouts/SimpleLayout';
 
@@ -68,27 +69,27 @@ export default function Router() {
       children: [
         { path: '', element: <Dashboard /> },  
 
-        /** MERCHANT PANEL ROUTES */
-        { path: 'customer', element: <Customer /> }, 
-        { path: 'employee', element: <Employee /> }, 
-        { path: 'discount', element: <Discount /> }, 
-        { path: 'category', element: <Category />}, 
-        { path: 'product', element: <ProductService />}, 
-        { path: 'tax', element: <Tax />},
-        { path: 'commissionpayment', element: <CommissionPayment />},
-        { path: 'defaultdiscount', element: <DefaultDiscountDivision />},
-        { path: 'employeesetting', element: <EmployeeSetting />},
+        /** MERCHANT PANEL ROUTES */  
+        { path: 'customer', element: !checkPageAccess('Customer') ? <NotAuthorized /> :<Customer /> }, 
+        { path: 'employee', element: !checkPageAccess('Employee') ? <NotAuthorized /> :<Employee /> }, 
+        { path: 'discount', element: !checkPageAccess('Discount') ?<NotAuthorized /> :<Discount /> }, 
+        { path: 'category', element: !checkPageAccess('Inventory') ?<NotAuthorized /> :<Category />}, 
+        { path: 'product', element: !checkPageAccess('Inventory') ?<NotAuthorized /> :<ProductService />}, 
+        { path: 'tax', element: !checkPageAccess('Tax') ?<NotAuthorized /> :<Tax />},
+        { path: 'commissionpayment', element: !checkPageAccess('DefaultCommission') ?<NotAuthorized /> :<CommissionPayment />},
+        { path: 'defaultdiscount', element: !checkPageAccess('DefaultDiscount') ?<NotAuthorized /> :<DefaultDiscountDivision />},
+        { path: 'employeesetting', element: !checkPageAccess('EmpSettings') ?<NotAuthorized /> :<EmployeeSetting />},
         { path: 'profile', element: <UserProfile/>},
-        { path: 'transactions', element: <Transactions/>},
-        { path: 'payout', element: <PayoutComponent/>},
-        { path: 'report', element: <ReportComponent/>},
+        { path: 'transactions', element:!checkPageAccess('Transactions') ?<NotAuthorized /> : <Transactions/>},
+        { path: 'payout', element: !checkPageAccess('Payout') ?<NotAuthorized /> :<PayoutComponent/>},
+        { path: 'report', element: !checkPageAccess('Report') ?<NotAuthorized /> :<ReportComponent/>},
         { path: 'appointments', element: <AppointmentComponent/>},
         { path: 'printers', element: <Printers/>},
         { path: 'batchreports', element: <BatchReports />},
-        { path: 'loyaltypointsettings', element: <LoyaltyPoints/>},
-        { path: 'loyaltyactivatesettings', element: <LPActivationSettings/>},
-        { path: 'giftcards', element: <GiftCards/>},
-        { path: 'loyaltyredeemsettings', element: <LoyaltyRedeemSettings/>},
+        { path: 'loyaltypointsettings', element: !checkPageAccess('LoyaltyPoints') ?<NotAuthorized /> :<LoyaltyPoints/>},
+        { path: 'loyaltyactivatesettings', element: !checkPageAccess('LoyaltyPoints') ?<NotAuthorized /> :<LPActivationSettings/>},
+        { path: 'giftcards', element: !checkPageAccess('GiftCard') ?<NotAuthorized /> :<GiftCards/>},
+        { path: 'loyaltyredeemsettings', element: !checkPageAccess('LoyaltyPoints') ?<NotAuthorized /> :<LoyaltyRedeemSettings/>},
         { path: 'waitinglist', element: <WaitingList/>},
         
       ],

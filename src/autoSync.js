@@ -90,9 +90,9 @@ const AutoSync = ({batchtime}) => {
         }}
       /> 
       
-      {open && <div style={{'visibility':'hidden', height:0}}><SyncProgress afterSyncComplete={()=>{
+      {/* {open && <div style={{'visibility':'hidden', height:0}}><SyncProgress afterSyncComplete={()=>{
                       setOpen(false)
-                    }} /></div>}
+                    }} /></div>} */}
     </div>
   )
 }

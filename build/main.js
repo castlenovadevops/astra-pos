@@ -289,7 +289,7 @@ ipcMain.handle('printHTML', async(event,args)=>{
 
                     const options = {
                       preview: false,            //  width of content body
-                      margins: 'default',  
+                      margin: '0 0 0 0',  
                       // copies: 1, 
                       // printerName: printername, 
                       silent: true,
@@ -298,7 +298,7 @@ ipcMain.handle('printHTML', async(event,args)=>{
                       copies: 1,
                       printerName: printername,
                       timeOutPerLine: 400,
-                      pageSize: '80mm' // page size
+                      // pageSize: '80mm' // page size
                       // pageSize: { height: 301000, width: 71000 } 
                   }
                   

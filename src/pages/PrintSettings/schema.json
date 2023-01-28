@@ -79,28 +79,6 @@
             "name":"footerText",
             "label":"Footer Text",
             "placeholder":"Footer Text"
-        },  
-        {
-            "component":"Select", 
-            "type": "text", 
-            "minLength": 1,
-            "maxLength": 50,
-            "grid":6,
-            "name":"fontFamily",
-            "label":"Font Family",
-            "placeholder":"Font Family",
-            "data":"/pos/print/getFonts"
-        },
-        {
-            "component":"TextField", 
-            "type": "text",
-            "format":"number",
-            "minLength": 1,
-            "maxLength": 2,
-            "grid":6,
-            "name":"fontSize",
-            "label":"Font Size",
-            "placeholder":"Font Size"
         }
     ],
     "required": ["printerName", "printerIdentifier"],

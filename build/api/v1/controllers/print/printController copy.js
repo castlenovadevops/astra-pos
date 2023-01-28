@@ -6,9 +6,9 @@ const APIManager = require('../../utils/apiManager');
 const  Sequelize  = require('sequelize');
 const fontList = require('font-list');
 const { sequelize } = require('../../models');
-const moment = require('moment');
-const { number } = require('prop-types');
+const moment = require('moment'); 
 
+const find = require('local-devices');
 module.exports = class SyncTaxController extends baseController{
     path = "/pos/print";
     router = express.Router();
@@ -26,6 +26,12 @@ module.exports = class SyncTaxController extends baseController{
                     path:this.path+"/getPrinters",
                     type:"post",
                     method: "getPrinters",
+                    authorization:'accessAuth'
+                },
+                {
+                    path:this.path+"/getPrinterByType",
+                    type:"post",
+                    method: "getPrinterByType",
                     authorization:'accessAuth'
                 },
                 {
@@ -51,7 +57,20 @@ module.exports = class SyncTaxController extends baseController{
                     type:"post",
                     method: "getPrintHTML",
                     authorization:'accessAuth'
-                }
+                },
+                {
+                    path:this.path+"/getDevices",
+                    type:"post",
+                    method: "getDevices",
+                    authorization:'accessAuth'
+                },
+                {
+                    path:this.path+"/getGiftcardPrintHTML",
+                    type:"post",
+                    method: "getGiftcardPrintHTML",
+                    authorization:'accessAuth'
+                },
+                
                 
             ]
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -82,11 +101,18 @@ module.exports = class SyncTaxController extends baseController{
         this.sendResponse({data: printers}, res, 200)
     }
 
+    getPrinterByType= async(req, res, next)=>{
+        const printers = await this.readAll({where:req.input}, 'printers')
+        this.sendResponse({data: printers}, res, 200)
+    }
+
     savePrinter = async(req, res, next)=>{
         var input = Object.assign({},  req.input);
         var print = req.input.print
         input.BillPrint = print.indexOf('Bill') !== -1 ? 1 : 0
         input.ReportPrint = print.indexOf('Report') !== -1 ? 1 : 0
+        input.fontFamily = '';
+        input.fontSize  = ''
         delete input["print"]
         this.create('printers', input).then(r=>{
             this.sendResponse({data:"Saved successfully"}, res, 200)
@@ -206,46 +232,55 @@ module.exports = class SyncTaxController extends baseController{
             var ticketdetail = results.dataValues||results;
             //console.log("ticketdetail")
             //console.log(ticketdetail)
-            var html = `<div style="max-width:100%; " >`; // div1
-            html+=`<div style='display:flex;align-items:center;justify-content:center;'><h5 style='font-size:12px;font-weight:bold;'>`+printer.Title+`</h5></div>`
+            var html = `<div style="max-width:280px;display:inline; padding:50px;" >`; // div1
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            
+            html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
+            html += `<div>`+merchantdetail.merchantAddress1+`</div>`
+            html += `<div>`+merchantdetail.merchantAddress2+`</div>`
+            html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+            html+=`</div>`
+            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</p></div>`
+                
             console.log("BITLL TYE ", billtype)
             if(billtype === 'bill' || billtype === 'receipt'){
+                html+=`<div style='display:flex;align-items:center;justify-content:center;width:100%;'><p style='font-size:12px;font-weight:bold;'>`+(printer.Title)+`</p></div>`
                 html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
                 html += `<div>`+merchantdetail.merchantAddress1+`</div>`
                 html += `<div>`+merchantdetail.merchantAddress2+`</div>`
-                html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipCode+`</div>`
+                html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
                 html+=`</div>`
-                html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><h5 style='font-size:12px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</h5></div>`
+                html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</p></div>`
 
 
-                html+=`<div><p style='margin-bottom:0'>Cashier: `+ticketdetail.merchantEmployee.mEmployeeFirstName+` `+ticketdetail.merchantEmployee.mEmployeeLastName+`</p>
-                <p style='margin-top:0'>`+moment.utc(ticketdetail.createdDate.replace("T"," ").replace("Z","")).local().format('DD-MMM-YYYY hh:mm a')+`</p>
+                html+=`<div><p style='margin-bottom:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>Cashier: `+ticketdetail.merchantEmployee.mEmployeeFirstName+` `+ticketdetail.merchantEmployee.mEmployeeLastName+`</p>
+                <p style='margin-top:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>`+moment.utc(ticketdetail.createdDate.replace("T"," ").replace("Z","")).local().format('DD-MMM-YYYY hh:mm a')+`</p>
                 </div>`
                 
-                html+=`<div style='display:flex;align-items:center;flex-direction:column;'>` // div2
+                html+=`<div style='display:flex;align-items:baseline;flex-direction:column;'>` // div2
                 ticketdetail.ticketservices.forEach((service, i)=>{ 
-                    html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`;
-                    html +=`<div style='max-width:50px'>`+service.serviceQty+`</div>`;
-                    html +=`<div style='max-width:calc(100% - 200px); '>`+service.mProduct.mProductName+`</div>`
+                    html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:280px'>`;
+                    html +=`<div style='max-width:20px;width:20px'>`+service.serviceQty+`</div>`;
+                    html +=`<div style='max-width:150px;width:150px;text-align:left; '>`+service.mProduct.mProductName+`</div>`
 
-                    html +=`<div style='max-width:150px;'>$`+Number(service.servicePrice).toFixed(2)+`</div>`
+                    html +=`<div style='max-width:100px;width:100px;'>$`+Number(service.servicePrice).toFixed(2)+`</div>`
                     html +=`</div>`
                     var taxes = service.ticketservicetaxes.map(t=>{
                         var taxhtml = ''
-                        taxhtml+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`; 
-                        taxhtml +=`<div style='max-width:calc(100% - 150px); '>`+t.mTaxName+`&nbsp;&nbsp;`+(t.mTaxType === 'Percentage' ? t.mTaxValue+"%" : "$"+t.mTaxValue)+`</div>`
+                        taxhtml+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:280px'>`; 
+                        taxhtml +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px); '>`+t.mTaxName+`&nbsp;&nbsp;`+(t.mTaxType === 'Percentage' ? t.mTaxValue+"%" : "$"+t.mTaxValue)+`</div>`
         
-                        taxhtml +=`<div style='max-width:150px;'>$`+Number(t.mTaxAmount).toFixed(2)+`</div>`
+                        taxhtml +=`<div style='max-width:150px;width:150px;'>$`+Number(t.mTaxAmount).toFixed(2)+`</div>`
                         taxhtml +=`</div>`
                         return taxhtml
                     })
 
                     var discounts = service.ticketservicediscounts.map(t=>{
                         var Discounthtml = ''
-                        Discounthtml+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`; 
-                        Discounthtml +=`<div style='max-width:calc(100% - 150px); '>`+t.mDiscount.mDiscountName+`&nbsp;&nbsp;`+(t.mDiscountType === 'Percentage' ? t.mDiscountValue+"%" : "$"+t.mDiscountValue)+`</div>`
+                        Discounthtml+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:280px'>`; 
+                        Discounthtml +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px); '>`+t.mDiscount.mDiscountName+`&nbsp;&nbsp;`+(t.mDiscountType === 'Percentage' ? t.mDiscountValue+"%" : "$"+t.mDiscountValue)+`</div>`
         
-                        Discounthtml +=`<div style='max-width:150px;'>($`+Number(t.mDiscountAmount).toFixed(2)+`)</div>`
+                        Discounthtml +=`<div style='max-width:150px;width:150px;'>($`+Number(t.mDiscountAmount).toFixed(2)+`)</div>`
                         Discounthtml +=`</div>`
                         return Discounthtml
                     })
@@ -253,22 +288,42 @@ module.exports = class SyncTaxController extends baseController{
                     html+= taxes.join("")
                     html+= discounts.join("")
                     if(i === ticketdetail.ticketservices.length-1){ 
-                        html+=`<div style='display:flex;width:100%;align-items:center;margin:1rem 0 0.5rem;justify-content:space-between;'><h5 style='font-size:15px;font-weight:bold;'> Total</h5><h5 style='font-size:15px;font-weight:bold;'> `+ticketdetail.ticketTotalAmount+`</h5></div>`
+                        html+=`<div style='display:flex;width:280px;align-items:center;margin:1rem 0 0.5rem;justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Total</p><p style='font-size:15px;font-weight:bold;'> $`+Number(ticketdetail.ticketTotalAmount).toFixed(2)+`</p></div>`
 
                         if(billtype === 'bill'){
                             html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
                             <p style='margin-top:0'>`+printer.footerText+`</p>
                             </div>`
+
+                            html+=`</div>` // div2
+                            html+=`</div>`;// div1
+                            this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
                         }
                         else if (billtype === 'receipt'){ 
+                            var paymentHTML = ''
+                            console.log("RECEIPT PRINTING", ticketdetail.ticketpayments)
+                            ticketdetail.ticketpayments.forEach((t, ti)=>{
+                                paymentHTML+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:280px'>`; 
+                                paymentHTML +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px);text-transform:capitalize; '>`+t.payMode+`&nbsp;&nbsp;`+(t.payMode !== 'Cash' ? "("+t.paymentType+")" : "")+`</div>`
+                
+                                paymentHTML +=`<div style='max-width:150px;width:150px;'>$`+Number(t.ticketPayment).toFixed(2)+`</div>`
+                                paymentHTML +=`</div>`
+                                if(ti === ticketdetail.ticketpayments.length-1){ 
+                                    html+= paymentHTML
+                                    html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
+                                    <p style='margin-top:0'>`+printer.footerText+`</p>
+                                    </div>`
 
+                                    html+=`</div>` // div2
+                                    html+=`</div>`;// div1
+                                    this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
+                                }
+                            })
                         }
-
-                        html+=`</div>` // div2
-                        html+=`</div>`;// div1
-                        this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
                     }
                 })
+
+                
             }
             else {
                 var employees = []
@@ -281,7 +336,18 @@ module.exports = class SyncTaxController extends baseController{
                         tips:0,
                         supplies:0
                     };
-                    if(employees.indexOf(service.merchantEmployee.mEmployeeId) === -1){   
+                    if(employees.indexOf(service.merchantEmployee.mEmployeeId) === -1){  
+                        ehtml.html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            
+                        ehtml.html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
+                        ehtml.html += `<div>`+merchantdetail.merchantAddress1+`</div>`
+                        ehtml.html += `<div>`+merchantdetail.merchantAddress2+`</div>`
+                        ehtml.html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+                        ehtml.html+=`</div>`
+                        ehtml.html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</p></div>`
+                            
+                        ehtml.html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+                 
                         ehtml.html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
                         ehtml.html += `<div>Employee Receipt</div>`
                         ehtml.html += `<div>`+moment.utc(this.getDate()).local().format('MM/DD/YYYY  hh:mm a')+`</div>`
@@ -299,24 +365,24 @@ module.exports = class SyncTaxController extends baseController{
                         ehtml.supplies += Number(ehtml.supplies) + (Number(service.serviceQty)*Number(service.servicePerUnitCost));
                     }
 
-                    ehtml.html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`;
-                    ehtml.html +=`<div style='max-width:50px'>`+service.serviceQty+`</div>`;
-                    ehtml.html +=`<div style='max-width:calc(100% - 200px); '>`+service.mProduct.mProductName+`</div>`
+                    ehtml.html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:270px'>`;
+                    ehtml.html +=`<div style='max-width:20px'>`+service.serviceQty+`</div>`;
+                    ehtml.html +=`<div style='max-width:calc(100% - 150px); '>`+service.mProduct.mProductName+`</div>`
 
-                    ehtml.html +=`<div style='max-width:150px;'>$`+(Number(service.serviceQty)*Number(service.servicePerUnitCost)).toFixed(2)+`</div>`
+                    ehtml.html +=`<div style='max-width:100px;'>$`+(Number(service.serviceQty)*Number(service.servicePerUnitCost)).toFixed(2)+`</div>`
                     ehtml.html +=`</div>`
                     employeehtml[service.merchantEmployee.mEmployeeId] = ehtml; 
                     if(i === ticketdetail.ticketservices.length-1){ 
                         var response = [];
                         Object.keys(employeehtml).forEach((emp, k)=>{
                             var e = employeehtml[emp]
-                            e.html+=`<div style='display:flex;width:100%;align-items:center; justify-content:space-between;'><h5 style='font-size:15px;font-weight:bold;'> Amount</h5><h5 style='font-size:15px;font-weight:bold;'> $`+Number(e.total).toFixed(2)+`</h5></div>`
+                            e.html+=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Amount</p><p style='font-size:15px;font-weight:bold;'> $`+Number(e.total).toFixed(2)+`</p></div>`
 
-                            e.html +=`<div style='display:flex;width:100%;align-items:center; justify-content:space-between;'><h5 style='font-size:15px;font-weight:bold;'> Supplies</h5><h5 style='font-size:15px;font-weight:bold;'> $`+Number(e.supplies).toFixed(2)+`</h5></div>`;
+                            e.html +=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Supplies</p><p style='font-size:15px;font-weight:bold;'> $`+Number(e.supplies).toFixed(2)+`</p></div>`;
 
-                            e.html += `<div style='display:flex;width:100%;align-items:center; justify-content:space-between;'><h5 style='font-size:15px;font-weight:bold;'> Tip</h5><h5 style='font-size:15px;font-weight:bold;'> $`+Number(e.tips).toFixed(2)+`</h5></div>` 
+                            e.html += `<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Tip</p><p style='font-size:15px;font-weight:bold;'> $`+Number(e.tips).toFixed(2)+`</p></div>` 
 
-                            e.html+=`<div style='display:flex;align-items:center;justify-content:space-between;'><p style='display:flex;align-items:center;justify-content:center;'>`+req.deviceDetails.merchantName+`- Printed `+moment.utc(this.getDate()).local().format('MM/DD/YYYY hh:mm a')+`</p></div>`
+                            e.html+=`<div style='display:flex;align-items:center;justify-content:space-between; width:270px;'><p style=' width:270px;display:flex;align-items:center;justify-content:center;'>`+req.deviceDetails.merchantName+`- Printed `+moment.utc(this.getDate()).local().format('MM/DD/YYYY hh:mm a')+`</p></div>`
                             e.html+=`</div>` // div2
                             e.html+=`</div>`;// div1
 
@@ -329,5 +395,61 @@ module.exports = class SyncTaxController extends baseController{
                 })
             }
         })
+    }
+
+
+    formatCardNumber(cardnumber){
+        return cardnumber.substring(0,4)+"-"+cardnumber.substring(3,7)+"-"+cardnumber.substring(7,11)+"-"+cardnumber.substring(11,15)
+    }
+
+    getGiftcardPrintHTML = async(req, res, next)=>{
+        var input = req.input 
+        var cardnumber = input.cardNumber  
+
+        this.readOne({where:{'cardNumber': cardnumber}}, 'giftCards').then(async (results)=>{
+            var billprinters = await this.readOne({where:{BillPrint: 1}}, 'printers')
+            var printer = billprinters != null ? billprinters.dataValues : {} 
+            var merchantdetail = req.deviceDetails;
+             //console.log("ticketdetail")
+            //console.log(ticketdetail)
+            var html = `<div style="max-width:270px;display:inline; padding:50px;" >`; // div1
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            
+            html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
+            html += `<div>`+merchantdetail.merchantAddress1+`</div>`
+            html += `<div>`+merchantdetail.merchantAddress2+`</div>`
+            html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+            html+=`</div>`
+            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>Gift Card</p></div>`
+            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:14px;font-weight:bold;'>`+this.formatCardNumber(cardnumber)+`</p></div>`
+            
+            
+            html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
+            <p style='margin-top:0'>`+printer.footerText+`</p>
+            </div>`
+
+            html+=`</div>` // div2
+            html+=`</div>`;// div1
+            this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
+        
+        })
+    }
+
+
+    getDevices = async(req, res, next)=>{
+        var thisobj = this;
+        find().then(devices => {
+            console.log(devices)
+            thisobj.sendResponse({data: devices}, res, 200) /*
+            [
+              { name: '?', ip: '192.168.0.10', mac: '...' },
+              { name: '...', ip: '192.168.0.17', mac: '...' },
+              { name: '...', ip: '192.168.0.21', mac: '...' },
+              { name: '...', ip: '192.168.0.22', mac: '...' }
+            ]
+            */
+          }).catch(e=>{
+            thisobj.sendResponse({message:"Error"}, res, 400)
+          })
     }
 }

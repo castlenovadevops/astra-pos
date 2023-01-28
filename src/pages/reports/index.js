@@ -255,7 +255,7 @@ export default class ReportComponent extends React.Component{
                             totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
                             discounttotal =Number(discounttotal)+Number(t.discount);
                             reportdetail.push(`<div style="borderBottom:'1px solid #000';display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
-                            <div style="width:20%"><b>Total</b></div>
+                            <div style="width:20%"><b>`+t.date+`</b></div>
                             <div style="width:30%"><b>$`+(Number(t.serviceTotal) > 0 ? "$"+Number(t.serviceTotal).toFixed(2) : '-') +`</b></div>
                             <div style="width:25%"><b>$`+(Number(t.tips) > 0 ? "$"+Number(t.tips).toFixed(2) : '-')+`</b></div>
                             <div style="width:25%"><b>$`+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : '-' +`</b></div>  
@@ -341,6 +341,143 @@ export default class ReportComponent extends React.Component{
                     <p style="textTransform:capitalize; fontWeight:400;margin-bottom:1rem;">`+merchantdetail.merchantName+` - Reported:` +Moment().format("MM/DD/YYYY hh:mm a")+`</p>
                 </div>` ) 
                 });
+
+                this.setState({printhtml: reportdetail.join("")}, ()=>{
+                    this.handleReportPrint(printers[0].printerIdentifier)
+                })
+            }
+            else{
+                this.setState({showFormError: true, formError:"No Printer selected"})
+            }
+        })
+    }
+
+
+    formEmpIndividualReportPrint(emp) { 
+
+        var reportdetail = [];
+        var mstr = window.localStorage.getItem('merchantdetail');
+        var merchantdetail = mstr !== undefined && mstr !== '' ? JSON.parse(mstr) : {}
+        
+        this.httpManager.postRequest(`pos/print/getPrinterByType`,{ReportPrint:1}).then(res=>{
+            const printers = res.data
+            if(printers.length >0){  
+                    reportdetail.push(`<div style="display:flex; align-items:center; justify-content:center; flex-direction:column">
+                            <div style="font-weight:bold; font-size:14px;">`+merchantdetail["merchantName"]+`</div>
+                            <div style="text-transform:capitalize">Employee Report</div>
+                            <div style="text-transform:capitalize; font-weight:400">`+Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")+`</div>
+                        </div>`);
+
+                    reportdetail.push(`<div style="display:flex;width:100%; align-items:flex-start; justify-content:flex-start; flex-direction:row"> 
+                            <div style="textTransform:capitalize;fontWeight:400">Employee : <b>`+emp.empdetail.mEmployeeFirstName+" "+emp.empdetail.mEmployeeLastName+`</b></div>
+                    </div>`) 
+                    if(emp.data.length > 0){
+                    // if(this.state.empReport.length > 0){
+                        reportdetail.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:row; border-bottom:1px solid #000;"> 
+                            <div style="width:20%"><b>`+(this.state.reporttype === 'annually' ? 'Year' : (this.state.reporttype === 'monthly') ? 'Month' : 'Date')+`</b></div>
+                            <div style="width:30%"> <b>Amount</b></div>
+                            <div style="width:25%">  <b>Tip</b></div>
+                            <div style="width:25%"><b>Discount</b></div> 
+                        </div>`)
+                        var totalServicePrice = 0
+                        var totalTips = 0
+                        var discounttotal = 0
+                        var totalAmount = 0
+
+                        emp.data.forEach((t, ti)=>{ 
+                            totalServicePrice =Number(totalServicePrice)+Number(t.serviceTotal);
+                            totalTips =Number(totalTips)+Number(t.tips);
+                            console.log(totalTips, Number(totalTips),"+",Number(t.tips))
+                            totalAmount =Number(totalAmount)+Number(t.serviceTotal)+Number(t.tips)-Number(t.discount);
+                            discounttotal =Number(discounttotal)+Number(t.discount);
+                            reportdetail.push(`<div style="borderBottom:'1px solid #000';display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                                    <div style="width:20%"><b>`+t.date+`</b></div>
+                                    <div style="width:30%"><b>`+(Number(t.serviceTotal) > 0 ? "$"+Number(t.serviceTotal).toFixed(2) : '-') +`</b></div>
+                                    <div style="width:25%"><b>`+(Number(t.tips) > 0 ? "$"+Number(t.tips).toFixed(2) : '-')+`</b></div>
+                                    <div style="width:25%"><b>`+((Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)) > 0 ? "$"+(Number(t.serviceTotal)+Number(t.tips)-Number(t.discount)).toFixed(2) : `-`)+`</b></div>  
+                            </div>`) 
+                            console.log(reportdetail)
+                            if(ti === emp.data.length-1){  
+                                reportdetail.push(`<div style=" display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                                <div style="width:20%"><b>Total</b></div>
+                                <div style="width:30%"><b>$`+(Number(totalServicePrice).toFixed(2)) +`</b></div>
+                                <div style="width:25%"><b>$`+(Number(totalTips).toFixed(2))+`</b></div>
+                                <div style="width:25%"><b>$`+(Number(totalAmount).toFixed(2)) +`</b></div>  
+                        </div>`)       
+
+
+                        reportdetail.push(`<div style="display:flex;width:270px; align-items:baseline; justify-content:baseline; flex-direction:column; margin-top:2rem">
+
+                        <div style="textTransform:capitalize; font-weight:700;">Discounts</div>
+                    
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;">Owner</div>
+                            <div style="width:40%">$`+this.getEmpDiscountAmount(emp,'Owner')+`
+                            </div>
+                        </div>
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;">Employee</div>
+                            <div style="width:40%">$`+this.getEmpDiscountAmount(emp,'Employee')+`
+                            </div>
+                        </div> 
+
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;">Owner & Employee</div>
+                            <div style="width:40%">$`+this.getEmpDiscountAmount(emp,'Both')+`
+                            </div>
+                        </div>  
+
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;">Total</div>
+                            <div style="width:40%">$`+this.getEmpTotalDiscounts(emp.discounts)+`
+                            </div>
+                        </div>   
+
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;">Tax Amount</div>
+                            <div style="width:40%">$`+(emp.empdetail.TotalTax!== null ? Number(emp.empdetail.TotalTax).toFixed(2) : "0.00")+`
+                            </div>
+                        </div>  
+
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;">Supplies</div>
+                            <div style="width:40%">$`+(emp.empdetail.Supplies!== null ? Number(emp.empdetail.Supplies).toFixed(2) : "0.00")+`
+                            </div>
+                        </div>   
+
+                        <div style="text-transform:capitalize; font-weight:400; display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;"><b>Payment Methods</b></div>
+                            <div style="width:40%">
+                            </div>
+                        </div>`) 
+
+                        reportdetail.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;"><b>Net</b></div>
+                            <div style="width:40%"><b>$`+(emp.nettAmount!== null ? Number(emp.nettAmount).toFixed(2) : "0.00")+`</b>
+                            </div>
+                        </div> </div>`)
+
+
+                        reportdetail.push(`<div style="text-transform:capitalize; font-weight:400; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                            <div style="width:60%;text-align:left;"><b>Net Total</b></div>
+                            <div style="width:40%"><b>$`+(emp.nettTotal!== null ? Number(emp.nettTotal).toFixed(2) : "0.00")+`</b>
+                            </div>
+                        </div> </div> 
+                    
+                    
+                                    </div>`)
+                            }
+                        })   
+                    }
+                    else{ 
+                        reportdetail.push(`<div style="margin-top:1rem;display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                        <p style="textTransform:capitalize; fontWeight:400">No tickets made during this time period by `+emp.empdetail.mEmployeeFirstName+" "+emp.empdetail.mEmployeeLastName+`</p>
+                        </div>`) 
+                    }
+
+                    reportdetail.push(`<div style="margin-top:1rem;display:flex;width:100%; align-items:baseline; justify-content:baseline, flex-direction:row"> 
+                    <p style="textTransform:capitalize; fontWeight:400;margin-bottom:1rem;">`+merchantdetail.merchantName+` - Reported:` +Moment().format("MM/DD/YYYY hh:mm a")+`</p>
+                </div>` )  
 
                 this.setState({printhtml: reportdetail.join("")}, ()=>{
                     this.handleReportPrint(printers[0].printerIdentifier)
@@ -751,10 +888,10 @@ export default class ReportComponent extends React.Component{
                         <Grid item xs={4}>${this.getTotalAmountcollected()}</Grid>
                     </Grid> 
 
-                    {this.state.adjustedTips > 0 && <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
+                    {/* {this.state.adjustedTips > 0 && <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
                         <Grid item xs={8}>Adjusted Tips</Grid>
                         <Grid item xs={4}>${Number(this.state.adjustedTips).toFixed(2)}</Grid>
-                    </Grid>}
+                    </Grid>} */}
                     <Grid container style={{textTransform:'capitalize', fontWeight:'700', display:'flex', alignItems:'center', justifyContent:'space-between',  width:'100%',marginTop:10}}>
                         <Grid item xs={8}>profit</Grid>
                         <Grid item xs={4}>${this.getProfitAmount()}</Grid>
@@ -801,8 +938,13 @@ export default class ReportComponent extends React.Component{
                 <Typography variant="subtitle2" style={{textTransform:'capitalize', fontWeight:'400'}}>{Moment(this.state.from_date).format("MM/DD/YYYY")+" - "+Moment(this.state.to_date).format("MM/DD/YYYY")}</Typography>
             </div>);
 
-        reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'flex-start', flexDirection:'row'}}> 
+        reportdetail.push(<div style={{display:'flex',width:'100%', alignItems:'flex-start', justifyContent:'space-between', flexDirection:'row'}}> 
                 <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>Employee : <b>{emp.empdetail.mEmployeeFirstName+" "+emp.empdetail.mEmployeeLastName}</b></Typography>
+                <Print style={{marginLeft:'1rem'}} onClick={(event)=>{
+                    this.formEmpIndividualReportPrint(emp)
+                    event.preventDefault();
+                    event.stopPropagation();
+                }}/>
         </div>) 
         if(emp.data.length > 0){
         // if(this.state.empReport.length > 0){
@@ -914,7 +1056,7 @@ export default class ReportComponent extends React.Component{
         }
         else{ 
             reportdetail.push(<div style={{display:'flex',marginTop:'1rem',width:'100%', alignItems:'center', justifyContent:'center', flexDirection:'row'}}> 
-                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {this.state.userDetail.mEmployeeFirstName+" "+this.state.userDetail.mEmployeeLastName}</Typography>
+                <Typography variant="body" style={{textTransform:'capitalize', fontWeight:'400'}}>No tickets made during this time period by {emp.empdetail.mEmployeeFirstName+" "+emp.empdetail.mEmployeeLastName}</Typography>
             </div>) 
         }
 

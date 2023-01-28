@@ -9,6 +9,7 @@ import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
 import LPRedeemSettings from '../LPRedeemSettings';
 import LPActivationSettings from '../LPActivationSettings';
 import AutoBatchComponent from "../../../../autoBatch";
+import { checkButtonAccess } from "../../../../utils/protector";
 
 export default class CommissionPayment extends React.Component{
     httpManager = new HTTPManager();
@@ -68,6 +69,10 @@ export default class CommissionPayment extends React.Component{
                 field.value = Number(data[field.name]);
                 console.log("POINTSSSSS")
             // }
+
+            if(checkButtonAccess('LoyaltyPoints') !== 'W'){
+               field.disabled=true;
+            }
             props.push(field);
             if(i === properties.length-1){
                 props.push({
@@ -81,7 +86,10 @@ export default class CommissionPayment extends React.Component{
                     "placeholder":"id",
                     "value":data.id
                   })
-                schema.properties = props; 
+                schema.properties = props;  
+                if(checkButtonAccess('LoyaltyPoints') !== 'W'){
+                    schema.buttons = [];
+                }
                 this.setState({schema: schema,selectedSettings: data, isLoading: false},()=>{
                    console.log("SCHEMA")
                     console.log(this.state.schema)
@@ -117,7 +125,7 @@ export default class CommissionPayment extends React.Component{
                 <Card style={{border:'1px solid #d0d0d0', padding:'1rem'}}>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                         <Typography variant="h4" gutterBottom>
-                            Loyalty Point Redeem Settings
+                            Loyalty Point Redeem Settings asdasd{checkButtonAccess('LoyaltyPoints') }
                         </Typography>
                         
                     </Stack>

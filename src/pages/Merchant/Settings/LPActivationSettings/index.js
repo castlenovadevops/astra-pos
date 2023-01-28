@@ -7,6 +7,7 @@ import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Box, Grid,   Container, Typography, Stack} from '@mui/material';
 import AutoBatchComponent from "../../../../autoBatch";
+import { checkButtonAccess } from "../../../../utils/protector";
 export default class CommissionPayment extends React.Component{
     httpManager = new HTTPManager();
 
@@ -62,6 +63,9 @@ export default class CommissionPayment extends React.Component{
                 console.log(data)
         properties.forEach((field,i)=>{ 
             field.value = Number(data[field.name]); 
+            if(checkButtonAccess('LoyaltyPoints') !== 'W'){
+                field.disabled=true
+            }
             props.push(field);
             if(i === properties.length-1){
                 props.push({
@@ -75,6 +79,11 @@ export default class CommissionPayment extends React.Component{
                     "placeholder":"id",
                     "value":data.id
                   })
+
+
+                if(checkButtonAccess('LoyaltyPoints') !== 'W'){
+                    schema.buttons = [];
+                }
                 schema.properties = props; 
                 this.setState({schema: schema,selectedSettings: data, isLoading: false},()=>{
                    console.log("SCHEMA")

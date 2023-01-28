@@ -10,7 +10,7 @@ import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers';
 // import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
 // import {CalendarViewMonthOutlined} from '@mui/icons-material';  
 // import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import {CalendarTodayOutlined as CalendarMonthIcon} from '@mui/icons-material';
+import {CalendarTodayOutlined as CalendarMonthIcon, PrintOutlined} from '@mui/icons-material';
 import Page from '../../components/Page';
 import LoaderContent from '../../components/Loader'; 
 import AutoBatchComponent from "../../autoBatch";
@@ -61,7 +61,41 @@ export default class Transactions extends React.Component {
         this.handlechangeFromDate = this.handlechangeFromDate.bind(this);
         this.handlechangeToDate = this.handlechangeToDate.bind(this);
         this.getTransactions = this.getTransactions.bind(this);
-        
+        this.getPrintHTML = this.getPrintHTML.bind(this)
+    } 
+    getPrintHTML(t){ 
+        this.httpManager.postRequest(`pos/print/getTxnPrintHTML`,{id : t.id}).then(htmlres=>{
+            
+            if(htmlres.htmlMsg instanceof Array){
+                htmlres.htmlMsg.forEach(html=>{ 
+                    var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+                    final_printed_data += "<div style='max-width:280px'>"+html+"</div>";
+                    final_printed_data += '</body></html>';
+                    if(htmlres.printers.printerIdentifier !== undefined){
+                    // window.api.printHTML({html:html, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                        window.api.printHTML({html:final_printed_data, printername:htmlres.printers.printerIdentifier}).then(r=>{console.log(htmlres.printers.printerIdentifier)
+                            console.log("Printed Successfully.")
+                        })
+                    }
+                    else{
+                        this.setState({printerror: true})
+                    }
+                })
+            }
+            else{ 
+                var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
+                final_printed_data += "<div style='max-width:270px'>"+htmlres.htmlMsg+"</div>";
+                final_printed_data += '</body></html>';
+                if(htmlres.printers.printerIdentifier !== undefined){
+                    window.api.printHTML({html:final_printed_data , printername:htmlres.printers.printerIdentifier}).then(r=>{
+                        console.log("Printed Successfully.")
+                    })
+                }
+                else{
+                    this.setState({printerror: true})
+                }
+            }
+        })
     }
     handlechangeFromDate(e){
         this.setState({from_date: e});
@@ -179,11 +213,14 @@ export default class Transactions extends React.Component {
                                 <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                                     Mode
                                 </Grid>
-                                <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
+                                <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'12px', fontWeight:'bold'}}> 
                                     Paid On
                                 </Grid>
                                 <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px', fontWeight:'bold'}}> 
                                     Employee 
+                                </Grid>
+                                <Grid item xs={1}>
+                                    
                                 </Grid>
                             </Grid>
                         <div style={{ width: '100%', height:  'calc(100% - 0px)',overflow: 'hidden', background: 'white'}}>
@@ -217,7 +254,7 @@ export default class Transactions extends React.Component {
                                 {/* {(t.payMode === 'Loyalty Points' || t.payMode === 'GiftCard') && <b>{t.payMode}</b>} */}
                                 <b>{ t.payMode !== null && (t.payMode.toLowerCase() === 'cash' ? 'Cash' : ( t.payMode !== 'Loyalty Points' && t.payMode !== 'GiftCard' ? t.paymentType+"("+t.cardType+")" : t.payMode))}</b>
                             </Grid>
-                            <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px'}}> 
+                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px'}}> 
                                 {Moment.utc(t.createdDate).local().format("HH:mm:ss a")}<br/>
                                 <span style={{color:'#ccc'}}>{Moment.utc(t.createdDate).local().format("MM/DD/YYYY")}</span>
                             </Grid>
@@ -225,6 +262,17 @@ export default class Transactions extends React.Component {
                                 {/* {this.getEmpName(t.technician_id)} */}
                                 {t.mEmployeeFirstName+" "+t.mEmployeeLastName}
                             </Grid>
+
+                            <Grid item xs={1} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'12px'}}> 
+                                <IconButton onClick={(e)=>{
+                                    this.getPrintHTML(t)
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}>
+                                    <PrintOutlined />
+                                </IconButton>
+                            </Grid>
+                            
                         </Grid>
                         })}
                         </div></div>

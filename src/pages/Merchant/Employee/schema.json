@@ -165,7 +165,7 @@
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"https://api.ci.dev.castlenova.net/api/v1/merchant/employee/save",
+        "url":"http://localhost:3000/api/v1/merchant/employee/save",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

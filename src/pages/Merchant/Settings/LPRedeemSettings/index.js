@@ -8,7 +8,7 @@ import AutoBatchComponent from "../../../../autoBatch";
 import FTextField from "../../../../components/formComponents/components/textField";
 import FButton from "../../../../components/formComponents/components/button";
 import FSelect from "../../../../components/formComponents/components/select";
-
+import { checkButtonAccess } from "../../../../utils/protector";
 export default class CommissionPayment extends React.Component{
     httpManager = new HTTPManager();
 
@@ -98,7 +98,7 @@ export default class CommissionPayment extends React.Component{
         fields.push(<Grid container className="redeemcontianer">
 
                     <Grid item xs={3}>
-                        <FTextField tabindex={i+1} InputProps={{
+                        <FTextField disabled={checkButtonAccess('LoyaltyPoints') !== 'W'} tabindex={i+1} InputProps={{
                             startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         }} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={4}  label={'Every Dollar Spent'} placeholder={'Every Dollar Spent'} name={'dollarSpent'} value={this.state.settings[i].dollarSpent}   onChange={e=>{
                              this.changeValue(e,i)
@@ -106,7 +106,7 @@ export default class CommissionPayment extends React.Component{
                     </Grid>
                     <Grid item xs={1}></Grid>   
                     <Grid item xs={3}>
-                        <FTextField tabindex={i+1}  required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={4}  label={'Points'} placeholder={'Points'} name={'pointsCount'} value={this.state.settings[i].pointsCount}   onChange={e=>{
+                        <FTextField  disabled={checkButtonAccess('LoyaltyPoints') !== 'W'} tabindex={i+1}  required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={4}  label={'Points'} placeholder={'Points'} name={'pointsCount'} value={this.state.settings[i].pointsCount}   onChange={e=>{
                             if(Number(e.target.value) <= 100){
                                 this.changeValue(e,i)
                             }
@@ -114,7 +114,7 @@ export default class CommissionPayment extends React.Component{
                     </Grid>
                     <Grid item xs={1}></Grid>   
                     <Grid item xs={3}>
-                        <FTextField tabindex={i+1} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Min. Ticket Value'} placeholder={'Min. Ticket Value'} name={'minimumTicketValue'} value={this.state.settings[i].minimumTicketValue}   onChange={e=>{
+                        <FTextField  disabled={checkButtonAccess('LoyaltyPoints') !== 'W'} tabindex={i+1} required={true} fullWidth  error={elmt.error} helperText={elmt.helperText} type={'text'} format={'number'} minLength={1} maxLength={6}  label={'Min. Ticket Value'} placeholder={'Min. Ticket Value'} name={'minimumTicketValue'} value={this.state.settings[i].minimumTicketValue}   onChange={e=>{
                              this.changeValue(e,i)
                         }}/>
                     </Grid> 
@@ -139,10 +139,10 @@ export default class CommissionPayment extends React.Component{
     renderButtons(){
         return <Grid container spacing={3}  alignItems="center" sx={{mt:2}}  justifyContent="center"> 
        <Grid item xs={2}>
-           <FButton fullWidth size="large" variant={'contained'} disabled={this.state.isDisabled} label={"Save"} onClick={()=>{
+           {checkButtonAccess('LoyaltyPoints') === 'W' && <FButton fullWidth size="large" variant={'contained'} disabled={this.state.isDisabled} label={"Save"} onClick={()=>{
                this.submitForm()
            }
-           }/>
+           }/>}
        </Grid>  
        </Grid>
     }

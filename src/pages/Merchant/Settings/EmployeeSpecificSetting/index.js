@@ -6,6 +6,7 @@ import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Card, Grid,   Container, Typography, Stack, TextField} from '@mui/material';  
 import AutoBatchComponent from "../../../../autoBatch";
+import { checkButtonAccess } from "../../../../utils/protector";
 const service = {
     borderBottom:'2px solid #f0f0f0',
     padding: 10,
@@ -82,6 +83,10 @@ export default class EmployeeSetting extends React.Component{
             } 
             properties.forEach((field,i)=>{
                 field.value = data[field.name] !== undefined ? data[field.name] : '';
+
+                if(checkButtonAccess('EmpSettings') !== 'W'){
+                    field.disabled=true
+                }
                 props.push(field);
                 if(i === properties.length-1){
                     props.push({
@@ -97,6 +102,9 @@ export default class EmployeeSetting extends React.Component{
                     })
                     schemaobj.properties = props; 
                     schemaobj.force = true;
+                    if(checkButtonAccess('EmpSettings') !== 'W'){
+                        schemaobj.buttons = [];
+                    }
                     this.setState({schema: schemaobj},()=>{ 
                         // console.log("SCHEMA::::")
                         // console.log(this.state.schema)

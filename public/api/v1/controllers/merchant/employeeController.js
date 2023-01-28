@@ -275,6 +275,11 @@ module.exports = class EmployeeController extends baseController{
                 Sequelize.col('`merchantEmployees`.`mEmployeeId`'),
                 `id`
             ],
+
+            [
+                Sequelize.literal("(select webPermissions from mEmployeePermissions where status=1 and merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                `mEmployeePermissions`
+            ],
             // [
             //     sequelize.literal("(select roleName from lkup_role where roleId = (select mEmployeeRole from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`) )"),
             //     `mEmployeeRoleName`
@@ -373,7 +378,11 @@ module.exports = class EmployeeController extends baseController{
                 [
                     sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                     "mTipsCheckPercentage"
-                ]
+                ],
+                [
+                    Sequelize.literal("(select webPermissions from mEmployeePermissions where status=1 and merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                    `mEmployeePermissions`
+                ],
             ],
         },
         include:[
@@ -408,8 +417,7 @@ module.exports = class EmployeeController extends baseController{
             let options={
                 where:{mEmployeePasscode: req.input.passCode, mEmployeeStatus:1},
                 attributes:{
-                    include:[
-
+                    include:[ 
                         [
                             sequelize.literal("(select id from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mCommissionId"
@@ -437,7 +445,11 @@ module.exports = class EmployeeController extends baseController{
                         [
                             sequelize.literal("(select mTipsCheckPercentage from mEmployeeCommission where merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId` and status=1)"),
                             "mTipsCheckPercentage"
-                        ]
+                        ],
+                        [
+                            Sequelize.literal("(select webPermissions from mEmployeePermissions where status=1 and merchantId='"+req.deviceDetails.merchantId+"' and mEmployeeId=`merchantEmployees`.`mEmployeeId`)"),
+                            `UserPermissions`
+                        ],
                     ]
                 }
             }

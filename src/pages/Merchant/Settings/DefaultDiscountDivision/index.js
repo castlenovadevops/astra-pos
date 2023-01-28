@@ -6,6 +6,7 @@ import FormManager from "../../../../components/formComponents/FormManager";
 import schema from './schema.json';
 import {Box, Grid,   Container, Typography, Stack} from '@mui/material'; 
 import AutoBatchComponent from "../../../../autoBatch";
+import { checkButtonAccess } from "../../../../utils/protector";
 export default class DefaultDiscountDivision extends React.Component{
     httpManager = new HTTPManager();
 
@@ -110,6 +111,10 @@ export default class DefaultDiscountDivision extends React.Component{
         var empid = udetail.mEmployeeId
         properties.forEach((field,i)=>{
             field.value = data[field.name];
+
+            if(checkButtonAccess('DefaultDiscount') !== 'W'){
+               field.disabled=true
+            }
             props.push(field);
             if(i === properties.length-1){
                 props.push({
@@ -160,6 +165,10 @@ export default class DefaultDiscountDivision extends React.Component{
                         "value":posid
                       })
                 schema.properties = props; 
+
+                if(checkButtonAccess('DefaultDiscount') !== 'W'){
+                    schema.buttons = [];
+                }
                 // console.log(schema)
                 this.setState({schema: schema,selectedDiscount: data},()=>{
                    
