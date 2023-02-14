@@ -31,6 +31,8 @@ module.exports = class PayoutController extends baseController{
 
 
     getPayout = async (req, res)=>{
+        console.log("*&*&*&*&*&")
+        console.log(req.input)
         let options = {
             where:{
                 mEmployeeId:{

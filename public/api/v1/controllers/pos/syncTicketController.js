@@ -332,6 +332,8 @@ module.exports = class SyncTicketController extends baseController{
         var services = ticketinput.ticketservices[i]
         if(j < services.ticketservicetaxes.length){
             var input = services.ticketservicetaxes[j]
+
+            input.createdDate = input.createdDate.replace("T"," ").replace("Z","")
             this.create('ticketservicetax', input, false).then(r=>{
                 this.saveServiceTaxes(ti, tickets, j+1, i, req, res, next);
             })

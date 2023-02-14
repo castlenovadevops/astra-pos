@@ -334,7 +334,7 @@ export default class ProductService extends React.Component{
                     field.value = 'Default'
                 }
                 else if(field.name === 'mProductType'){
-                    field.value = 'Product'
+                    field.value = 'Service'
                 }
                 else if(field.name === 'mProductPriceType'){
                     field.value = 'Fixed'

@@ -4,7 +4,7 @@ import Crypto from './crypto';
 export default class HTTPManager{
     API_URL = process.env.REACT_APP_LOCALAPIURL;
     crypto = new Crypto();
-
+    isCalled = false
     getAuthHeader(){
         var accessToken = window.localStorage.getItem('accessToken') || '';
         var authorizationToken = window.localStorage.getItem('token') || '';
@@ -68,7 +68,44 @@ export default class HTTPManager{
 
                 if(error.response !== undefined){
                     if(error.response.status  === 401){
-                        window.localStorage.clear();
+                        window.localStorage.removeItem('userdetail');
+                        window.location.reload();
+                    }
+                }
+                if(error.status !== 200){
+                    requestresponse = error.response;
+                }
+                if(requestresponse === undefined){
+                    requestresponse={status:400, data:''}
+                }
+                // console.log(this.crypto.AESDecrypt(requestresponse.data))
+                reject(this.crypto.AESDecrypt(requestresponse.data));
+            }) 
+        })
+    }
+
+    postBatchRequest(url, input){
+        console.log(this.isCalled, new Date().toISOString())
+        this.isCalled= new Date().toISOString();
+        return new Promise((resolve, reject)=>{ 
+            if(url.indexOf('http') === -1){
+                url = process.env.REACT_APP_LOCALAPIURL+url
+            }
+            axios.post(url, {data:this.crypto.AESEncrypt(input)}, {headers: this.getAuthHeader()}).then(response=>{ 
+                var requestresponse = response;
+                // console.log(response)
+                if(response.status !== 200){
+                    requestresponse = response.response;
+                } 
+                console.log(this.crypto.AESDecrypt(requestresponse.data))
+               resolve(this.crypto.AESDecrypt(requestresponse.data));
+            }).catch(error=>{
+                // console.log(error)
+                var requestresponse = error;
+
+                if(error.response !== undefined){
+                    if(error.response.status  === 401){
+                        window.localStorage.removeItem('userdetail');
                         window.location.reload();
                     }
                 }

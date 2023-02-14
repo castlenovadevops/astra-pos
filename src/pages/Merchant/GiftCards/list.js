@@ -7,8 +7,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import Iconify from '../../../components/Iconify';
 import FormManager from "../../../components/formComponents/FormManager";
 import schema from './schema';
-import {Box, Grid, Card,  Container, Typography, Stack} from '@mui/material';
-import FButton from '../../../components/formComponents/components/button';
+import {Box, Grid, Card,  Container, Button, Stack} from '@mui/material';
+import { Print } from "@mui/icons-material";
 import moment from "moment/moment";
 
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
@@ -30,7 +30,7 @@ export default class Discount extends React.Component{
                     minWidth: 150,
                     editable: false,
                     renderCell: (params) => (
-                        <div style={{textTransform:'capitalize'}}>
+                        <div style={{textTransform:'capitalize',display:'flex', alignItems:'center', justifyContent:'center'}}>
                             {params.row.cardType}
                         </div>
                     )
@@ -41,7 +41,7 @@ export default class Discount extends React.Component{
                     minWidth: 200,
                     editable: false,
                     renderCell: (params) => (
-                        <div>
+                        <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
                             {this.formatCardNumber(params.row.cardNumber)}
                         </div>
                     )
@@ -52,7 +52,7 @@ export default class Discount extends React.Component{
                     minWidth: 150,
                     editable: false,
                     renderCell: (params) => (
-                        <div style={{textTransform:'capitalize'}}>
+                        <div style={{textTransform:'capitalize', display:'flex', alignItems:'center', justifyContent:'center'}}>
                             {params.row.cardValue}
                         </div>
                     )
@@ -63,7 +63,7 @@ export default class Discount extends React.Component{
                     minWidth: 300,
                     editable: false,
                     renderCell: (params) => (
-                        <div> 
+                        <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}> 
                             {moment(params.row.validFrom).format('MM/DD/YYYY')} - 
                             {moment(params.row.validTo).format('MM/DD/YYYY')}
                         </div>
@@ -145,10 +145,24 @@ export default class Discount extends React.Component{
     getActions(params){
         var detail = window.localStorage.getItem('userdetail')
         if(detail !== '' && detail !== undefined && detail !=='{}'){ 
-        return <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>      
-               {params.row.cardType === 'Digital' && <FButton
-                variant="outlined" 
-                size="small" 
+        return <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>   
+        {(params.row.status === 'Waiting')&&
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            className='bgbtn'
+                            style={{ marginLeft: 16 }}
+                            onClick={(event) => { 
+                                this.props.payGiftCard(params.row);
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }}
+                        >
+                            Pay
+                        </Button>}
+
+               {params.row.cardType === 'Digital' && <Print style={{marginLeft:'1rem'}} 
                 onClick={()=>{ 
                     this.httpManager.postRequest(`pos/print/getGiftcardPrintHTML`,{cardNumber: params.row.cardNumber}).then(htmlres=>{
                         var final_printed_data = '<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></head><body>';
@@ -163,8 +177,7 @@ export default class Discount extends React.Component{
                             this.setState({printerror: true})
                         }
                     })
-                }} 
-                label="Print"/>}
+                }}  />}
                 {params.row.cardType !== 'Digital' && <div  style={{margin:'0 8px', display:'flex', alignItems:'center', justifyContent:'center'}}>N/A</div>}
             </div>
         }

@@ -4,6 +4,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker,  LocalizationProvider } from '@mui/x-date-pickers'; 
 import Page from '../../components/Page';
 import AutoBatchComponent from '../../autoBatch';
+import Moment from 'moment';
 // material
 import { Button, Card, Stack, Container,TextField, Typography,Dialog,DialogTitle,DialogContent } from '@mui/material';
 import TableContent from '../../components/table/tableView';
@@ -133,7 +134,8 @@ export default class PayoutComponent extends React.Component{
     }
 
     getPayout(){
-        this.httpManager.postRequest('merchant/payout/getPayout', {from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
+        console.log( Moment(this.state.from_date).format("YYYY-MM-DD"),  Moment(this.state.to_date).format("YYYY-MM-DD"))
+        this.httpManager.postRequest('merchant/payout/getPayout', {from_date:  Moment(this.state.from_date).format("YYYY-MM-DD"), to_date:  Moment(this.state.to_date).format("YYYY-MM-DD")}).then(res=>{
             console.log(res.data)
             this.setState({employee_reportlist: res.data})
         })

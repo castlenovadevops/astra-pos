@@ -358,7 +358,7 @@ export default class TicketFullPayment extends React.Component  {
                 
                     {Math.ceil(Number(this.props.data.topayamount)).toFixed(2) ===  Number(this.props.data.topayamount).toFixed(2) &&  this.getPaymentValues(Math.ceil(Number(this.props.data.topayamount)), 3).map(t=>{
                         return <Grid item xs={3} style={{display:'flex'}}>
-                                    <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:this.state.selectedAmount === t ? '1px solid #bee1f7': '1px solid #134163', background:this.state.selectedAmount === t ? '#bee1f7' :'transparent', margin:10,borderRadius:10, cursor:'pointer'}} align="left"
+                                    <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:Number(this.state.selectedAmount).toFixed(2) === Number(t).toFixed(2) ? '1px solid #bee1f7': '1px solid #134163', background:Number(this.state.selectedAmount).toFixed(2) === Number(t).toFixed(2) ? '#bee1f7' :'transparent', margin:10,borderRadius:10, cursor:'pointer'}} align="left"
                                      onClick={()=>{
                                         this.selectPayment(t)
                                     }}>{Number(t).toFixed(2)}</Typography>
@@ -367,7 +367,7 @@ export default class TicketFullPayment extends React.Component  {
                     
                     {Math.ceil(Number(this.props.data.topayamount)).toFixed(2) !==  Number(this.props.data.topayamount).toFixed(2) &&  this.getPaymentValues(Math.ceil(Number(this.props.data.topayamount)), 2).map(t=>{
                         return <Grid item xs={3} style={{display:'flex'}}>
-                                    <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:'1px solid #134163', margin:10,borderRadius:10, cursor:'pointer'}} align="left"
+                                    <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:Number(this.state.selectedAmount).toFixed(2) === Number(t).toFixed(2) ? '1px solid #bee1f7': '1px solid #134163', background:Number(this.state.selectedAmount).toFixed(2) === Number(t).toFixed(2) ? '#bee1f7' :'transparent', margin:10,borderRadius:10, cursor:'pointer'}} align="left"
                                      onClick={()=>{
                                         this.selectPayment(t)
                                     }}>{Number(t).toFixed(2)}</Typography>

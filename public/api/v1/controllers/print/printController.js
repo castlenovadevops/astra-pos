@@ -252,43 +252,51 @@ module.exports = class SyncTaxController extends baseController{
             //console.log("ticketdetail")
             //console.log(ticketdetail)
             var html = `<div style="max-width:100%;display:inline;font-family:'Arial'" >`; // div1
-            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:16px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:18px;font-weight:bold;margin:0'>`+printer.Title+`</p></div>`
             
             html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
-            html += `<div style='max-width:100%;width:100%;font-size:12px;text-align:center;    white-space: nowrap;'>`+merchantdetail.merchantAddress1+(merchantdetail.merchantAddress2 !== '' ? ','+merchantdetail.merchantAddress2 : '')+`</div>`
-            html += `<div style='max-width:100%;width:100%;font-size:12px;text-align:center;    white-space: nowrap;'>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+            html += `<div style='max-width:100%;width:100%;font-size:14px;text-align:center; font-weight:500;   white-space: nowrap;'>`+merchantdetail.merchantAddress1+(merchantdetail.merchantAddress2 !== '' ? ','+merchantdetail.merchantAddress2 : '')+`</div>`
+            html += `<div style='max-width:100%;width:100%;font-size:14px;text-align:center; font-weight:500;   white-space: nowrap;'>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
             html+=`</div>`
-            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:16px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</p></div>`
+            html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><div style='font-size:18px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</div></div>`
                 
             console.log("BITLL TYE ", billtype)
-            if(billtype === 'bill' || billtype === 'receipt'){
-                // html+=`<div style='display:flex;align-items:center;justify-content:center;width:100%;'><p style='font-size:12px;font-weight:bold;'>`+(printer.Title)+`</p></div>`
-                // html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
-                // html += `<div>`+merchantdetail.merchantAddress1+`</div>`
-                // html += `<div>`+merchantdetail.merchantAddress2+`</div>`
-                // html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
-                // html+=`</div>`
-                // html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</p></div>`
-
-
-                html+=`<div><div style='max-width:100%;width:100%;font-size:12px;text-align:left;    white-space: nowrap;'>Cashier: `+ticketdetail.merchantEmployee.mEmployeeFirstName+` `+ticketdetail.merchantEmployee.mEmployeeLastName+`</div>
-                <div style='max-width:100%;width:100%;font-size:12px;text-align:left;    white-space: nowrap;'>`+moment.utc(ticketdetail.createdDate.replace("T"," ").replace("Z","")).local().format('DD-MMM-YYYY hh:mm a')+`</div>
+            if(billtype === 'bill' || billtype === 'receipt'){ 
+                html+=`<div><div style='max-width:100%;width:100%;font-size:13px;text-align:left;  font-weight:500;  white-space: nowrap;'>Cashier: `+ticketdetail.merchantEmployee.mEmployeeFirstName+` `+ticketdetail.merchantEmployee.mEmployeeLastName+`</div>
+                <div style='max-width:100%;width:100%;font-size:13px;text-align:left; font-weight:500;   white-space: nowrap;'>`+moment.parseZone(ticketdetail.createdDate).format('DD-MMM-YYYY hh:mm a')+`</div>
                 </div>`
-                
-                html+=`<div style='width:100%;display:flex;align-items:baseline;flex-direction:column;font-size:11px;'>` // div2
+                var taxesdetails = [];
+                var addedtaxes = [];
+                html+=`<div style='width:95%;display:flex;align-items:baseline;flex-direction:column;font-size:11px;padding:0 5px 5px;'>` // div2
                 ticketdetail.ticketservices.forEach((service, i)=>{ 
-                    html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;font-size:12px;width:100%'>`;
-                    html +=`<div style='max-width:20px;font-size:12px;width:20px;text-align:left;'>`+service.serviceQty+`</div>`;
-                    html +=`<div style='max-width:150px;width:150px;text-align:left;font-size:12px; '>`+service.mProduct.mProductName+`</div>`
+                    html+=`<div style='display:flex;align-items:baseline;font-weight:500;justify-content:space-between;font-size:12px;width:100%'>`;
+                    html +=`<div style='max-width:20px;font-size:12px;width:20px;font-weight:500;text-align:left;'>`+service.serviceQty+`</div>`;
+                    html +=`<div style='max-width:150px;width:150px;text-align:left;font-size:12px;font-weight:500; '>`+service.mProduct.mProductName+`</div>`
 
-                    html +=`<div style='max-width:100px;width:100px;font-size:12px;text-align:right;padding-right:10px;'>$`+(Number(service.serviceQty)*Number(service.servicePerUnitCost)).toFixed(2)+`</div>`
+                    html +=`<div style='max-width:100px;width:100px;font-weight:500;font-size:12px;text-align:right;padding-right:10px;'>$`+(Number(service.serviceQty)*Number(service.servicePerUnitCost)).toFixed(2)+`</div>`
                     html +=`</div>`
                     var taxes = service.ticketservicetaxes.map(t=>{
                         var taxhtml = ''
+                        if(addedtaxes.indexOf(t.mTaxId) === -1){
+                            addedtaxes.push(t.mTaxId);
+                            taxesdetails.push({
+                                taxName:t.mTaxName,
+                                taxValue: (t.mTaxType === 'Percentage' ? t.mTaxValue+"%" : "$"+t.mTaxValue),
+                                taxAmount: t.mTaxAmount
+                            })
+                        }
+                        else{
+                            var idx = addedtaxes.indexOf(t.mTaxId);
+                            var de = taxesdetails[idx];
+                            console.log("TAXXXXXXX",Number(de.taxAmount),"+",Number(t.mTaxAmount), "=", Number(de.taxAmount)+Number(t.mTaxAmount) )
+                            de.taxAmount = Number(de.taxAmount)+Number(t.mTaxAmount);
+                            taxesdetails[idx] = de;
+                        }
+
                         taxhtml+=`<div style='display:flex;align-items:flex-start;justify-content:space-between;width:100%'>`; 
-                        taxhtml +=`<div style='max-width:20px;font-size:12px;width:20px;text-align:left;'>&nbsp;</div><div style='max-width:calc(100% - 120px);width:calc(100% - 120px);font-size:11px;text-align:left;    white-space: nowrap;'>`+t.mTaxName+`&nbsp;&nbsp;`+(t.mTaxType === 'Percentage' ? t.mTaxValue+"%" : "$"+t.mTaxValue)+`</div>`
+                        taxhtml +=`<div style='max-width:20px;font-size:10px;width:20px;text-align:left;'>&nbsp;</div><div style='max-width:calc(100% - 120px);padding-left:10px;width:calc(100% - 120px);font-size:11px;text-align:left;    white-space: nowrap;'>`+t.mTaxName+`&nbsp;&nbsp;`+(t.mTaxType === 'Percentage' ? t.mTaxValue+"%" : "$"+t.mTaxValue)+`</div>`
         
-                        taxhtml +=`<div style='max-width:100px;width:100px;font-size:12px;text-align:right;padding-right:10px;'>$`+Number(t.mTaxAmount).toFixed(2)+`</div>`
+                        taxhtml +=`<div style='max-width:100px;width:100px;font-size:10px;text-align:right;padding-right:10px;'>$`+Number(t.mTaxAmount).toFixed(2)+`</div>`
                         taxhtml +=`</div>`
                         return taxhtml
                     })
@@ -307,6 +315,18 @@ module.exports = class SyncTaxController extends baseController{
                     html+= discounts.join("")
                     if(i === ticketdetail.ticketservices.length-1){ 
 
+                        
+                        var ttaxes = taxesdetails.map(t=>{
+                            var tthtml = ''
+                            tthtml+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`; 
+                            tthtml +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px);font-size:11px;text-align:left;    white-space: nowrap;'>`+t.taxName+`&nbsp;&nbsp;`+(t.taxValue)+`</div>`
+            
+                            tthtml +=`<div style='max-width:150px;width:150px;font-size:12px;text-align:right;padding-right:10px;'>$`+Number(t.taxAmount).toFixed(2)+`</div>`
+                            tthtml +=`</div>`
+                            return tthtml
+                        })
+                        html+= "<div style='width:100%;margin:1rem 0 0;'>"+ttaxes.join("")+"</div>"
+
                         if(ticketdetail.ticketdiscounts.length>0){
                             var tdiscounts = ticketdetail.ticketdiscounts.map(t=>{
                                 var Discounthtml = ''
@@ -318,7 +338,7 @@ module.exports = class SyncTaxController extends baseController{
                                 return Discounthtml
                             })
                             html+= "<div style='margin:1rem 0 0;'>"+tdiscounts.join("")+"</div>"
-                        }
+                        }  
 
                         html+=`<div style='display:flex;width:100%;align-items:center;margin:0.5rem 0 0.5rem;justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Total</p><p style='font-size:15px;font-weight:bold;text-align:right;padding-right:10px;'> $`+Number(ticketdetail.ticketTotalAmount).toFixed(2)+`</p></div>`
 
@@ -333,30 +353,43 @@ module.exports = class SyncTaxController extends baseController{
                             this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
                         }
                         else if (billtype === 'receipt'){ 
-                            var paymentHTML = ''
-                            console.log("RECEIPT PRINTING", ticketdetail.ticketpayments)
-                            var isCardpaid= false;
-                            ticketdetail.ticketpayments.forEach((t, ti)=>{
-                                if(t.payMode.toLowerCase() === 'card'){
-                                    isCardpaid = true;
-                                }
+                            var resp = [];
+                            console.log("RECEIPT PRINTING", ticketdetail.ticketpayments) 
+                            ticketdetail.ticketpayments.forEach((t, ti)=>{ 
+                                var paymentHTML = html
                                 paymentHTML+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`; 
-                                paymentHTML +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px);text-transform:capitalize;display:flex;align-items:flex-start; '>`+t.payMode+`&nbsp;&nbsp;`+(t.payMode.toLowerCase() !== 'cash' ? "("+t.paymentType+")" : "")+`</div>`
+                                paymentHTML +=`<div style='max-width:100%;width:100%;text-transform:capitalize;display:flex;align-items:flex-start; '>`+(t.payMode.toLowerCase() !== 'cash' ?  t.paymentType+" "+t.payMode+`&nbsp;&nbsp;` : "Cash ")+` Sale</div>`
                 
                                 paymentHTML +=`<div style='max-width:150px;width:100px;text-align:right;padding-right:10px;'>$`+Number(t.ticketPayment).toFixed(2)+`</div>`
                                 paymentHTML +=`</div>`
-                                if(ti === ticketdetail.ticketpayments.length-1){ 
-                                    if(isCardpaid){
-                                        html+=`<div style='display:flex;width:100%;align-items:center;margin:1rem 0 0.5rem;justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Tip</p><p style='font-size:15px;font-weight:bold;text-align:right;padding-right:10px;border-bottom:1px dotted #000;width:100px;'></p></div>`
-                                    }
-                                    html+= paymentHTML
-                                    html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
-                                    <p style='margin-top:0'>`+printer.footerText+`</p>
+
+                                if(t.payMode.toLowerCase() === 'card'){
+                                    paymentHTML+=`<div style='display:flex;width:100%;align-items:center;margin:1rem 0 0.5rem;justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Tip</p><p style='font-size:15px;font-weight:bold;text-align:right;padding-right:10px;border-bottom:1px dotted #000;width:100px;'></p></div>`
+
+
+                                    paymentHTML+=`<div style='display:flex;width:100%;align-items:center;margin:1rem 0 0.5rem;justify-content:space-between;'>I agree to pay the above amount per the cardholder and/or merchant agreement</div>
+                                    <div style='display:flex;width:100%;align-items:center;margin:1rem 0 0.5rem;justify-content:space-between;'> <p style='font-size:15px;font-weight:normal;text-align:left;padding-right:10px;border-bottom:1px dotted #000;width:100%;'>x</p></div>`
+                                }
+
+                                paymentHTML +=`<div style='width:100%;margin-bottom:1rem;' ><p style='margin-bottom:0'>Enjoy</p>
+                                    <p style='margin-top:0;'>`+printer.footerText+`</p>
                                     </div>`
 
-                                    html+=`</div>` // div2
-                                    html+=`</div>`;// div1
-                                    this.sendResponse({htmlMsg: html, printers: printer}, res, 200);
+                                paymentHTML+=`</div>` // div2
+                                paymentHTML+=`</div>`;// div1
+
+                                resp.push(paymentHTML)
+
+                                if(ti === ticketdetail.ticketpayments.length-1){ 
+                                    // html+= paymentHTML
+                                    // html+=`<div style='width:100%;margin-bottom:1rem;' ><p style='margin-bottom:0'>Enjoy</p>
+                                    // <p style='margin-top:0;'>`+printer.footerText+`</p>
+                                    // </div>`
+
+                                    // html+=`</div>` // div2
+                                    // html+=`</div>`;// div1
+
+                                    this.sendResponse({htmlMsg: resp, printers: printer}, res, 200);
                                 }
                             })
                         }
@@ -377,52 +410,50 @@ module.exports = class SyncTaxController extends baseController{
                         supplies:0
                     };
                     if(employees.indexOf(service.merchantEmployee.mEmployeeId) === -1){  
-                        ehtml.html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
-            
+                        ehtml.html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:18px;font-weight:bold;margin:0;'>`+printer.Title+`</p></div>` 
+
                         ehtml.html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
-                        ehtml.html += `<div>`+merchantdetail.merchantAddress1+`</div>`
-                        ehtml.html += `<div>`+merchantdetail.merchantAddress2+`</div>`
-                        ehtml.html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+                        ehtml.html += `<div style='max-width:100%;width:100%;font-size:14px;text-align:center; font-weight:500;   white-space: nowrap;'>`+merchantdetail.merchantAddress1+(merchantdetail.merchantAddress2 !== '' ? ','+merchantdetail.merchantAddress2 : '')+`</div>`
+                        ehtml.html += `<div style='max-width:100%;width:100%;font-size:14px;text-align:center; font-weight:500;   white-space: nowrap;'>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
                         ehtml.html+=`</div>`
-                        ehtml.html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</p></div>`
-                            
-                        ehtml.html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+                        ehtml.html+=`<div style='display:flex;align-items:center;margin:1rem 0 0.5rem;justify-content:center;'><div style='font-size:18px;font-weight:bold;'>ORDER: Ticket - `+ticketdetail.ticketCode+`</div></div>`  
                  
                         ehtml.html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
-                        ehtml.html += `<div>Employee Receipt</div>`
-                        ehtml.html += `<div>`+moment.utc(this.getDate()).local().format('MM/DD/YYYY  hh:mm a')+`</div>`
+                        ehtml.html += `<div style='max-width:100%;width:100%;font-size:14px;text-align:center; font-weight:500;   white-space: nowrap;'>Employee Receipt</div>`
+                        ehtml.html += `<div style='max-width:100%;width:100%;font-size:14px;text-align:center; font-weight:500;   white-space: nowrap;'>`+moment.parseZone(this.getDate()).format('MM/DD/YYYY  hh:mm a')+`</div>`
                         ehtml.html+=`</div>`
-                        ehtml.html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;'><p style='margin-bottom:0;max-width:calc(100% - 150px)'>Employee:&nbsp;&nbsp;<b>`+service.merchantEmployee.mEmployeeFirstName+` `+service.merchantEmployee.mEmployeeLastName+`</b></p> <p style='max-width:150px'>Ticket:&nbsp;<b>`+ticketdetail.ticketCode+`</b></p> </div>` 
+                        ehtml.html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;'><p style='margin-bottom:0;max-width:calc(100% - 150px);font-size:14px;'>Employee:&nbsp;&nbsp;<b>`+service.merchantEmployee.mEmployeeFirstName+` `+service.merchantEmployee.mEmployeeLastName+`</b></p> <p style='max-width:150px;font-size:14px;'>Ticket:&nbsp;<b>`+ticketdetail.ticketCode+`</b></p> </div>` 
                         employees.push(service.merchantEmployee.mEmployeeId)
                     }
                     else{
                         ehtml = employeehtml[service.merchantEmployee.mEmployeeId]
                     }
-                    console.log("TIPS", service.ticketTips)
-                    ehtml.total += Number(ehtml.total) + (Number(service.serviceQty)*Number(service.servicePerUnitCost));
-                    ehtml.tips += Number(ehtml.tips) +(service.ticketTips.length > 0 ? Number(service.ticketTips[0].dataValues.tipsAmount) : 0);
+                    ehtml.total = Number(ehtml.total) + (Number(service.serviceQty)*Number(service.servicePerUnitCost));
+                    ehtml.tips = Number(ehtml.tips) +(service.ticketTips.length > 0 ? Number(service.ticketTips[0].dataValues.tipsAmount) : 0);
+                    console.log("TOTAL::::", ehtml.total)
+                    console.log("TIPS::::", ehtml.tips)
                     if(service.mProduct.mProductType === 'Product'){
-                        ehtml.supplies += Number(ehtml.supplies) + (Number(service.serviceQty)*Number(service.servicePerUnitCost));
+                        ehtml.supplies = Number(ehtml.supplies) + (Number(service.serviceQty)*Number(service.servicePerUnitCost));
                     }
 
                     ehtml.html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:270px'>`;
-                    ehtml.html +=`<div style='max-width:20px'>`+service.serviceQty+`</div>`;
-                    ehtml.html +=`<div style='max-width:calc(100% - 150px); '>`+service.mProduct.mProductName+`</div>`
+                    ehtml.html +=`<div style='max-width:20px;font-weight:500;font-size:14px;text-align:left;width:20px;'>`+service.serviceQty+`</div>`;
+                    ehtml.html +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px);text-align:left;font-weight:500;font-size:14px;padding-right:10px; '>`+service.mProduct.mProductName+`</div>`
 
-                    ehtml.html +=`<div style='max-width:100px;'>$`+(Number(service.serviceQty)*Number(service.servicePerUnitCost)).toFixed(2)+`</div>`
+                    ehtml.html +=`<div style='max-width:100px;font-weight:500;font-size:14px;text-align:right;padding-right:10px;width:100px'>$`+(Number(service.serviceQty)*Number(service.servicePerUnitCost)).toFixed(2)+`</div>`
                     ehtml.html +=`</div>`
                     employeehtml[service.merchantEmployee.mEmployeeId] = ehtml; 
                     if(i === ticketdetail.ticketservices.length-1){ 
                         var response = [];
                         Object.keys(employeehtml).forEach((emp, k)=>{
                             var e = employeehtml[emp]
-                            e.html+=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Amount</p><p style='font-size:15px;font-weight:bold;'> $`+Number(e.total).toFixed(2)+`</p></div>`
+                            e.html+=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;margin:0;'><p style='font-size:15px;margin:0;font-weight:bold;'> Amount</p><p style='font-size:15px;margin:0;font-weight:bold;text-align:right;padding-right:10px;'> $`+Number(e.total).toFixed(2)+`</p></div>`
 
-                            e.html +=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Supplies</p><p style='font-size:15px;font-weight:bold;'> $`+Number(e.supplies).toFixed(2)+`</p></div>`;
+                            e.html +=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;margin:0;'><p style='font-size:15px;margin:0;font-weight:bold;'> Supplies</p><p style='font-size:15px;margin:0;font-weight:bold;text-align:right;padding-right:10px;'> $`+Number(e.supplies).toFixed(2)+`</p></div>`;
 
-                            e.html += `<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;'><p style='font-size:15px;font-weight:bold;'> Tip</p><p style='font-size:15px;font-weight:bold;'> $`+Number(e.tips).toFixed(2)+`</p></div>` 
+                            e.html += `<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;margin:0;'><p style='font-size:15px;margin:0;font-weight:bold;'> Tip</p><p style='font-size:15px;margin:0;font-weight:bold;text-align:right;padding-right:10px;'> $`+Number(e.tips).toFixed(2)+`</p></div>` 
 
-                            e.html+=`<div style='display:flex;align-items:center;justify-content:space-between; width:270px;'><p style=' width:270px;display:flex;align-items:center;justify-content:center;'>`+req.deviceDetails.merchantName+`- Printed `+moment.utc(this.getDate()).local().format('MM/DD/YYYY hh:mm a')+`</p></div>`
+                            e.html+=`<div style='display:flex;align-items:center;justify-content:space-between; width:270px;margin-bottom:20px'><p style=' width:100%;margin:20px;display:flex;align-items:center;justify-content:center;'>`+req.deviceDetails.merchantName+`- Printed `+moment(this.getDate()).format('MM/DD/YYYY hh:mm a')+`</p></div>`
                             e.html+=`</div>` // div2
                             e.html+=`</div>`;// div1
 
@@ -453,7 +484,7 @@ module.exports = class SyncTaxController extends baseController{
              //console.log("ticketdetail")
             //console.log(ticketdetail)
             var html = `<div style="max-width:270px;display:inline;font-family:'Arial'" >`; // div1
-            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;margin:0'>`+printer.Title+`</p></div>`
             
             html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
             html += `<div>`+merchantdetail.merchantAddress1+`</div>`
@@ -497,24 +528,29 @@ module.exports = class SyncTaxController extends baseController{
             var merchantdetail = req.deviceDetails;
             var transaction = results.dataValues||results;  
             var html = `<div style="max-width:100%;display:inline;font-family:'Arial'" >`; // div1
-            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+            html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:18px;font-weight:bold;margin:0;'>`+printer.Title+`</p></div>`
             
             html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
-            html += `<div>`+merchantdetail.merchantAddress1+`</div>`
-            html += `<div>`+merchantdetail.merchantAddress2+`</div>`
-            html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+            html += `<div style="font-size:14px;margin:0;font-weight:400;">`+merchantdetail.merchantAddress1+`</div>`
+            html += `<div style="font-size:14px;margin:0;font-weight:400;">`+merchantdetail.merchantAddress2+`</div>`
+            html += `<div style="font-size:14px;margin:0;font-weight:400;">`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
             html+=`</div>` 
 
-            html+=`<div><p style='margin-bottom:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>Cashier: `+transaction.merchantEmployee.mEmployeeFirstName+` `+transaction.merchantEmployee.mEmployeeLastName+`</p>
-            <p style='margin-top:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>`+moment.utc(transaction.createdDate.replace("T"," ").replace("Z","")).local().format('DD-MMM-YYYY hh:mm a')+`</p>
+            html+=`<div><p style='margin-bottom:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;font-size:14px;margin:0;font-weight:400;'>Cashier: `+transaction.merchantEmployee.mEmployeeFirstName+` `+transaction.merchantEmployee.mEmployeeLastName+`</p>
+            <p style='font-size:14px;margin:0;font-weight:400;margin-top:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>`+moment.parseZone(transaction.createdDate).format('DD-MMM-YYYY hh:mm a')+`</p>
             </div>` 
-            html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`; 
-            html +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px);text-transform:capitalize;display:flex;align-items:flex-start; '>`+transaction.payMode+`&nbsp;&nbsp;`+(transaction.payMode.toLowerCase() !== 'cash' ? "("+transaction.paymentType+")" : "")+`</div>`
+            html+=`<div style='display:flex;width:270px;align-items:baseline; justify-content:space-between;margin:0;'><p style='font-size:15px;margin:10px 0;font-weight:bold;'> Total</p><p style='font-size:15px;margin:10px 0;font-weight:bold;text-align:right;padding-right:10px;'> $`+Number(transaction.ticketPayment).toFixed(2)+`</p></div>`
 
-            html +=`<div style='max-width:150px;width:100px;text-align:right;padding-right:10px;'>$`+Number(transaction.ticketPayment).toFixed(2)+`</div>`
+            html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;width:100%'>`; 
+            html +=`<div style='max-width:calc(100% - 150px);width:calc(100% - 150px);text-transform:capitalize;display:flex;align-items:flex-start;font-size:14px;margin:0;font-weight:400;' >`+transaction.payMode+`&nbsp;&nbsp;`+(transaction.payMode.toLowerCase() !== 'cash' ? "("+transaction.paymentType+")" : "")+`</div>`
+
+            html +=`<div style='max-width:150px;width:100px;text-align:right;padding-right:10px; font-size:14px;margin:0;font-weight:400;'>$`+Number(transaction.ticketPayment).toFixed(2)+`</div>`
             html +=`</div>` 
-            html+=`<div style='width:100%; ><p style='margin-bottom:0'>Enjoy</p>
-            <p style='margin-top:0'>`+printer.footerText+`</p>
+            html+=`<div style='width:100%;margin:10px 0;' ><p style='margin-bottom:0'>Enjoy</p>
+            <p style='margin-top:0;font-size:12px;margin:0;font-weight:400;'>`+printer.footerText+`</p>
+            </div>` 
+            html+=`<div style='width:100%;margin:10px 0;' >
+            <p style='margin-top:0;font-size:12px;margin:0;font-weight:400;'></p>
             </div>`
 
             html+=`</div>` // div2
@@ -549,15 +585,18 @@ console.log("BATCH DETAIL", batchdetail)
             },
             where:{ 
                 payMode:'card',
-                ticketId: sequelize.literal("(select ticketId from tickets where batchId='"+input.id+"')")
+                ticketId: {
+                    [Sequelize.Op.in]: sequelize.literal("(select ticketId from tickets where batchId='"+input.id+"')")
+                }
             }, 
         }
 
         this.readAll(options, 'ticketpayment').then(async (results)=>{
+            var transactions = results.dataValues||results; 
             var billprinters = await this.readOne({where:{BillPrint: 1}}, 'printers')
+            console.log("PRINTER ",  results)
             var printer = billprinters != null ? billprinters.dataValues : {} 
-            var merchantdetail = req.deviceDetails;
-            var transactions = results.dataValues||results;  
+            var merchantdetail = req.deviceDetails; 
             var addedCards = [];
             var carddetails = [];
             var addedtickets = [];
@@ -586,16 +625,16 @@ console.log("BATCH DETAIL", batchdetail)
                 }
                 if(i === transactions.length-1){
                     var html = `<div style="max-width:100%;display:inline; font-family:'Arial'" >`; // div1
-                    html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;'>`+printer.Title+`</p></div>`
+                    html+=`<div style='display:flex;align-items:center;justify-content:center;'><p style='font-size:12px;font-weight:bold;margin:0'>`+printer.Title+`</p></div>`
                     
                     html += `<div style='display:flex;align-items:center;justify-content:center;flex-direction:column'>`
-                    html += `<div>`+merchantdetail.merchantAddress1+`</div>`
-                    html += `<div>`+merchantdetail.merchantAddress2+`</div>`
-                    html += `<div>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
+                    html += `<div style='font-size:12px;font-weight:400;margin:0'>`+merchantdetail.merchantAddress1+`</div>`
+                    html += `<div style='font-size:12px;font-weight:400;margin:0'>`+merchantdetail.merchantAddress2+`</div>`
+                    html += `<div style='font-size:12px;font-weight:400;margin:0'>`+merchantdetail.merchantCity+`,`+merchantdetail.merchantState+`,`+merchantdetail.merchantZipcode+`</div>`
                     html+=`</div>`  
 
                     html+=`<div><p style='margin-bottom:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>Batch: `+batchdetail.batchName+`</p>
-                    <p style='margin-top:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>`+moment.utc(batchdetail.createdDate.replace("T"," ").replace("Z","")).local().format('DD-MMM-YYYY hh:mm a')+`</p>
+                    <p style='margin-top:0;width:100%;display:flex;alignItems:flex-start;justifyContent:flex-start;'>`+moment.parseZone(batchdetail.createdDate).format('DD-MMM-YYYY hh:mm a')+`</p>
                     </div>`  
                     html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;flex-direction:column;width:100%'>`;
 
@@ -713,6 +752,8 @@ console.log("BATCH DETAIL", batchdetail)
                         </div>
                     ` 
 
+                    console.log(html)
+                    console.log(carddetails.length)
                     carddetails.forEach((cd, ci)=>{ 
 
                     html+=`<div style='display:flex;align-items:baseline;justify-content:space-between;flex-direction:row;width:100%'>`;
@@ -730,7 +771,15 @@ console.log("BATCH DETAIL", batchdetail)
                         html+="</div>"
                     })
   
+                    html+=`<div style='width:100%;margin:10px 0;' ><p style='margin-bottom:0'>Enjoy</p>
+                    <p style='margin-top:0;font-size:12px;margin:0;font-weight:400;'>`+printer.footerText+`</p>
+                    </div>` 
+                    html+=`<div style='width:100%;margin:10px 0;' >
+                    <p style='margin-top:0;font-size:12px;margin:0;font-weight:400;'></p>
+                    </div>`
+                    
                     html+=`</div>`;// div1
+                    console.log(html)
                     this.sendResponse({htmlMsg: html, printers: printer}, res, 200); 
                     
                 }

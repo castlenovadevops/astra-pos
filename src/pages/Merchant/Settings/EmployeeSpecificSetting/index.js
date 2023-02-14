@@ -173,9 +173,18 @@ export default class EmployeeSetting extends React.Component{
                     data.push(elmt);
                     if(i === response.data.length-1){
                         this.setState({employeelist: data, isLoading: false},()=>{
-                            this.setState({employeeId: data[0].mEmployeeId},()=>{
-                                this.getEmp(data[0])
-                            })
+                            if(this.state.employeeId !== '' && this.state.employeeId !== data[0].mEmployeeId){
+                                var emp = data.filter(r=>r.mEmployeeId === this.state.employeeId);
+                                this.getEmp(emp[0])
+                            }
+                            else{
+                                this.setState({employeeId: data[0].mEmployeeId},()=>{
+                                    this.getEmp(data[0])
+                                })
+                            }
+                            // this.setState({employeeId: data[0].mEmployeeId},()=>{
+                            //     this.getEmp(data[0])
+                            // })
                         });
                     }
                 })

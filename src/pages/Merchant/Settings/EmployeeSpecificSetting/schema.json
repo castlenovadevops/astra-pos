@@ -97,7 +97,7 @@
         }
 
     ],
-    "required": ["minimumSalary","mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
+    "required": ["mOwnerPercentage", "mEmployeePercentage","mCashPercentage","mCheckPercentage","mTipsCheckPercentage","mTipsCashPercentage"],
     "buttons":[ 
         {
             "label":"Save",

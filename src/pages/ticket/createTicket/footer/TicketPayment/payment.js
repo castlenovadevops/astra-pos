@@ -55,7 +55,7 @@ export default class TicketPayment extends React.Component  {
 
 
     getPrintHTML(billtype){
-        this.httpManager.postRequest(`pos/print/getPrintHTML`,{ticketId : this.props.ticketDetail.ticketId}).then(htmlres=>{
+        this.httpManager.postRequest(`pos/print/getPrintHTML`,{ticketId : this.props.ticketDetail.ticketId, billtype:billtype}).then(htmlres=>{
             // console.log(JSON.parse(htmlres.htmlMsg))
             // window.api.printHTML({htmlres.htmlMsg, htmlres.printers.printerIdentifier}).then(r=>{
             //     console.log("Printed Successfully.")
@@ -234,12 +234,12 @@ export default class TicketPayment extends React.Component  {
             </div>
             <div style={{display:'flex', width:'100%', flexDirection:'row'}}>
                 <Grid container spacing={2} >
-                    <Grid item xs={4} style={{display:'flex'}}> 
+                 <Grid item xs={4} style={{display:'flex'}}> 
                         <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border:  '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                             this.getPrintHTML('bill')
                         }}>Print Bill</Typography>
-                    </Grid>  
-                     <Grid item xs={4} style={{display:'flex'}}> 
+                    </Grid> 
+                    <Grid item xs={4} style={{display:'flex'}}> 
                        <Typography  id="modal-modal-title" variant="subtitle"  style={{display:'flex', alignItems:'center', justifyContent:'center',"color":'#000', fontWeight:'700', width:'200px', height:'70px', border: '1px solid #134163', margin:10,borderRadius:10, cursor:'pointer', background: 'transparent' }} align="left" onClick={()=>{
                              this.getPrintHTML('receipt')
                         }}>Print Receipt</Typography>
@@ -285,9 +285,13 @@ export default class TicketPayment extends React.Component  {
                                     {this.props.customerDetail.mCustomerName}
                                  </Typography> }
                         </div>}
-                        <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center'}} onClick={() => this.props.handleClosePayment()}> 
+                        {this.props.ticketDetail.paymentStatus !== 'Paid' && <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center'}} onClick={() => this.props.handleClosePayment('noclose')}> 
                             <CloseIcon fontSize="small" style={{"color":'#134163'}}/>
-                        </Typography>
+                        </Typography>}
+
+                        {this.props.ticketDetail.paymentStatus === 'Paid' && <Typography variant="subtitle2" align="right" style={{cursor:'pointer', display:'flex', alignItems:'center'}} onClick={() => this.props.handleClosePayment('')}> 
+                            <CloseIcon fontSize="small" style={{"color":'#134163'}}/>
+                        </Typography>}
                     </Grid>      
                 </Grid>
             </Grid>

@@ -1,9 +1,9 @@
+/* eslint-disable no-useless-constructor */
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController');
 const CommonController  = require('../common/commonController');
 
-const express = require('express');
-const authenticate = require('../../middleware/index');  
+const express = require('express'); 
 const Sequelize   = require('sequelize'); 
 
 const sequelize =  require('../../models').sequelize
@@ -51,7 +51,13 @@ module.exports = class GiftCardController extends baseController{
                     type:"post",
                     method: "checkBalance",
                     authorization:'authorizationAuth'
-                },  
+                },      
+                {
+                    path:this.path+"/getGiftCardTicket",
+                    type:"post",
+                    method: "getGiftCardTicket",
+                    authorization:'authorizationAuth'
+                },    
             ]     
 
             resolve({MSG: "INITIALIZED SUCCESSFULLY"})
@@ -60,7 +66,9 @@ module.exports = class GiftCardController extends baseController{
 
 
     getCards = async(req,res, next)=>{
-        const giftcards = await this.readAll({where:{status:'Active', merchantId: req.deviceDetails.merchantId}}, 'giftCards')
+        const giftcards = await this.readAll({where:{status:{
+            [Sequelize.Op.in] : ['Active', 'Waiting']
+        }, merchantId: req.deviceDetails.merchantId}}, 'giftCards')
        
         this.sendResponse({data: giftcards}, res, 200);
     }
@@ -71,7 +79,7 @@ module.exports = class GiftCardController extends baseController{
         input["createdDate"] = this.getDate();
         input["updatedBy"] = req.userData.mEmployeeId;
         input["updatedDate"] = this.getDate();
-        input["status"] ='Active';
+        input["status"] = input.cardSold === 1 ? 'Waiting' : 'Active';
         console.log(input)
         input["validFrom"] = input.validFrom.replace("T"," ").replace("Z","");
         input["validTo"] = input.validTo.replace("T"," ").replace("Z","");
@@ -152,6 +160,12 @@ module.exports = class GiftCardController extends baseController{
         }).catch(e=>{
             this.sendResponse({message:"Error occurred. Please close the ticket and try again"}, res, 400);
         })
+    }
+
+    getGiftCardTicket= async(req, res, next)=>{
+        var cardNumber = req.input.cardNumber;
+        var ticket = await this.readOne({where:{ticketCode: cardNumber}}, 'tickets')
+        this.sendResponse({data: ticket.dataValues ||  ticket}, res, 200)
     }
 
 

@@ -17,22 +17,25 @@ const pkfields = {
     "LPSettings":"id",
     "LPActivationSettings":"id",
     "LPRedeemSettings":"id",
-    "giftCards":"id",
-    "customerLoyaltyPoints": "id",
+    "giftCards":"id", 
     "tickets":"ticketId"
 }
 
 module.exports = class baseController extends MsgController{
     models = models;
 
-    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers","LPSettings","LPActivationSettings","LPRedeemSettings", "giftCards","customerLoyaltyPoints", "tickets"]
+    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers","LPSettings","LPActivationSettings","LPRedeemSettings", "giftCards", "tickets"]
 
     constructor(props){
         super(props);
     }
 
     getDate(){
-        return new Date().toISOString().replace("T"," ").replace("Z","")
+        var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+        var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+        
+        console.log(localISOTime)
+        return  localISOTime.replace("T"," ").replace("Z","");//new Date().toISOString().replace("T"," ").replace("Z","")
     }
     
 

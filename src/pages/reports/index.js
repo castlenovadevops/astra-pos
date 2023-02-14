@@ -592,7 +592,7 @@ export default class ReportComponent extends React.Component{
     }
     getReports(){
         if(this.state.tabName === 'Owner'){
-            this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
+            this.httpManager.postRequest('merchant/report/getReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date:  Moment(this.state.from_date).format("YYYY-MM-DD"), to_date:  Moment(this.state.to_date).format("YYYY-MM-DD")}).then(res=>{
                 console.log(res)
                 this.setState({adjustedTips:res.adjustedTips.tipsAmount ? Number(res.adjustedTips.tipsAmount) : 0,  payments: res.payments, owner: res.owner,discounts: res.discounts,OwnerDiscount:0},()=>{ 
                     this.formatOwnerReport(res.data,{
@@ -603,7 +603,7 @@ export default class ReportComponent extends React.Component{
             })
         }
         else{
-            this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{
+            this.httpManager.postRequest('merchant/report/getEmpReport', {type:this.state.tabName, reportPeriod: this.state.reportPeriod ,from_date:  Moment(this.state.from_date).format("YYYY-MM-DD"), to_date:  Moment(this.state.to_date).format("YYYY-MM-DD")}).then(res=>{
                 // //console.log(res)
                 this.setState({OwnerDiscount:0},()=>{
                     this.formatEmployeeData(res.data, []) 

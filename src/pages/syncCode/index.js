@@ -7,6 +7,7 @@ import { deviceDetect } from 'react-device-detect';
 import HTTPManager from "../../utils/httpRequestManager"; 
 import { Wifi } from "@mui/icons-material"; 
 import Iconify from '../../components/Iconify';
+import moment from "moment";
 const get = require('get-value')
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 const RootStyle = styled('div')(({ theme }) => ({
@@ -57,7 +58,7 @@ export default class App extends React.Component {
   }
 
   swapDevice(obj){
-    console.log(this.state.response)
+    // console.log(obj)
     this.setState({isLoading: true}, ()=>{
         this.httpManager.postRequest(`/pos/swapdevice`,{fromDevice:obj , toDevice:this.state.response.merchantdetail.device}).then(res=>{ 
             var merchantdetail = Object.assign({},  this.state.response.merchantdetail)
@@ -88,6 +89,7 @@ export default class App extends React.Component {
             this.setState({ isLoading: false})
             console.log(res.devices)
             var devicemacs = [];
+            var posIds = [];
             var deviceslist = [];
             if(res.devices.length === 0){
                 window.localStorage.setItem('merchantdetail', JSON.stringify(res.merchantdetail))
@@ -96,74 +98,102 @@ export default class App extends React.Component {
             }
             else{  
                 res.devices.forEach((d,i)=>{
-                    var dobj = JSON.parse(d.deviceMAC) 
-                    let anpi0 = get(dobj, 'anpi0.mac')
-                    let anpi1 = get(dobj, 'anpi1.mac')
-                    var en1 = get(dobj, 'en1.mac') 
-                    let Ethernet = get(dobj, 'Ethernet.mac')
-                    var WiFi = get(dobj, 'Wi-Fi.mac') 
-                    // if(devicemacs.indexOf(anpi0) === -1 && devicemacs.indexOf(anpi1) === -1 &&
-                    // devicemacs.indexOf(en1) === -1 && devicemacs.indexOf(awdl0) === -1 
-                    // && devicemacs.indexOf(llw0) === -1 && devicemacs.indexOf(utun0) === -1 &&
-                    // devicemacs.indexOf(utun1) === -1 && devicemacs.indexOf(Ethernet) === -1 &&
-                    // devicemacs.indexOf(WiFi) === -1 )
-                    if(devicemacs.indexOf(anpi0) === -1 || devicemacs.indexOf(anpi1) === -1 ||
-                    devicemacs.indexOf(en1) === -1 ||   devicemacs.indexOf(Ethernet) === -1 ||
-                    devicemacs.indexOf(WiFi) === -1){
-                        var ispushed = 0;
-                        if(devicemacs.indexOf(anpi0) === -1){
-                            d.installs = 1
-                            deviceslist.push(d);
-                            ispushed =1 
-                            devicemacs.push(anpi0)
-                        }
-                        if(devicemacs.indexOf(anpi1) === -1){
-                            if(ispushed === 0){ 
-                                d.installs = 1
-                                deviceslist.push(d);
-                            }
-                            devicemacs.push(anpi1)
-                        }
-                        if(devicemacs.indexOf(en1) === -1){
-                            if(ispushed === 0){ 
-                                d.installs = 1
-                                deviceslist.push(d);
-                            }
-                            devicemacs.push(en1)
-                        } 
-                        if(devicemacs.indexOf(Ethernet) === -1){
-                            if(ispushed === 0){ 
-                                d.installs = 1
-                                deviceslist.push(d);
-                            }
-                            devicemacs.push(Ethernet)
-                        }
-                        if(devicemacs.indexOf(Wifi) === -1){
-                            if(ispushed === 0){ 
-                                d.installs = 1
-                                deviceslist.push(d);
-                            }
-                            devicemacs.push(Wifi)
-                        } 
+                    // var dobj = JSON.parse(d.deviceMAC) 
+                    // let anpi0 = get(dobj, 'anpi0.mac')
+                    // let anpi1 = get(dobj, 'anpi1.mac')
+                    // var en1 = get(dobj, 'en1.mac') 
+                    // let Ethernet = get(dobj, 'Ethernet.mac')
+                    // var WiFi = get(dobj, 'Wi-Fi.mac')  
+                    // if((posIds.indexOf(d.POSId) === -1) && (devicemacs.indexOf(anpi0) === -1 || devicemacs.indexOf(anpi1) === -1 ||
+                    // devicemacs.indexOf(en1) === -1 ||   devicemacs.indexOf(Ethernet) === -1 ||
+                    // devicemacs.indexOf(WiFi) === -1)){
+                    //     var ispushed = 0;
+
+                    //     if(posIds.indexOf(d.POSId) === -1){
+                    //         if(ispushed === 0){ 
+                    //             d.installs = 1
+                    //             deviceslist.push(d);
+                    //             ispushed =1 
+                    //         }
+                    //         posIds.push(d.POSId)
+                    //     }
+                    //     if(devicemacs.indexOf(anpi0) === -1){
+                    //         if(ispushed === 0){ 
+                    //             d.installs = 1
+                    //             deviceslist.push(d);
+                    //             ispushed =1 
+                    //         }
+                    //         devicemacs.push(anpi0)
+                    //     }
+                    //     if(devicemacs.indexOf(anpi1) === -1){
+                    //         if(ispushed === 0){ 
+                    //             d.installs = 1
+                    //             deviceslist.push(d);
+                    //             ispushed =1 
+                    //         }
+                    //         devicemacs.push(anpi1)
+                    //     }
+                    //     if(devicemacs.indexOf(en1) === -1){
+                    //         if(ispushed === 0){ 
+                    //             d.installs = 1
+                    //             deviceslist.push(d);
+                    //             ispushed =1 
+                    //         }
+                    //         devicemacs.push(en1)
+                    //     } 
+                    //     if(devicemacs.indexOf(Ethernet) === -1){
+                    //         if(ispushed === 0){ 
+                    //             d.installs = 1
+                    //             deviceslist.push(d);
+                    //             ispushed =1 
+                    //         }
+                    //         devicemacs.push(Ethernet)
+                    //     }
+                    //     if(devicemacs.indexOf(Wifi) === -1){
+                    //         if(ispushed === 0){ 
+                    //             d.installs = 1
+                    //             deviceslist.push(d);
+                    //             ispushed =1 
+                    //         }
+                    //         devicemacs.push(Wifi)
+                    //     } 
+                    // }
+                    // else{
+                    //     var lst = [];
+                    //     deviceslist.forEach((deviceobj, j)=>{
+                    //         if(deviceobj.POSId === d.POSId || get(deviceobj, 'anpi0.mac') === anpi0 || get(deviceobj, 'anpi1.mac')=== anpi1||
+                    //             get(deviceobj, 'en1.mac') === en1 || get(deviceobj, 'Ethernet.mac') === Ethernet ||
+                    //             get(deviceobj, 'Wi-Fi.mac') === WiFi){
+                            
+                    //             deviceobj.installs = Number(deviceobj.installs) + Number(1)
+                    //         }
+                    //         lst.push(deviceobj)
+                    //         if(j === deviceslist.length-1){
+                    //             deviceslist = Object.assign([], lst)
+                    //         }
+                    //     })
+                    // }
+                    if(posIds.indexOf(d.POSId) === -1){
+                        deviceslist.push(d); 
+                        posIds.push(d.POSId)
                     }
                     else{
-                        var lst = [];
-                        deviceslist.forEach((deviceobj, j)=>{
-                            if(get(deviceobj, 'anpi0.mac') === anpi0 || get(deviceobj, 'anpi1.mac')=== anpi1||
-                                get(deviceobj, 'en1.mac') === en1 || get(deviceobj, 'Ethernet.mac') === Ethernet ||
-                                get(deviceobj, 'Wi-Fi.mac') === WiFi){
-                            
-                                deviceobj.installs = Number(deviceobj.installs) + Number(1)
-                            }
-                            lst.push(deviceobj)
-                            if(j === deviceslist.length-1){
-                                deviceslist = Object.assign([], lst)
-                            }
-                        })
-                    }
+                        var idx = posIds.indexOf(d.POSId)
+                        deviceslist[idx] = d;
+                    } 
+
                     if(i === res.devices.length -1){
+                        console.log(deviceslist)
                         if(deviceslist.length > 0){
-                            this.setState({deviceslist: deviceslist, backupOption: true, response: res})
+                            var dlist = deviceslist.sort(function(a, b) {
+                                var keyA = new Date(a.installedOn),
+                                  keyB = new Date(b.installedOn);
+                                // Compare the 2 dates
+                                if (keyA > keyB) return -1;
+                                if (keyA < keyB) return 1;
+                                return 0;
+                              });
+                            this.setState({deviceslist: dlist, backupOption: true, response: res})
                         }
                         else{
                             window.localStorage.setItem('merchantdetail', JSON.stringify(res.merchantdetail))
@@ -253,7 +283,8 @@ export default class App extends React.Component {
                                     }}>
                                         <div>{getIcon('mdi:laptop')}</div>
                                         <div>{c.deviceName}</div>
-                                        <div style={{fontSize:'13px', color:'#999'}}>No.Of installs: {c.installs}</div>
+                                        <div style={{fontSize:'13px', color:'#999'}}>Installed On: {moment(c.installedOn).format("MM/DD/YYYY hh:mm a")}</div>
+                                        {/* <div style={{fontSize:'13px', color:'#999'}}>No.Of installs: {c.installs}</div> */}
                                     </Card>}
                                 )}
                             </div>}

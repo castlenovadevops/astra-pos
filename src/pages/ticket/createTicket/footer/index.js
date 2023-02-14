@@ -141,18 +141,21 @@ export default class TicketFooterComponent extends React.Component{
     handleClosePayment(msg=''){ 
         console.log("PAYMENT CLOSE CALLED")
         console.log(msg)
+        // 
         // this.props.data.closeTicket();
-        if( msg === undefined){
-            msg ='';
+        if( msg === undefined || msg===''){ 
+            this.props.data.closeTicket();
             this.setState({openPayment: false})
+             msg ='';
         }
-        if(msg === 'reload'){
+        else if(msg === 'reload'){
             this.props.data.getTicketDetails();
         }
         // else if(msg !== ''){
         //     this.props.data.closeTicket();
         // }
         else{
+            // 
             this.setState({openPayment: false})
         }
     }
@@ -290,7 +293,9 @@ export default class TicketFooterComponent extends React.Component{
 
  
 {this.state.openPrint && <PrintModal customer_detail={this.props.data.customer_detail} handleClosePayment={(msg)=>{
-    this.setState({openPrint: false})}} price={this.props.data.price} ticketDetail={this.props.data.ticketDetail}> 
+window.location.href="/";
+//</>this.setState({openPrint: false});
+}} price={this.props.data.price} ticketDetail={this.props.data.ticketDetail}> 
             </PrintModal>}
 
             {this.state.openPayment && <PaymentModal pageFrom={"Ticket"} customer_detail={this.props.data.customer_detail} selectCustomerDetail={(obj, opt)=>{

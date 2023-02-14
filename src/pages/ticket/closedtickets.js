@@ -71,8 +71,8 @@ export default class ClosedTicketsComponent extends React.Component{
                     renderCell: (params) => (
                             <Typography variant="body2" style={{marginLeft:10,MozUserSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none', userSelect: 'none'}} align="center">
                         {/* {Moment(params.row.created_at).format('ddd DD MMM HH:MM a')}
-                        */} 
-                        {Moment.utc(params.row.createdDate).local().format('MM-DD-YYYY hh:mm a')}
+                        */}  
+                        {Moment.parseZone(params.row.lastPaidTicket).format('MM-DD-YYYY hh:mm a')}
 
                         {/* {params.row.created_at} */}
                         
@@ -160,7 +160,8 @@ export default class ClosedTicketsComponent extends React.Component{
 
     loadData(){
         this.setState({isLoading: true})
-        this.httpManager.postRequest('merchant/ticket/getPaidTickets',{from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{ 
+        console.log(this.state.from_date, this.state.to_date)
+        this.httpManager.postRequest('merchant/ticket/getPaidTickets',{from_date: Moment(this.state.from_date).format("YYYY-MM-DD"), to_date: Moment(this.state.to_date).format("YYYY-MM-DD")}).then(res=>{ 
             this.setState({isLoading: false, ticketslist: res.data, showDatePopup: false})
             console.log(res.data)
         })
@@ -168,7 +169,7 @@ export default class ClosedTicketsComponent extends React.Component{
 
     loadClosedTicketsToBatch(){
         this.setState({isLoading: true, showConfirm: false})
-        this.httpManager.postRequest('merchant/ticket/getClosedTicketsToBatch',{from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{ 
+        this.httpManager.postRequest('merchant/ticket/getClosedTicketsToBatch',{from_date: Moment(this.state.from_date).format("YYYY-MM-DD"), to_date: Moment(this.state.to_date).format("YYYY-MM-DD")}).then(res=>{ 
             this.setState({isLoading: false})
             if(res.data.length === 0){
                 this.setState({batcherror: true})
@@ -267,6 +268,7 @@ export default class ClosedTicketsComponent extends React.Component{
                                                         style={{marginRight:'10px'}}
                                                         value={this.state.from_date}
                                                         onChange={(e)=>{
+                                                            console.log(e)
                                                             this.setState({from_date: e});
                                                         }}
                                                         renderInput={(params) => <TextField {...params} />}

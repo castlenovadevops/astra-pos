@@ -15,21 +15,29 @@ export default class AutoBatchComponent extends React.Component{
     componentDidMount(){
         var batchtime = (window.localStorage.getItem('batchTime') || '55 23')+' * * *'
         console.log("BATCH TIME" , `${batchtime}`)
-        // this.scheduleJob.cancel();
-        this.scheduleJob = schedule.scheduleJob(
-        `${batchtime}`, 
+        console.log(this.scheduleJob)
+        this.scheduleJob.cancel();
+        this.scheduleJob = schedule.scheduleJob(  `${batchtime}`, 
         () => {
             if(!this.state.isRunning){
-                this.setState({isRunning: true})
-                this.httpManager.postRequest("/merchant/batch/autoBatch", {data:"FROM AUTO BATCH"}).then(res=>{    
-                    this.setState({isRunning: false})
-                    console.log('job ran on schedule complete!');
+                this.setState({isRunning: true},()=>{
+                    setTimeout(() => {
+                        this.httpManager.postBatchRequest("/merchant/batch/autoBatch", {data:"FROM AUTO BATCH"}).then(res=>{    
+                            this.setState({isRunning: false})
+                            console.log('job ran on schedule complete!');
+                        })
+                    }, 1000);
                 })
             }
-                console.log('job ran on schedule!');
+            console.log('job ran on schedule!');
         },
         );
+
+        // this.httpManager.postBatchRequest("/merchant/batch/startCronBatch", {data:"FROM AUTO BATCH"}).then(res=>{    
+        // })
+        
     }
+
 
     render(){
         return <></>

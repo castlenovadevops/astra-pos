@@ -58,7 +58,7 @@ export default class OpenTicketsComponent extends React.Component{
                             <Typography variant="subtitle2" style={{marginLeft:10,MozUserSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none', userSelect: 'none'}} align="center">
                         {/* {Moment(params.row.created_at).format('ddd DD MMM HH:MM a')}
                         */} 
-                        {Moment.utc(params.row.createdDate).local().format('MM-DD-YYYY hh:mm a')}
+                        {Moment.parseZone(params.row.createdDate).format('MM-DD-YYYY hh:mm a')}
 
                         {/* {params.row.created_at} */}
                         

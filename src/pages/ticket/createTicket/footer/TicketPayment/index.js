@@ -30,7 +30,7 @@ export default function PaymentModal(
     <TicketPayment afterSubmit={()=>{
       console.log("AFTER SUBMIT CALLED")
       handleClosePayment('reload')
-    }} handleClosePayment={handleClosePayment} pageFrom={pageFrom} selectCustomerDetail={selectCustomerDetail} customerDetail={customer_detail} ticketDetail={ticketDetail} price={price}></TicketPayment>
+    }} handleClosePayment={(msg)=>handleClosePayment(msg)} pageFrom={pageFrom} selectCustomerDetail={selectCustomerDetail} customerDetail={customer_detail} ticketDetail={ticketDetail} price={price}></TicketPayment>
     </DialogContent> 
 </Dialog>  
 

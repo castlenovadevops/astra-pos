@@ -111,6 +111,16 @@ export default class App extends React.Component{
 
     // this.updateBatch()
     window.api.on("appOpen", (e)=>{
+      // window.localStorage.removeItem('userdetail')
+      var str = window.localStorage.getItem('userdetail') || ''
+      if(str !== ''){
+        var userdetail = JSON.parse(str)
+        this.httpManager.postRequest(`/merchant/employee/clocklog`, {passCode: userdetail.mEmployeePasscode}).then(res=>{
+          window.localStorage.removeItem('userdetail'); 
+          window.location.href="/"
+        })
+      }
+
       this.httpManager.postRequest(`/merchant/batch/autobatchprevday`, {fromdate:dayjs(new Date().toISOString()).add(-1,'day').format("YYYY-MM-DD")}).then(r=>{
         console.log(r)
       })

@@ -154,7 +154,7 @@ export default class ReportView extends React.Component  {
                     </Grid>
                     <Grid container style={{margin:'0.5rem 0'}}>
                         <Grid item xs={6}><b>Total</b></Grid>
-                        <Grid item xs={6}><b>${Number(totalpayable).toFixed(2)}</b></Grid>
+                        <Grid item xs={6}><b>${(Number(totalpayable)+Number(this.props.empSelected.Tips)).toFixed(2)}</b></Grid>
                     </Grid>
                     <Grid container style={{margin:'0.5rem 0'}}>
                         <Grid item xs={6}><b>Cash({this.props.empSelected.mCashPercentage+"%"})</b></Grid>
@@ -167,7 +167,7 @@ export default class ReportView extends React.Component  {
 
                     <Grid container style={{margin:'0.5rem 0'}}>
                         <Grid item xs={6}><b>Tips Cash({this.props.empSelected.mTipsCashPercentage+"%"})</b></Grid>
-                        <Grid item xs={6}><b>${Number(this.props.empSelected.Tips * (this.props.empSelected.mCashPercentage / 100)).toFixed(2)}</b></Grid>
+                        <Grid item xs={6}><b>${Number(this.props.empSelected.Tips * (this.props.empSelected.mTipsCashPercentage / 100)).toFixed(2)}</b></Grid>
                     </Grid>
                     <Grid container style={{margin:'0.5rem 0'}}>
                         <Grid item xs={6}><b>Tips Check({this.props.empSelected.mTipsCheckPercentage+"%"})</b></Grid>

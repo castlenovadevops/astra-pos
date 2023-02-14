@@ -3,7 +3,7 @@
 const baseController = require('../common/baseController');
 const MsgController = require('../common/msgController'); 
 const express = require('express'); 
-const Sequelize = require('sequelize')
+// const Sequelize = require('sequelize')
 const sequelize =  require('../../models').sequelize
 
 module.exports = class TicketController extends baseController{
@@ -111,8 +111,15 @@ module.exports = class TicketController extends baseController{
         var ticketDetail = detail.dataValues || detail;
         let loyaltypoints = await this.readOne({where:{status:1}}, 'LPRedeemSettings')
 
-        this.create('ticketpayment', payinput).then(async (r)=>{
+        this.create('ticketpayment', payinput).then(async (r)=>{ 
+            if(ticketDetail.ticketType === "GiftCard"){
+                this.readOne({where:{cardNumber: ticketDetail.ticketCode}}, 'giftCards').then(g=>{
+                    var gdetail = g.dataValues || g 
+                    this.update("giftCards",{id:gdetail.id, status:'Active'}).then(r=>{
 
+                    })
+                })
+            }
             console.log("SAVE PAYMENT POINTS CALLED", req.input)
             if( ticketDetail.customerId !== undefined &&  ticketDetail.customerId !== ''){
                 
@@ -145,7 +152,7 @@ module.exports = class TicketController extends baseController{
                 }
                 // var remainAmount = Number(ticket.ticketTotalAmount) - Number(paidamount)
                 // console.log(remainAmount, paidamount)
-
+ 
                 var remainAmount = (Number(ticket.ticketTotalAmount) - Number(paidamount)).toFixed(2)
                 console.log("REMAINING AMOUNT FROM PAYMENT CONTROLLER")
                 console.log(remainAmount, paidamount)

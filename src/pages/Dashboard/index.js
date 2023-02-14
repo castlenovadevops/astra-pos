@@ -23,7 +23,7 @@ export default class Dashboard extends React.Component{
     render(){
         return  <> 
         <MerchantDashboard style={{height:'100%'}}/> 
-        <AutoBatchComponent/>
+        {/* <AutoBatchComponent/> */}
         {/* {window.localStorage.getItem('batchTime') !== undefined && window.localStorage.getItem('batchTime') !== '' && <AutoSync batchtime={(window.localStorage.getItem('batchTime') || '55 23')+' * * *'}/>}  */}
         </>
     }

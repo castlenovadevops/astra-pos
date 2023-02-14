@@ -194,7 +194,7 @@ module.exports = class AppointmentController extends baseController{
                     [Sequelize.Op.in]:[null, '']
                 },
                 appointmentStatus:{
-                    [Sequelize.Op.in]:[ 'Booked']
+                    [Sequelize.Op.in]:[ 'Booked', 'Waiting']
                 }
             },
             attributes:{

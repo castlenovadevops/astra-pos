@@ -26,7 +26,7 @@ var menu = Menu.buildFromTemplate([
     ]
 }]);
 
-Menu.setApplicationMenu(menu);
+// Menu.setApplicationMenu(menu);
 app.disableHardwareAcceleration(); 
 
 // const db = new sqlite3.Database(
@@ -298,7 +298,7 @@ ipcMain.handle('printHTML', async(event,args)=>{
                       copies: 1,
                       printerName: printername,
                       timeOutPerLine: 400,
-                      // pageSize: '80mm' // page size
+                      pageSize: '72mm' // page size
                       // pageSize: { height: 301000, width: 71000 } 
                   }
                   

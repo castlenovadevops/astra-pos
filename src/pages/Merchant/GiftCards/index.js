@@ -46,6 +46,32 @@ export default class GiftCards extends React.Component{
         this.handleCloseform = this.handleCloseform.bind(this);  
         this.onStateChange = this.onStateChange.bind(this);
         this.checkBalance = this.checkBalance.bind(this); 
+        this.payGiftCard = this.payGiftCard.bind(this);
+    }
+
+
+    payGiftCard(detail){
+        this.setState({giftCardError: false, giftCardErrorText: ''})
+        this.httpManager.postRequest('merchant/giftcard/getGiftCardTicket', {cardNumber: detail.cardNumber.replaceAll('-','')}).then(res=>{
+            
+            this.setState({ticketDetail:res.data,
+                price:{ 
+                    retailPrice:0,
+                    servicePrice:0,
+                    ticketSubTotal:res.data.ticketTotalAmount,
+                    ticketDiscount:0,
+                    taxAmount:0,
+                    tipsAmount:0,
+                    grandTotal: res.data.ticketTotalAmount
+                }}, ()=>{
+                    this.setState({showPayment: true})
+                })
+        }).catch(e=>{
+            console.log(e)
+            if(e.message){
+                this.setState({giftCardError: true, giftCardErrorText: e.message})
+            }
+        })
     }
 
     checkBalance(){
@@ -293,7 +319,7 @@ export default class GiftCards extends React.Component{
 
             {!this.state.addForm && <>
 
-            <CardList/> </>}
+            <CardList payGiftCard={this.payGiftCard}/> </>}
 
             {this.state.showPayment && <Box sx={{ width: '100%' }}> 
                 <Grid container spacing={3}  alignItems="center"  justifyContent="center" style={{marginLeft:0, marginRight:0,width:'100%', fontWeight:'bold'}} > 

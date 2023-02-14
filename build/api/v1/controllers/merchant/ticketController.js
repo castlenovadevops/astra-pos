@@ -344,7 +344,12 @@ module.exports = class TicketController extends baseController{
                     [
                         sequelize.literal("(select GROUP_CONCAT(DISTINCT payMode) from ticketpayment where ticketId=`tickets`.`ticketId`)"),
                         'paymode'
-                    ]
+                    ],
+                    [
+                        sequelize.literal("(select Max(createdDate) from ticketpayment where ticketId=`tickets`.`ticketId`)"),
+                        'lastPaidTicket'
+                    ],
+                    
                 ]
             }
         }

@@ -151,7 +151,7 @@ export default class WaitingList extends React.Component {
                             return <Grid container spacing={3}  style={{height:'80px', cursor:'pointer', width:'100%', margin:0, padding: '10px 0',borderBottom:'1px solid #f0f0f0'}} >
                             <Grid item xs={2} style={{height:'100%',width:'100%', margin:0, padding:'10px 20px', fontSize:'14px'}}> 
                                 {Moment(t.appointmentDate+" "+t.appointmentTime).format("HH:mm:ss a")}<br/>
-                                <span style={{color:'#ccc'}}>{Moment.utc(t.appointmentDate+" "+t.appointmentTime).local().format("MM/DD/YYYY")}</span>
+                                <span style={{color:'#ccc'}}>{Moment.parseZone(t.appointmentDate+" "+t.appointmentTime).format("MM/DD/YYYY")}</span>
                             </Grid>
                             <Grid item xs={3} style={{height:'100%',width:'100%', margin:0, padding:10, fontSize:'14px'}}> 
                                 {t.customerName !== '' && t.customerName !== null && t.customerName !== undefined ? t.customerName :t.guestName+"(Guest)"}

@@ -148,7 +148,7 @@
         }
        
     ],
-    "required": ["mEmployeeFirstName", "mEmployeeLastName","mEmployeePhone","mEmployeeAddress1","mEmployeeCity","mEmployeeZipcode","mEmployeeRole","mEmployeeCode"],
+    "required": ["mEmployeeFirstName", "mEmployeeLastName","mEmployeePhone","mEmployeeAddress1","mEmployeeCity","mEmployeeZipcode","mEmployeeRole","mEmployeePasscode"],
     "buttons":[
         {
           "label":"Save",
@@ -165,7 +165,7 @@
     ],
     "onSubmit":{  
         "action":"API",
-        "url":"http://localhost:3000/api/v1/merchant/employee/save",
+        "url":"https://api.ci.dev.castlenova.net/api/v1/merchant/employee/save",
         "method":"POST",
         "onSuccess":{
             "action":"reloadData"

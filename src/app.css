@@ -721,6 +721,11 @@ svg.iconify{
     color:#fff;
 }
 
+.appointmentpopup .MuiButtonBase-root:disabled{
+    background-color: #ccc;
+    color:#999;
+}
+
 .appointmentpopup .MuiInputAdornment-root .MuiButtonBase-root{
     background: transparent;
     color:#212B36;

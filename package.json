@@ -97,6 +97,7 @@
     "material-ui-phone-number": "^3.0.0",
     "moment": "^2.29.4",
     "mysql2": "^2.1.0",
+    "node-cron": "^3.0.2",
     "node-schedule": "^2.1.0",
     "nodemon": "^2.0.15",
     "numeral": "^2.0.6",

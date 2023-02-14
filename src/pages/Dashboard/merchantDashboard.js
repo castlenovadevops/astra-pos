@@ -127,7 +127,9 @@ export default class MerchantDashboard extends React.Component{
                         Clock-In / Clock-Out
                     </Grid>
                     <Grid item xs={3} className={'dashboardFooterDivider active'} onClick={()=>{
-                        this.setState({showCreateTicket: true})
+                        this.setState({ownerTechnician: this.state.userdetail}, ()=>{
+                            this.setState({showCreateTicket: true})
+                        })
                     }}>
                         Create Ticket
                     </Grid> 

@@ -1,9 +1,9 @@
 import React from 'react'
 import Schedule from 'react-schedule-job'
 import 'react-schedule-job/dist/index.css'
+import 'react-js-cron/dist/styles.css'
 import HTTPManager from './utils/httpRequestManager';
 import SyncProgress from './pages/syncData/syncProgressWithoutRefresh';  
-import 'react-js-cron/dist/styles.css'
 
 const styles = {
   text: {
@@ -90,9 +90,9 @@ const AutoSync = ({batchtime}) => {
         }}
       /> 
       
-      {/* {open && <div style={{'visibility':'hidden', height:0}}><SyncProgress afterSyncComplete={()=>{
+      {open && <div style={{'visibility':'hidden', height:0}}><SyncProgress afterSyncComplete={()=>{
                       setOpen(false)
-                    }} /></div>} */}
+                    }} /></div>}
     </div>
   )
 }

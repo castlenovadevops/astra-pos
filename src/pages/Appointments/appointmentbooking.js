@@ -167,7 +167,7 @@ export default class AppointmentBookingComponent extends React.Component{
     }
 
     getTechnicians(){
-        this.httpManager.postRequest(`merchant/employee/get`,{data:"EMP LIST"}).then(response=>{
+        this.httpManager.postRequest(`merchant/employee/getAll`,{data:"EMP LIST"}).then(response=>{
             // console.log(response)
             this.setState({technicians: response.data},()=>{
                 this.getCustomers()
@@ -276,6 +276,7 @@ export default class AppointmentBookingComponent extends React.Component{
                                     inputFormat="MM/dd/yyyy"
                                     minDate={new Date()} 
                                     style={{marginRight:'10px'}}
+                                    disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false}
                                     value={this.state.appointmentDate}
                                     onChange={(e)=>{
                                         this.setState({appointmentDate: e})
@@ -288,6 +289,7 @@ export default class AppointmentBookingComponent extends React.Component{
                             <Paper style={{marginRight:'5px'}}>Time</Paper>
                             <TimePicker
                                 showSecond={false}
+                                disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false}
                                 defaultValue={this.props.appointmentdetail !== undefined ?  moment().hour(Number(this.props.appointmentdetail.appointmentTime.split(":")[0])).minute(Number(this.props.appointmentdetail.appointmentTime.split(":")[1])) : moment().hour(today.format("HH")).minute(today.format("mm"))} 
                                 className="appt_timepicker"
                                 onChange={this.onChange}
@@ -301,13 +303,13 @@ export default class AppointmentBookingComponent extends React.Component{
 
 
                 <div style={{display:'flex'}}>
-                    <div style={{display:'flex'}}>
+                    <div style={{display:'flex'}}> 
                         {/* <span style={{marginRight:'8px'}}>Duration: </span>
                         <Paper>{this.state.totalDuration} Mins</Paper> */}
-                         <Button variant="contained" style={{marginRight:'1rem'}} onClick={()=>{ 
+                         <Button variant="contained" disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false} style={{marginRight:'1rem'}} onClick={()=>{ 
                             this.openAddCustomer();
                         }}>Add Customer</Button>
-                        <Button variant="contained" onClick={()=>{
+                        <Button variant="contained" disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false} onClick={()=>{
                             var appts = Object.assign([], this.state.appointments)
                             appts.push({
                                 customer:null,
@@ -359,6 +361,7 @@ export default class AppointmentBookingComponent extends React.Component{
                                                 appts[i] = appt;  
                                                 this.setState({appointments: appts})
                                             }}
+                                            disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false}
                                             options={this.state.customers} 
                                             keyPropFn={(option) => option.mCustomerId}
                                             valuePropFn={(option) => option.mCustomerName+"("+option.mCustomerMobile+")"}
@@ -385,6 +388,7 @@ export default class AppointmentBookingComponent extends React.Component{
                                                         removeSelectionText=""
                                                         value={ser.service}
                                                         defaultValue={ser.service}
+                                                        disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false}
                                                         onChange={(e)=>{
                                                             var appts = Object.assign([], this.state.appointments);
                                                             var obj = appt.services[j];
@@ -403,6 +407,7 @@ export default class AppointmentBookingComponent extends React.Component{
                                                     <SearchableSelect 
                                                         removeSelectionText=""
                                                         value={ser.technician}
+                                                        disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false}
                                                         onChange={(e)=>{
                                                             var appts = Object.assign([], this.state.appointments);
                                                             var obj = appt.services[j];
@@ -418,7 +423,7 @@ export default class AppointmentBookingComponent extends React.Component{
                                                         />
                                                     </div>
                                                     <div style={{width:'20%',padding:'5px', display:'flex', alignItems:'center'}}>
-                                                        <TextField placeholder="Duration" value={ser.duration} type="number" variant="standard" onChange={(e)=>{
+                                                        <TextField placeholder="Duration" disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false} value={ser.duration} type="number" variant="standard" onChange={(e)=>{
                                                             var appts = Object.assign([], this.state.appointments);
                                                             var obj = appt.services[j];
                                                             if( e.target.value.length < 4)
@@ -456,14 +461,14 @@ export default class AppointmentBookingComponent extends React.Component{
                     {/* <TextField placeholder="Remarks" fullWidth maxRows={4} multiline /> */}
                 </div>
                 <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <Button variant="contained" onClick={()=>{
+                    <Button variant="contained" disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false} onClick={()=>{
                         this.saveAppointment()
                     }}>Book Appointment</Button>
-                    <Button variant="contained" color="secondary" onClick={()=>{
+                    <Button variant="contained" color="secondary" disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false} onClick={()=>{
                         this.reset()
                     }}>Reset</Button>
     {this.state.appointmentId !== '' && 
-                    <Button variant="contained" color="error" onClick={()=>{
+                    <Button variant="contained" disabled={ this.props.appointmentdetail !== undefined && this.props.appointmentdetail.editable === false} color="error" onClick={()=>{
                         // this.deleteAppointment()
                         this.setState({showDeleteAppointment: true})
                     }}>Delete Appointment</Button>}
@@ -499,7 +504,7 @@ export default class AppointmentBookingComponent extends React.Component{
 }} title=""><div>{this.state.errorMsg}</div></DialogComponent>}
 
 
-{this.state.showNewappointment && <DialogComponent className="notespopup" open={this.state.showNewappointment} onClose={()=>{
+{this.state.showNewappointment && <DialogComponent  className='noprintpopup' open={this.state.showNewappointment} onClose={()=>{
     this.setState({showError: false},()=>{
         this.setState({errorMsg:''})
     })

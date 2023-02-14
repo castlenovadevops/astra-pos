@@ -1,6 +1,6 @@
 
 export const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem('userdetail');
 }
 
 export const isDeviceRegistered = ()=>{ 
@@ -29,7 +29,7 @@ export const checkPageAccess = (page)=>{
     if(userdetail.mEmployeeRoleName === 'Owner'){
         return true;
     }
-    var permissions = userdetail.UserPermissions !== undefined ? JSON.parse(userdetail.UserPermissions)  : {}
+    var permissions = userdetail.UserPermissions !== undefined && userdetail.UserPermissions !== null ? JSON.parse(userdetail.UserPermissions)  : {}
     var tmp = page.split('.') 
     if(Object.keys(permissions).length !== 0){
         if(permissions[page] !== '' && tmp.length === 1 && permissions[page] !== undefined){

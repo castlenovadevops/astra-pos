@@ -1,5 +1,5 @@
 import React from 'react'
-
+import dayjs from 'dayjs'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -56,15 +56,21 @@ export default class AppointmentCalendar extends React.Component {
         this.setState({isLoading: true})
         this.httpManager.postRequest(`/merchant/appointment/getAllAppointmentsByDate`,{data:"FROM CALENDAR"}).then(res=>{
             console.log("DATAAAA")
-            console.log(INITIAL_EVENTS)
+            console.log(res.data)
             var data = []
 
             this.setState({appointments: []},()=>{
                 console.log(this.state.appointments)
                 res.data.forEach((element, i) => {
-                    console.log(element)
+                    console.log(moment(element.appointmentDate).format("YYYY-MM-DD")+"T"+element.appointmentTime+":00") 
+                    var endtime= element.appointmentTime.split(":")[0]+":"+(Number(element.appointmentTime.split(":")[1])+10)
+                    if(Number(element.appointmentTime.split(":")[1])+10 >= 60){
+                      endtime= element.appointmentTime.split(":")[0]+":59"
+                    } //dayjs(moment(element.appointmentDate).format("YYYY-MM-DD")+"T"+element.appointmentTime+":00").add(10,'minute')
+                    console.log(endtime)
                     data.push({
                         id: element.appointmentId,
+                        end:moment(element.appointmentDate).format("YYYY-MM-DD")+"T"+endtime+":00",
                         start:moment(element.appointmentDate).format("YYYY-MM-DD")+"T"+element.appointmentTime+":00",
                         title: element.title
                     })
@@ -123,14 +129,17 @@ export default class AppointmentCalendar extends React.Component {
         })
         this.formatServiceData(0, i, results, data)
     }
-    else{
-        console.log(results[0])
+    else{ 
+        var requestedDate = moment(results[0].appointmentDate+"T"+results[0].appointmentTime+":00").toDate();
+        var today = moment() 
+
         this.setState({appointmentdetail : {
             appointmentDate: moment(results[0].appointmentDate).toDate(),
             appointmentTime: results[0].appointmentTime,
             appointments: data,
-            appointmentId: results[0].appointmentId
-        }}, ()=>{
+            appointmentId: results[0].appointmentId,
+            editable: today.diff(requestedDate, 'minutes') > 1 ? false : true
+        }}, ()=>{ 
             this.props.editAppointment(this.state.appointmentdetail)
         })
     }
@@ -176,8 +185,9 @@ export default class AppointmentCalendar extends React.Component {
             initialView='dayGridMonth'
             editable={true}
             selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
+            selectMirror={false}
+            dayMaxEvents={false}
+            allDaySlot={false}
             weekends={this.state.weekendsVisible}
             initialEvents={this.state.appointments} // alternatively, use the `events` setting to fetch from a feed
             select={this.handleDateSelect}

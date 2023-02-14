@@ -57,7 +57,12 @@ module.exports = class SyncCustomerController extends baseController{
             let tobesync = toBeSynced[idx];
             let datares = await this.readOne({where:{
                 mCustomerId: tobesync.tableRowId
-            }}, 'mCustomers')
+            },
+        include:[
+            {
+                model:this.models.customerLoyaltyPoints
+            }
+        ]}, 'mCustomers')
             if(datares !== null){
                 var data = datares.dataValues
                 data["createdDate"] = data["createdDate"].replace("T"," ").replace("Z","");
@@ -109,20 +114,26 @@ module.exports = class SyncCustomerController extends baseController{
             var detail = data[idx];
             let detailexist = await this.readOne({where:{mCustomerId: data[idx].mCustomerId, mCustomerStatus:1}}, 'mCustomers')
             if(detailexist !== null){
+                console.log("^^^^^^^^^ exist record")
                 this.delete('mCustomers', {mCustomerId:  data[idx].mCustomerId}).then(r=>{
-                    this.create('mCustomers', data[idx], false).then(async r=>{
-                        var pkfield = pkfields[model]
-                        syncedRows.push(detail[pkfield])
-                        this.saveData(idx+1, data, req, res, next,syncedRows)
+                    this.delete('customerLoyaltyPoints', {customerId: data[idx].mCustomerId}).then(rr=>{
+                        this.create('mCustomers', data[idx], false).then(async r=>{  
+                            var pkfield = pkfields[model]
+                            syncedRows.push(detail[pkfield])
+                            this.savecustomerLoyaltyPoints(0, idx, data,req, res, next,syncedRows)
+                        })
                     })
                 })
             }
             else{
-                this.create('mCustomers', data[idx], false).then(async r=>{ 
-                    var pkfield = pkfields[model]
-                        syncedRows.push(detail[pkfield])
-                        this.saveData(idx+1, data, req, res, next,syncedRows)
-                })
+                console.log("^^^^^^^^^ not exist record")
+                this.delete('customerLoyaltyPoints', {customerId: data[idx].mCustomerId}).then(rr=>{
+                    this.create('mCustomers', data[idx], false).then(async r=>{  
+                        var pkfield = pkfields[model]
+                            syncedRows.push(detail[pkfield])
+                            this.savecustomerLoyaltyPoints(0, idx, data,req, res, next,syncedRows)
+                    })
+                });
             }
         }
         else{
@@ -138,4 +149,22 @@ module.exports = class SyncCustomerController extends baseController{
             }) 
         }
     }
+
+    savecustomerLoyaltyPoints(pidx, idx, data,req, res, next,syncedRows){
+        if(data[idx].customerLoyaltyPoints !== undefined){
+            if(pidx < data[idx].customerLoyaltyPoints.length){
+                var points = data[idx].customerLoyaltyPoints
+                this.create('customerLoyaltyPoints', points[pidx], false).then(async r=>{   
+                    this.savecustomerLoyaltyPoints(pidx+1, idx, data, req, res, next,syncedRows)
+                })
+            }
+            else{ 
+                this.saveData(idx+1, data, req, res, next,syncedRows)
+            }
+        }
+        else{ 
+            this.saveData(idx+1, data, req, res, next,syncedRows)
+        }
+    }
+
 }

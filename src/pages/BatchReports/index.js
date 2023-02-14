@@ -159,7 +159,7 @@ export default class BatchReports extends React.Component {
 
 
     getBatchReports(){
-        this.httpManager.postRequest(`merchant/batch/getBatches`,{from_date:this.state.from_date, to_date:this.state.to_date}).then(r=>{
+        this.httpManager.postRequest(`merchant/batch/getBatches`,{from_date: Moment(this.state.from_date).format("YYYY-MM-DD"), to_date: Moment(this.state.to_date).format("YYYY-MM-DD")}).then(r=>{
             this.setState({batches: r.data, isLoading: false, showDatePopup: false})
         })
     }
