@@ -71,6 +71,18 @@ export default class Employee extends React.Component{
                       </div>
                   )
                 },
+
+                {
+                    field: 'mEmployeeStatus',
+                    headerName: 'Status',
+                    minWidth:200,
+                    editable: false,
+                    renderCell: (params) => (
+                        <div>
+                           {params.row.mEmployeeStatus === '1'? 'Active' : 'Inactive'}
+                        </div>
+                    )
+                },
                 {
                     field: 'Action',
                     headerName:'Actions',

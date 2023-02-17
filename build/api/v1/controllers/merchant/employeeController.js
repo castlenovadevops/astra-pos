@@ -301,7 +301,10 @@ module.exports = class EmployeeController extends baseController{
         where:{
             mEmployeeRoleName: {
                 [Sequelize.Op.ne] : 'Owner'
-            }
+            },
+            // mEmployeeStatus:{
+            //     [Sequelize.Op.in] : ['1', 1]
+            // }
         },
         include:[
             {
@@ -342,11 +345,11 @@ module.exports = class EmployeeController extends baseController{
     //         ],
     //     ]
     // },
-        // where:{
-        //      mEmployeeId: {
-        //         [Sequelize.Op.in] : sequelize.literal("(select mEmployeeId from mEmpRefMerchant where merchantId='"+req.deviceDetails.merchantId+"' )")
-        //     }
-        // },
+        where:{
+            mEmployeeStatus:{
+                [Sequelize.Op.in] : ['1', 1]
+            }
+        },
 
         attributes:{
             include:[

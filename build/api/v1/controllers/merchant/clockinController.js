@@ -105,6 +105,9 @@ module.exports = class ClockInController extends baseController{
             where:{
                 mEmployeeId:{
                     [Sequelize.Op.notIn]:sequelize.literal("(select mEmployeeId from empLog where status=1)")
+                }, 
+                mEmployeeStatus:{
+                    [Sequelize.Op.in] : ['1', 1]
                 }
             },
         }
@@ -113,6 +116,9 @@ module.exports = class ClockInController extends baseController{
                 where:{
                     mEmployeeId:{
                         [Sequelize.Op.in]:sequelize.literal("(select mEmployeeId from empLog where status=1)")
+                    }, 
+                    mEmployeeStatus:{
+                        [Sequelize.Op.in] : ['1', 1]
                     }
                 }, 
             }
