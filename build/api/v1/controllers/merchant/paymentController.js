@@ -107,9 +107,16 @@ module.exports = class TicketController extends baseController{
             "createdBy":req.userData.mEmployeeId,
             "createdDate":this.getDate()
         }
+
+
         let detail = await this.readOne({where:{ticketId: input.ticketDetail.ticketId}}, 'tickets');
         var ticketDetail = detail.dataValues || detail;
         let loyaltypoints = await this.readOne({where:{status:1}}, 'LPRedeemSettings')
+
+
+        if(ticketDetail.customerId !== undefined && ticketDetail.customerId !== null && ticketDetail.customerId !== ''){
+            await this.update('mCustomers', {mCustomerId: ticketDetail.customerId, mCustomerStatus:1}, {where:{mCustomerId: ticketDetail.customerId}},true)
+        }
 
         this.create('ticketpayment', payinput).then(async (r)=>{ 
             if(ticketDetail.ticketType === "GiftCard"){

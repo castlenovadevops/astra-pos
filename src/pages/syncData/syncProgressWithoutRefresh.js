@@ -125,6 +125,22 @@ export default class SyncProgress extends React.Component{
                 progresscompletion: 7.75,
                 url:  `/pos/syncData/tickets`
             } ,
+
+            {
+                name: "batches",
+                tablename: 'batches',
+                progressText: "Synchronizing Batches...",
+                progresscompletion: 7.75,
+                url:  `/pos/syncData/batches`
+            } ,
+
+            {
+                name: "appointments",
+                tablename: 'appointments',
+                progressText: "Synchronizing Appointments...",
+                progresscompletion: 7.75,
+                url:  `/pos/syncData/appointments`
+            } ,
         ]}, ()=>{
             
             var condition = navigator.onLine ? 'online' : 'offline';

@@ -815,11 +815,8 @@ export default class CreateTicketComponent extends React.Component{
             this.updateTicketDiscountAmount(i+1)
         } 
         else{ 
-            var totalDiscountAmount = 0;
-            console.log("ASDASDASDASd", this.state.totalValues)
-            var price = Object.assign({}, this.state.totalValues);
-            console.log("ASDASDASDASd2", price)
-            console.log("TIcket Discount ::: ",Number(price.ticketSubTotal), Number(totalDiscountAmount),"+" )
+            var totalDiscountAmount = 0; 
+            var price = Object.assign({}, this.state.totalValues);  
             this.state.ticketdiscounts.forEach((dis,j) =>{
                 totalDiscountAmount = Number(totalDiscountAmount)+Number(dis.mDiscountAmount)
                 if(j=== this.state.ticketdiscounts.length-1){

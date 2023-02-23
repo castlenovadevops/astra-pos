@@ -18,13 +18,15 @@ const pkfields = {
     "LPActivationSettings":"id",
     "LPRedeemSettings":"id",
     "giftCards":"id", 
-    "tickets":"ticketId"
+    "tickets":"ticketId",
+    "appointments":"id",
+    "batches": 'batchId'
 }
 
 module.exports = class baseController extends MsgController{
     models = models;
 
-    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers","LPSettings","LPActivationSettings","LPRedeemSettings", "giftCards", "tickets"]
+    syncTables = ["mTax", "mCategory", "mProducts", "mDiscounts", "mCustomers","LPSettings","LPActivationSettings","LPRedeemSettings", "giftCards", "tickets", "appointments", "batches"]
 
     constructor(props){
         super(props);

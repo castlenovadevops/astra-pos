@@ -134,5 +134,10 @@ module.exports = (sequelize) => {
         updatedAt: 'updatedDate',
         deletedAt: false
     })
+
+    mCustomers.associate =  function(models){  
+        models.mCustomers.hasMany(models.customerLoyaltyPoints, {foreignKey: 'customerId',sourceKey: 'mCustomerId'});
+        models.customerLoyaltyPoints.belongsTo(models.mCustomers, {foreignKey: 'customerId',targetKey: 'mCustomerId'});
+    }
     return mCustomers;
 }

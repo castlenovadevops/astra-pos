@@ -81,9 +81,10 @@ module.exports = class BatchController extends baseController{
             createdBy: req.userData.mEmployeeId,
             createdDate: this.getDate(),
             merchantId: req.deviceDetails.merchantId,
-            batchMode: 'manual'
+            batchMode: 'manual',
+            "POSId": req.deviceDetails.device.POSId
         }
-
+// console.log(req.deviceDetails);
         var tickets = await this.readAll({where:{ticketId:{
             [Sequelize.Op.in]: sequelize.literal("(select ticketId from ticketpayment where (batchId is null or batchId='') and payMode='card' and createdDate between '"+fromdate.substring(0, 10)+" 00:00:00' and '"+todate.substring(0, 10)+" 23:59:59')")
         }}}, 'tickets')
@@ -126,6 +127,7 @@ module.exports = class BatchController extends baseController{
             createdBy: req.userData.mEmployeeId,
             createdDate: this.getDate(),
             merchantId: req.deviceDetails.merchantId,
+            "POSId": req.deviceDetails.device.POSId,
             batchMode:'auto'
         }
         var tickets = await this.readAll({where:{ticketId:{
@@ -174,6 +176,7 @@ module.exports = class BatchController extends baseController{
                 createdBy: req.userData.mEmployeeId,
                 createdDate: this.getDate(),
                 merchantId: req.deviceDetails.merchantId,
+                "POSId": req.deviceDetails.device.POSId,
                 batchMode:'auto'
             }
             var tickets = await this.readAll({where:{ticketId:{

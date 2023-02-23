@@ -71,6 +71,8 @@ module.exports = class AppointmentController extends baseController{
                 createdDate: this.getDate(),
                 appointmentDate:req.input.data.appointmentdate,
                 appointmentTime:req.input.data.appointmenttime,
+                "POSId": req.deviceDetails.device.POSId ,
+                merchantId: req.deviceDetails.merchantId,
                 recordType:'Checkin',
                 appointmentStatus:'Waiting'
             }

@@ -58,8 +58,12 @@ module.exports = class TicketController extends baseController{
         //         })
         //     }
         // });
+
+        if(ticketinput.customerId !== undefined && ticketinput.customerId !== null && ticketinput.customerId !== ''){
+            await this.update('mCustomers', {mCustomerId: ticketinput.customerId, mCustomerStatus:1}, {where:{mCustomerId: ticketinput.customerId}},true)
+        }
         this.update('tickets', ticketinput, {where:{ticketId: ticketDetail.ticketId}},true).then(re=>{  
-            this.update('appointments',{appointmentStatus:'ModifiedTicket'}, {where:{ticketId: ticketDetail.ticketId}}).then(re=>{  
+            this.update('appointments',{appointmentStatus:'ModifiedTicket'}, {where:{ticketId: ticketDetail.ticketId}}, false).then(re=>{  
                 this.update('ticketservices',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{  
                     this.update('ticketdiscount',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 
                         this.update('ticketdiscountcommission',{status:0},{where:{ticketId: ticketDetail.ticketId}}, true).then(r=>{ 

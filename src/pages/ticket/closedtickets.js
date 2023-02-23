@@ -24,6 +24,7 @@ export default class ClosedTicketsComponent extends React.Component{
             showDatePopup: false,
             from_date: new Date(),
             to_date : new Date(),
+            batchConfirm: false,
             columns: [
 
                 {
@@ -119,6 +120,11 @@ export default class ClosedTicketsComponent extends React.Component{
         this.loadClosedTicketsToBatch = this.loadClosedTicketsToBatch.bind(this)
         this.checkBatch= this.checkBatch.bind(this)
         this.openClosedDatePopup = this.openClosedDatePopup.bind(this)
+        this.onCloseDialog = this.onCloseDialog.bind(this)
+    }
+
+    onCloseDialog(){
+        this.setState({batchConfirm: false, batcherror: false })
     }
 
     openClosedDatePopup(){
@@ -175,17 +181,19 @@ export default class ClosedTicketsComponent extends React.Component{
                 this.setState({batcherror: true})
             }
             else{
-                this.setState({isLoading: true})
-                this.httpManager.postRequest('merchant/batch/save',{from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{ 
-                    this.setState({isLoading: false})
-                });
+                this.setState({batchConfirm: true})
             }
             console.log(res.data)
         })
     }
 
-    onSubmitBatchSettle(){
 
+
+    onSubmitBatchSettle(){ 
+        this.setState({isLoading: true, batchConfirm: false})
+        this.httpManager.postRequest('merchant/batch/save',{from_date: this.state.from_date, to_date: this.state.to_date}).then(res=>{ 
+            this.setState({isLoading: false,})
+        });
     }
 
     render(){
@@ -232,6 +240,34 @@ export default class ClosedTicketsComponent extends React.Component{
                         <Button  size="large" variant="contained"  onClick={()=>this.setState({batcherror: false})}>OK</Button>
                     </DialogActions>
                 </Dialog> 
+
+
+
+                <Dialog
+                    open={this.state.batchConfirm}
+                    onClose={this.onCloseDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        Confirmation
+                    </DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure to settle the batch?
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions> 
+                        <Button  size="large" variant="contained"  onClick={()=>{
+                            this.onSubmitBatchSettle()
+                        }}>Yes</Button>
+                        
+                        <Button  size="large" variant="outlined"  onClick={()=>{
+                            this.onCloseDialog()
+                        }}>No</Button>
+                    </DialogActions>
+                </Dialog> 
+
 
             <Dialog
                     className="custommodal"

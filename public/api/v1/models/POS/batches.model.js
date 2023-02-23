@@ -22,6 +22,12 @@ module.exports = (sequelize) => {
              primaryKey: false, 
              allowNull: false 
         },
+        POSId: {
+             field: 'POSId', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: false 
+        },
         createdBy: {
              field: 'createdBy', 
              type: DataTypes.STRING(100), 

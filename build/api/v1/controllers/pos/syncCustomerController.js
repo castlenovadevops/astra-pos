@@ -60,7 +60,8 @@ module.exports = class SyncCustomerController extends baseController{
             },
         include:[
             {
-                model:this.models.customerLoyaltyPoints
+                model:this.models.customerLoyaltyPoints,
+                required: false
             }
         ]}, 'mCustomers')
             if(datares !== null){
@@ -112,7 +113,19 @@ module.exports = class SyncCustomerController extends baseController{
         var model = "mCustomers"
         if(idx<data.length){ 
             var detail = data[idx];
-            let detailexist = await this.readOne({where:{mCustomerId: data[idx].mCustomerId, mCustomerStatus:1}}, 'mCustomers')
+            let options = {
+                where:{
+                    mCustomerId: data[idx].mCustomerId, 
+                    mCustomerStatus:1
+                },
+                // include:[
+                //     {
+                //         model:this.models.customerLoyaltyPoints,
+                //         required: false
+                //     }
+                // ]
+            }
+            let detailexist = await this.readOne(options, 'mCustomers')
             if(detailexist !== null){
                 console.log("^^^^^^^^^ exist record")
                 this.delete('mCustomers', {mCustomerId:  data[idx].mCustomerId}).then(r=>{
@@ -154,7 +167,9 @@ module.exports = class SyncCustomerController extends baseController{
         if(data[idx].customerLoyaltyPoints !== undefined){
             if(pidx < data[idx].customerLoyaltyPoints.length){
                 var points = data[idx].customerLoyaltyPoints
-                this.create('customerLoyaltyPoints', points[pidx], false).then(async r=>{   
+                var ipt = points[pidx]
+                ipt["createdDate"] = ipt["createdDate"].replace("T"," ").replace("Z",""); 
+                this.create('customerLoyaltyPoints', ipt, false).then(async r=>{   
                     this.savecustomerLoyaltyPoints(pidx+1, idx, data, req, res, next,syncedRows)
                 })
             }

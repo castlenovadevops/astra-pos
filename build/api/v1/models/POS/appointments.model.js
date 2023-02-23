@@ -17,6 +17,12 @@ module.exports = (sequelize) => {
              allowNull: false,
              defaultValue: DataTypes.UUIDV4
         },
+        POSId: {
+             field: 'POSId', 
+             type: DataTypes.STRING(255), 
+             primaryKey: false, 
+             allowNull: false 
+        },
         merchantId: {
              field: 'merchantId', 
              type: DataTypes.STRING(255), 

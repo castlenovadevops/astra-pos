@@ -25,6 +25,9 @@ const SyncLPActivationSettings = require('../controllers/pos/syncLPActivationSet
 const SyncLPRedeemSettings = require('../controllers/pos/syncLPRedeemSettingsController');
 const SyncGiftCardsSettings = require('../controllers/pos/syncGiftCardsController');
 const SyncTicketController = require('../controllers/pos/syncTicketController');
+const SyncBatchController = require('../controllers/pos/syncBatchController');
+const SyncAppointmentController = require('../controllers/pos/syncAppointmentsController');
+
 
 const ClockInController = require('../controllers/merchant/clockinController');
 const TicketController = require('../controllers/merchant/ticketController');
@@ -97,6 +100,8 @@ const corsOptions ={
         new SyncLPRedeemSettings(),
         new SyncGiftCardsSettings(),
         new SyncTicketController(),
+        new SyncBatchController(),
+        new SyncAppointmentController(),
 
         new PrintController(),
         new SettingsController(),
