@@ -101,7 +101,10 @@ module.exports = class SyncBatchController extends baseController{
             let detailexist = await this.readOne({where:{batchId: data[idx].batchId }}, 'batches')
             if(detailexist !== null){
                 this.delete('batches', {batchId:  data[idx].batchId}).then(r=>{
-                    this.create('batches', data[idx], false).then(async r=>{
+                    var batch = data[idx];
+                    batch["createdDate"] = data[idx]["createdDate"].replace("T"," ").replace("Z",""); 
+                    console.log("BATCH CREATED", batch["createdDate"])
+                    this.create('batches', batch, false).then(async r=>{
                         var pkfield = pkfields[model]
                         syncedRows.push(detail[pkfield])
                         this.saveData(idx+1, data, req, res, next,syncedRows)
@@ -109,7 +112,10 @@ module.exports = class SyncBatchController extends baseController{
                 })
             }
             else{
-                this.create('batches', data[idx], false).then(async r=>{ 
+                var batch = data[idx];
+                batch["createdDate"] = data[idx]["createdDate"].replace("T"," ").replace("Z","");  
+                console.log("BATCH CREATED", batch["createdDate"])
+                this.create('batches', batch , false).then(async r=>{ 
                     var pkfield = pkfields[model]
                         syncedRows.push(detail[pkfield])
                         this.saveData(idx+1, data, req, res, next,syncedRows)

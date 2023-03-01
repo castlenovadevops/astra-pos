@@ -15,10 +15,17 @@
     "postinstall": "electron-builder install-app-deps",
     "pack-app": "npm run build-react && electron-builder -mwl --dir",
     "pack-build": "electron-builder --dir",
-    "build": "cp main.js ./public/main.js && cp main.js ./build/main.js && npm run build-react && electron-builder -mw",
+    "build-prod": "cp main.js ./public/main.js && cp ./public/api/v1/config/settings.prod.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ && cp main.js ./build/main.js && npm run build-react && electron-builder -mw",
+    "build-demo": "cp main.js ./public/main.js&& cp ./public/api/v1/config/settings.demo.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ && cp main.js ./build/main.js && npm run build-react && electron-builder -mw",
+    "build-dev": "cp main.js ./public/main.js && cp ./public/api/v1/config/settings.dev.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ && cp main.js ./build/main.js && npm run build-react && electron-builder -mw",
+    "build-local": "cp main.js ./public/main.js && cp ./public/api/v1/config/settings.local.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ && cp main.js ./build/main.js && npm run build-react && electron-builder -mw",
     "rebuild": "electron-rebuild -f -w sqlite3",
     "rebuild-arm64": "electron-rebuild -f --arch=arm64",
-    "install-sqlite": "npm install sqlite3@5.0.0 --build-from-source --runtime=electron --target=9.4.4 --dist-url=https://electronjs.org/headers --target_arch=ia32 &&  npm install sqlite3@5.0.0 --build-from-source --runtime=electron --target=9.4.4 --dist-url=https://electronjs.org/headers --target_arch=x64"
+    "install-sqlite": "npm install sqlite3@5.0.0 --build-from-source --runtime=electron --target=9.4.4 --dist-url=https://electronjs.org/headers --target_arch=ia32 &&  npm install sqlite3@5.0.0 --build-from-source --runtime=electron --target=9.4.4 --dist-url=https://electronjs.org/headers --target_arch=x64",
+    "start-local":"cp main.js ./public/main.js && cp ./public/api/v1/config/settings.local.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ &&  concurrently \"npm run start-react\" \"npm run start-electron\"",
+    "start-dev":"cp main.js ./public/main.js && cp ./public/api/v1/config/settings.dev.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ &&  concurrently \"npm run start-react\" \"npm run start-electron\"",
+    "start-demo":"cp main.js ./public/main.js && cp ./public/api/v1/config/settings.demo.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ &&  concurrently \"npm run start-react\" \"npm run start-electron\"",
+    "start-prod":"cp main.js ./public/main.js && cp ./public/api/v1/config/settings.prod.js ./public/api/v1/config/settings.js  && cp -r ./public/api/v1/config/* ./build/api/v1/config/ &&  concurrently \"npm run start-react\" \"npm run start-electron\""
   },
   "eslintConfig": {
     "extends": [
